@@ -103,6 +103,17 @@ Die vom Nutzer teils als Klassen bezeichneten Panelnamen sind **IDs**.
 
 ## Layout und Dateien
 
+- Ausruestfenster-Optik 14.10.2026: Native `.relic-details` brachte eigenen
+  braunen Aussenrahmen mit, Header/Body 5px Padding und Hauptbonus-Absatz 12px
+  vertikale Margins. Erste Dock-Integration hatte diese Stile nicht zurueckgesetzt.
+  Jetzt eigener kompakter Stil nur unter `#relic-equip-window`: kein innerer
+  Aussenrahmen, Grid-Kopf mit 44px-Bild und Titel, Hauptbonus volle Inhaltsbreite,
+  dezente Trennlinie, 11px-Substats/10px-Metadaten, vereinheitlichte Buttons.
+  Native Qualitaetsklassen und inline Substat-Farben beibehalten.
+  Opera-Endkontrolle: 220px Breite, 265,8px Hoehe statt vorher 291,6px,
+  Hauptbonus 204,4px breit; kein Scrollbedarf und keine Dockueberlappung.
+  Build/Typecheck und neun Hover-/Equip-Bedienungstests bestanden.
+
 - Onboarding-Korrektur 14.10.2026: redundante Fussbuttons Ueberspringen/Los geht's
   durch einen Button `Verstanden` ersetzt. Die Einfuehrung ist eine einseitige
   Uebersicht; Kreuz/Escape erlauben direktes Schliessen. Speicherflag/Hilfe bleiben.

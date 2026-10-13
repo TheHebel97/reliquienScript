@@ -8,13 +8,23 @@ export function createRelicEquipPanel(
   panel.setAttribute('aria-label', 'Reliquie ausrüsten'); document.body.append(panel);
   const style = document.createElement('style');
   style.textContent = `
-    #relic-equip-window .relic-details { width: 100%; min-width: 0; margin: 0; box-sizing: border-box; overflow-wrap: anywhere; }
-    #relic-equip-window .header { display: flex; gap: 5px; }
-    #relic-equip-window .description { flex: 1; min-width: 0; }
-    #relic-equip-window .image { flex: 0 0 48px; }
-    #relic-equip-window .image img { width: 48px; height: 48px; object-fit: contain; }
-    #relic-equip-window .buttons { display: flex; justify-content: center; }
-    #relic-equip-window .relic-dock-close { cursor: pointer; font-size: 11px; }
+    #relic-equip-window { color: #412b13; font: 12px/1.4 Verdana, sans-serif; }
+    #relic-equip-window .relic-details { width: 100%; min-width: 0; margin: 0; padding: 0; border: 0; background: transparent; box-sizing: border-box; overflow-wrap: anywhere; }
+    #relic-equip-window .relic-details .header { display: grid; grid-template-columns: minmax(0, 1fr) 44px; gap: 6px; height: auto; min-height: 0; padding: 0; margin: 0; border: 0; background: transparent; }
+    #relic-equip-window .description { display: contents; }
+    #relic-equip-window .description strong { grid-column: 1; grid-row: 1; align-self: center; font-size: 12px; line-height: 1.3; }
+    #relic-equip-window .description p { grid-column: 1 / -1; grid-row: 2; margin: 0; font-size: 12px; line-height: 1.4; }
+    #relic-equip-window .image { grid-column: 2; grid-row: 1; width: 44px; height: 44px; margin: 0; padding: 0; }
+    #relic-equip-window .image img { display: block; width: 44px; height: 44px; object-fit: contain; }
+    #relic-equip-window .relic-details .body { height: auto; min-height: 0; margin: 7px 0 0; padding: 7px 0 0; border: 0; border-top: 1px solid #c8b58e; background: transparent; font-size: 11px; line-height: 1.4; }
+    #relic-equip-window .sub_stats { display: grid; gap: 5px; margin: 0 0 7px; padding: 0; }
+    #relic-equip-window .sub_stat { padding: 0; margin: 0; }
+    #relic-equip-window :is(.range,.discovered_by) { margin: 0; padding: 0; color: #6e593b; font-size: 10px; line-height: 1.4; }
+    #relic-equip-window .discovered_by a { color: inherit; font-weight: normal; }
+    #relic-equip-window .buttons { display: flex; justify-content: center; margin: 2px 0 0; }
+    #relic-equip-window .buttons button { font: inherit; font-weight: bold; padding: 4px 10px; border: 1px solid #563716; border-radius: 6px; background: #76502d; color: #fff4d9; text-shadow: none; box-shadow: none; cursor: pointer; }
+    #relic-equip-window .buttons button:is(:disabled,.btn-disabled) { opacity: .55; cursor: default; }
+    #relic-equip-window .relic-dock-close { cursor: pointer; font: 11px Verdana, sans-serif; padding: 3px 7px; border: 1px solid #b39a6b; border-radius: 6px; background: #f4e4c2; color: inherit; }
     #relics > div.relic-equip-selected > img { box-shadow: inset 0 0 0 1px #24190d; }
   `;
   document.head.append(style);
