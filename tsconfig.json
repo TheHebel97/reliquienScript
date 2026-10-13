@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "target": "es5",   // Set the target ECMAScript version for compiled JavaScript
+    "lib": ["dom", "dom.iterable", "esnext"],  // Include necessary libraries for browser compatibility
+    "allowJs": true,   // Allow compilation of plain JavaScript files
+    "skipLibCheck": true,  // Skip type checking for library files (optional)
+    "strict": true,    // Enable strict type checking
+    "outDir": "./dist",  // Output directory for compiled JavaScript files
+    "downlevelIteration": true
+  },
+  "include": ["src/**/*"]  // Include all TypeScript files in the "src" directory for compilation
+}

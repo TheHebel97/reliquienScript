@@ -1,0 +1,450 @@
+# Website-Notizen – Die Staemme / Reliquien
+
+Stand: 13.10.2026. Vor Browserzugriff diese bekannten Strukturen verwenden.
+
+## Umgebung
+
+- Lesende Spielcode-Pruefung 12.09.2026 auf Dorfübersicht, ohne Navigation,
+  Klicks oder Spielaktionen: geladenes `merged/game.7681c0.js` enthaelt einen
+  verschleierten Pruefblock, initialisiert durch `a9fb6feee2c()`.
+  Dieser beobachtet hinzugefuegte Script-Elemente und meldet deren externe
+  src-Adressen; daneben bestehen gezielte Signaturpruefungen auf bestimmte
+  DOM-Elemente, globale Variablen und einen LocalStorage-Eintrag.
+  Meldepfad nutzt Connection.emit oder einen Bildrequest. Das Vorhandensein
+  dieser Logik beweist keine Erkennung unseres Userscripts. Keine pauschale
+  Unauffaelligkeit aus fehlenden eigenen Serverrequests ableiten.
+  Reliquienmodul war in diesem Tab nicht geladen und wurde nicht untersucht.
+
+- Userscript-Match: `https://*.die-staemme.de/game.php?village=*&screen=relic_*`.
+- Getestete Ansicht: `screen=relic_system` (Inventar).
+- Aktuelle Nutzervorgabe: ausschliesslich Opera mit ChatGPT-Erweiterung;
+  keine Verbindung zur Chrome-ChatGPT-Erweiterung herstellen. Fruehere
+  Chrome-Tests sind historische Ergebnisse, keine aktuelle Browserfreigabe.
+  Browser-/Tab-IDs pro Sitzung ermitteln, nicht fest im Code speichern.
+- 13.10.2026: Offenes Opera-Fenster mit Die-Staemme-Spielseite erkannt.
+  Computer-Use-Zugriff anschliessend vom Werkzeug gestoppt: aktuelle
+  Browser-URL konnte nicht zuverlaessig ermittelt werden. Keine Installation
+  oder Spielaktionen durchgefuehrt; Tampermonkey-Status nicht verifiziert.
+  Standalone-Build inklusive TypeScript-Pruefung und 27 Unit-Tests erfolgreich.
+- Lokales Bundle: `http://localhost:9000/bundle.js`, Dev-Server laeuft zuletzt.
+- Injection asynchron: nach Reload auf ein erwartetes Userscript-Element warten,
+  nicht sofort ein fehlendes Panel als Fehler behandeln.
+- Nutzer erlaubt direkte Tests auf seinem Spiel-Testaccount.
+
+## Bekannte DOM-Struktur
+
+Die vom Nutzer teils als Klassen bezeichneten Panelnamen sind **IDs**.
+
+| Selektor | Funktion / Details |
+| --- | --- |
+| `.inventory-description` | Erklaerender Absatz, per Userscript ausgeblendet |
+| `#page_inventory` | Elterncontainer der Inventarbereiche |
+| `#relics_container` | Filter und Raster, urspruenglich maximal 490px breit |
+| `.relics-grid-row` | Flex-Zeile mit Vor-Pfeil, `#relics`, Nach-Pfeil |
+| `#relics > div > img` | Kachel; Bild traegt `data-id` der Reliquie |
+| `#relics .relic-selected img` | Aktuell gewaehlte Kachel |
+| `#prev_page`, `#next_page` | Blaettern; aktive Klassen `arrowLeft` / `arrowRight` |
+| `#selected_relic_details .relic-details` | Ausgewaehlte Reliquie: `.header .description`, `.image img`, `.body` |
+| `.sub_stats .sub_stat` | Substat-Zeilen innerhalb der Details; Farbklassen und Inline-Stile erhalten |
+| `.range`, `.discovered_by` | Bereich und Entdecker innerhalb der Details |
+| `#add_relic_to_upgrade_panel_button` | Ausgewaehlte Reliquie in einen Aufwertungsslot legen; verbraucht sie noch nicht |
+| `#equip_button` | Nativer Ausruesten-Button in `#selected_relic_details .buttons`; auch ohne Userscript am 13.10.2026 in Opera bestaetigt |
+| `#village_relic` | Ausgeruestete Dorf-Reliquie; Original-DOM fuer Spiel-Events beibehalten |
+| `#village_relic_image`, `#village_relic_details` | Dorf-Bild und Details |
+| `#remove_relic_button` | Entfernt die ausgeruestete Reliquie, kein Panel-Steuerelement |
+| `#upgrade_panel` | Aufwertungsslots und eigentlicher Aufwertungsbutton |
+| `#relics_to_upgrade` | Container mit drei Slot-Divs |
+| `#relics_to_upgrade_0`, `_1`, `_2` | Slot-**Bilder**, Basis ist Slot 0; keine `data-id` am Slot beobachtet |
+| `#relics_to_upgrade_remove_0`, `_1`, `_2` | Entfernen aus Slots; versteckt mit `.display-none` |
+| `#upgrade_relic_button` | Fuehrt die eigentliche Aufwertung aus; `.btn-disabled` bei unvollstaendiger Auswahl |
+| `table.vis` mit Inventar-Link | Reliquien-Subnavigation; rechter, vom Userscript angehaengter Slot fuer den Entdeckt-von-Schalter |
+
+## Detailvorschau und Regeln
+
+- Preset-Vorbereitung 13.10.2026: native Filterkataloge in Opera liefern
+  16 Typen, 5 Qualitaeten und 35 Substat-Arten, unabhaengig von den aktuell
+  vorhandenen Inventar-Reliquien. Das belegt den aktuellen Auswahlkatalog,
+  nicht die serverseitige Zulaessigkeit aller theoretischen Kombinationen.
+  Auslesen aus `inventory_filter_type`, `inventory_filter_quality` und
+  `inventory_filter_sub1`; keine festgeschriebenen Browser-/Tab-IDs verwenden.
+- Relevante Substat-IDs fuer das Nutzerbeispiel: 3 Axtkaempfer Angriff+Verteidigung,
+  5 Leichte Kavallerie Angriff+Verteidigung, 24 Axtkaempfer Angriff,
+  26 Leichte Kavallerie Angriff, 33 Axtkaempfer Verteidigung,
+  35 Leichte Kavallerie Verteidigung. Grossaxt-Typ `greataxe` hat im beobachteten
+  Inventar Axtkaempfer Angriff+Verteidigung als Hauptbonus.
+
+- Shiny-Kriterium verifiziert: `RelicSystem.getRelicById(id).sub_stats` enthaelt
+  pro Substat `perfect: boolean`. Der Spielrenderer setzt fuer `perfect: true`
+  die Klasse `.relic-perfect-stat` (farbiger Stat im Tooltip).
+- `src/ui/relic-shiny-highlight.ts` setzt `.relic-shiny` am Raster-Wrapper,
+  sobald mindestens ein Substat perfect ist. 3px pinker Innenrahmen (#ff4fc3)
+  als Outline am Bild verschiebt keine Kacheln und bleibt bei Auswahl sichtbar.
+  ChildList-Observer erneuert die Markierung bei jedem Raster-Neuaufbau.
+- Endtest: Sattel ID 59659 mit perfektem Katapult-Verteidigungsstat korrekt
+  pink markiert; alle sichtbaren Kacheln mit Spieldaten abgeglichen, 0 Abweichungen.
+  Webpack-Build inklusive TypeScript-Pruefung erfolgreich.
+- Beim Klick auf `#add_relic_to_upgrade_panel_button` wird die Detailansicht geleert.
+  Basisdetails deshalb VOR dem Spielhandler per Capture-Click sichern.
+- Slot-Bildadressen verwenden z.B. `relics_184/handsaw_shoddy.webp` und
+  `horseshoe_shoddy.webp`: Dateiname liefert Typ + Qualitaet, nicht die individuelle ID.
+- Leere Bilder: `placeholder_relic_to_upgrade.png` (Slot 0),
+  `placeholder_relic_upgrade_material.png` (Material).
+- Beobachtete Qualitaetsoptionen: `shoddy`, `polished`, `refined`, `superior`, `renowned`.
+- Nutzervorgabe: Drei gleiche Typen behalten die Substats der ersten Reliquie,
+  inklusive pinker/Shiny-Substats. Verschiedene Typen ergeben eine zufaellige
+  Aufwertung; dabei koennen Shinys entstehen. Gleiche Qualitaet erforderlich.
+- Umsetzung behandelt auch 2+1 gemischte Typen als random; diese Variante ist
+  eine Interpretation von "gleicher Typ vs. random", keine serverseitig bestaetigte Regel.
+- Exakte neue Zahlenwerte und Zufallsergebnisse sind nicht bekannt. Bei gleichen
+  Typen aktuelle Basisdetails mit entsprechendem Hinweis anzeigen; nichts erfinden.
+- Substat-Farben beim Kopieren per computed `color` sichern, da CSS vom
+  Elternselektor abhaengen kann. Keine duplizierten IDs oder Aktionsbuttons kopieren.
+- Nur Slots auf DOM-Aenderungen beobachten, nicht die eigene Vorschau (Endlosschleife).
+
+## Layout und Dateien
+
+- Onboarding-Korrektur 14.10.2026: redundante Fussbuttons Ueberspringen/Los geht's
+  durch einen Button `Verstanden` ersetzt. Die Einfuehrung ist eine einseitige
+  Uebersicht; Kreuz/Escape erlauben direktes Schliessen. Speicherflag/Hilfe bleiben.
+
+- Onboarding 13.10.2026: `relic-onboarding.ts` nach den anderen UI-Installern,
+  nur bei Raster und Suchzeile. Einseitiges natives Dialogmodal `#relic-onboarding`
+  mit sechs kompakten Themen (Links-/Rechtsklick zuerst). Kein Tour-/Schrittsystem.
+  Schliessen/Skip/Fertig/Escape speichern `reliquiensrtipz:onboarding-seen=1`;
+  bei Reload nicht automatisch oeffnen. `#relic-onboarding-help` (?) neben der
+  Suche oeffnet manuell, Fokus nach Schliessen zur Ausloesesteuerung bzw. Suche.
+  Storage-Ausnahme laesst Oeffnen/Schliessen nutzbar. Bei schmalen Viewports
+  einspaltig, maximal verfuegbare Fensterhoehe; Modalinhalt bei Bedarf scrollbar.
+  Opera-Endtest: Erststart sichtbar, 560x606px ohne Scrollbedarf im normalen
+  Viewport; Ueberspringen -> geschlossen/Fokus Suche, Reload -> geschlossen,
+  Hilfe manuell geoeffnet/Escape -> Fokus Hilfe. Build/Typecheck und 63 Tests
+  erfolgreich. Keine Spielaktion ausgefuehrt.
+
+- Hover-/Equip-Trennung 13.10.2026 ersetzt die fruehere interaktive Hover-Vorschau:
+  Hover-Tooltip hat `pointer-events:none`, keine Aktionsbuttons/fokussierbaren Links;
+  Verlassen der Kachel schliesst sofort, auch Richtung Statsflaeche. Darunterliegende
+  Nachbarkacheln empfangen den Pointer direkt, keine Umwege um die Vorschau mehr.
+  Rechtsklick auf echte Reliquie verhindert nur deren Browser-Kontextmenue und
+  oeffnet `#relic-equip-window` als fuenftes 220px-Dockfenster. Platz-/Positionsregeln
+  unveraendert, Auswahl nicht persistent. Pinned ID/Details getrennt von Hover;
+  vor Ausruesten per aktuellem Rasterbild die exakte ID nativ erneut auswaehlen.
+  Fehlende/entfernte/gefilterte Reliquie schliesst die Auswahl, keine stale Aktion.
+  Native Button-Beschriftung/Disabled und Bestaetigungsdialog beibehalten.
+  Shared DOM-Helfer `relic-details-dom.ts`: sanitisiertes Klonen ohne IDs/Handler/
+  Buttons/aktive Links; Substat-Farbe direkt vom Original uebernehmen.
+  Regressionen zuerst auf altem Code fehlgeschlagen (Mausdurchlaessigkeit und
+  festgehaltenes Hover bei Verlassen), danach alle 57 Tests plus Typecheck/Build bestanden.
+  Opera-Endtest bei 1590x1022: Vorschau ohne Buttons; elementFromPoint im Bereich
+  der Vorschau trifft darunterliegende Rasterkachel. Echter Wechsel zur benachbarten
+  leeren Kachel schliesst sofort. Rechtsklick auf ID 283148 oeffnet korrektes Panel
+  220x291,6px ohne Dockueberlappung; Ausruesten mittig, native 24h-Bestaetigung
+  erscheint. Mit Abbrechen geschlossen, nichts ausgeruestet/verbraucht, Slots leer.
+  Mangels zweiter echter Reliquie Pin-gegen-spaeteren-Hover-Verwechslung im DOM-Test
+  mit zwei nativen Auswahlhandlern geprueft; Ausruestaktion verwendet gepinnte ID.
+
+- Presetfarbe 13.10.2026: `#relic-preset-color` im kompakten 18px-Toolbarbereich
+  neben der Trefferzahl. Globale Farbe fuer Rasterrahmen und Presetzeilen,
+  Standard gedecktes Neon-Gelb #d2d51b; inset 1px #443b29 als dunkle Innenkontur.
+  CSS-Variable `--relic-preset-color` an Raster/Panel/Modal; Pink bleibt unveraendert.
+  Speicherformat 2 ergaenzt `color`, alte/fehlende/ungueltige Farbwerte nutzen Default.
+  Opera-Endtest: Wechsel auf Rot #c73721 ueber echtes Farbfeld wirkt sofort und
+  bleibt nach Reload erhalten; anschliessend Gelb wiederhergestellt. Eigene Regeln
+  und Default-Schalter erhalten. Build/Typecheck und 55 Tests erfolgreich,
+  inklusive Farbwechsel bei kombinierten Shiny-/Preset-Klassen in DOM-Testdaten.
+
+- Preset-Ausbau 13.10.2026: sechs Nutzer-Kampfdefaults plus Rohstoffregel in
+  `relic-preset-defaults.ts`. Typen Grossaxt=greataxe, Kurzspeer=shortspear,
+  Hellebarde=halberd, Banner=banner, Langschwert=longsword. MAIN_BONUSES folgt
+  der aktuellen offiziellen Hilfe (Juni 2026+):
+  https://support.innogames.com/kb/TribalWars/de_DE/6055?ls=1
+  Rucksack=Kaserne-Kosten, Sattel=Stall-Kosten, Handsaege=Werkstatt-Kosten;
+  aeltere Hilfe beschreibt diese Typen abweichend, nicht fuer neue Welten verwenden.
+  Aktueller Weltkatalog enthaelt keine Kaserne-Kosten-Substatoption. Semantische
+  Bedingung `barracks-cost` erkennt einen tatsaechlich gelieferten Substat anhand
+  seiner nativen Bezeichnung; keine unbestaetigte numerische Kosten-ID festlegen.
+  Rohstoffgruppe erlaubt Hauptbonus+genau zwei Substats aus Holz/Eisen/Lehm,
+  Kaserne-Rekrutierungskosten und Beutekapazitaet; fremder/fehlender Bonus faellt raus.
+  Kombinierte Einheitenboni zaehlen fuer Angriff oder Verteidigung; separate
+  Angriffsboni zaehlen nicht als Verteidigung. Ein Stat fuellt nur eine Bedingung.
+  Optional `shinyOnly` im Modal. Gemeinsamer Blau-/Pink-Rahmen mit echten
+  Highlight-Installern an kuenstlichen perfect-Daten getestet (auch Toggle/Rasterersetzung),
+  kein Shiny-Spieltest auf dem leeren Account behaupten.
+  Speicherformat 2 migriert Format 1; installierte Default-IDs verhindern
+  Zuruecksetzen bearbeiteter/deaktivierter/geloeschter Defaults bei Reload.
+  Kompakte 20px-Zeilen statt Seiten/Karten, Editor im nativen Dialog mit Fokus-
+  rueckgabe und Escape. Opera: zehn Zeilen gemeinsam bei 1487x918 ohne Scrollbedarf
+  im 220x340px-Panel, Modal 420px breit; zwei temporaere Layout-Testpresets entfernt.
+  Temporaere Viewportvorgabe zurueckgesetzt. Ausgangsviewport war nur 234px breit;
+  dort ist wegen gemeinsamer Kollisionsspur Scrollbedarf erwartbar.
+
+- Preset-Symbole 13.10.2026: Der vom Nutzer erwaehnte Versammlungsplatz war
+  bereits in Opera offen; keine Chrome-Verbindung benoetigt. Native farbige Bilder
+  unter `/graphic/unit/unit_{spear,sword,axe,spy,light,heavy,ram,catapult}.webp`.
+  Keine inactive-Variante in den beobachteten Bildadressen. Aktuelle CDN-Assetwurzel
+  aus einem bestehenden `/graphic/`-Bild der Reliquienseite ableiten.
+  Presetkarten/Editorchips nutzen 18px-Symbole, kurze Bonuslabels und volle
+  Titel/ARIA-Bezeichnungen. Grossaxt zeigt Axtsymbol als bestaetigten Hauptbonus;
+  weitere Typen und Nicht-Einheiten-Boni bleiben Text, keine Zuordnung raten.
+  Fehlende Bilder fallen auf die volle Textbezeichnung zurueck.
+  Opera-Endtest: Axt/LK/Axt geladen, Panel weiterhin 220x340px, Karte und Editor
+  ohne Scrollbedarf; gespeicherte Regel unveraendert. Build/Typecheck und 50 Tests
+  bestanden. Konkrete System-Defaults werden vom Nutzer noch schriftlich geliefert.
+
+- Nutzerkorrektur 13.10.2026: Presetfenster wieder 220px breit, genauso wie
+  alle anderen Randfenster. Mehr Platz soll ausschliesslich durch Hoehe entstehen;
+  340px Mindesthoehe und Name/Typ im Editor wieder untereinander. Die folgenden 400px-Messungen sind
+  historisch und durch diese Vorgabe ersetzt.
+- Platzabhaengiger Randwechsel: `balanceDockSides` verwendet natuerliche Hoehen
+  (inkl. Mindesthoehe) und 8px-Abstaende. Passt eine Seite nicht, moeglichst wenige
+  andere Fenster auf die Gegenseite verschieben. Drag-/Tastaturziel und gerade
+  geoeffnetes/vergroessertes Fenster bevorzugen; Seitenwechsel mit den Positionen
+  speichern. Keine feste Drei-Fenster-Grenze; bei mehr Fensterhoehe passen auch vier.
+  Beide Seiten ausnutzen, bevor Hoehen begrenzt werden. Auf sehr schmalen Viewports
+  bleibt die gemeinsame Kollisionsspur erhalten.
+- Opera-Test bei 1487x918: Presets 220x340px. Beim Ziehen von links nach rechts
+  mit drei anderen Fenstern rechts bleibt Presets rechts; Aufwerten springt nach
+  links. Alle Fenster ohne Ueberlappung/Scrollbedarf. Editor einspaltig (204px
+  Innenbreite), bestehende Substats unveraendert. Build/Typecheck und 50 Tests
+  erfolgreich, inklusive Seitentausch und stabiler Verteilung bei Platzmangel.
+
+- Randfenster-Proportionen 13.10.2026: Erklaerungsbloecke in Filter/Presets
+  entfernt. Aufwertungsvorschau bei leeren Slots verborgen; sonst nur kurze
+  Statuszeile/Basisdetails, keine langen Regeltexte. Filter-/Preset-Schliessen
+  rechts in der Kopfzeile statt eigener voller Zeile.
+- Presetfenster jetzt 400px breit, Karten mit 8px Innenabstand und zwei Karten
+  pro Seite (Navigation bei mehr Presets). Editor/Listendarstellung wechseln:
+  Name+Typ nebeneinander, Substats per Dropdown/Hinzufuegen und entfernbaren Chips.
+  Keine Liste mit 35 Checkboxen im Panel mehr. Speicher-/Matching-Modell bleibt
+  unveraendert; auch Presets auf anderen Kartenseiten matchen weiterhin.
+- `dockHeightLimits` verteilt Hoehen nach natuerlichem Inhalt: kurze Fenster
+  behalten ihre Hoehe, groessere nutzen den verbleibenden Platz. Breitenabhaengige
+  Kollisionsspur beachtet das 400px-Fenster. Content-MutationObserver beobachtet
+  ChildList/Text/hidden/open, sodass Editorwechsel und geoeffnete Sektionen die
+  Hoehen aktualisieren, selbst wenn zuvor eine Maximalhoehe gesetzt war.
+  Scrollbalken an Randpanels/Filterlisten sind ausgeblendet; bei extrem wenig
+  Platz bleibt Overflow per Rad/Touch/Tastatur nutzbar, Inhalte nicht abschneiden.
+- Opera-Endkontrolle bei 1487x918: alle vier geoeffneten Randfenster ohne
+  Ueberlappung und ohne Scrollbedarf. Preset-Editor mit zwei bestehenden Substats
+  400x269px; Filter 220x196px, Dorf 220x178px, Aufwerten 220x135px.
+  Substats 5/24 im neuen Entwurf hinzugefuegt, Chip entfernt und Entwurf verworfen;
+  gespeichertes `Axt + LK Off` unveraendert. Build/Typecheck und 45 Tests bestanden.
+  Nutzer will System-Defaults erst als naechstes nach Bewertung der Proportionen
+  vorgeben; noch keine weiteren Default-Kombinationen anlegen.
+
+- Frei konfigurierbare Presets seit 13.10.2026: `src/ui/relic-presets.ts`,
+  Modell `relic-preset-model.ts`. `#relic-preset-trigger` neben dem Filter-Schalter
+  oeffnet das standardmaessig geschlossene Dockfenster `#relic-preset-window`.
+  Kollisions-/Drag-/Resize-/Positionsspeicherung laeuft ueber `addDockedPanel`.
+  Dock-CSS umfasst nun auch dieses Fenster; keine Ueberlappung im Opera-Endtest.
+- Preset: Name (max. 80 Zeichen), optionaler Typ (legt Hauptbonus fest),
+  ausgewaehlte Substat-IDs, aktiv/inaktiv. Typ und alle Substats muessen passen;
+  Substat-Reihenfolge egal. Mindestens eine Bedingung erforderlich. Mehrere
+  Presets als ODER. Zahlenwerte/Qualitaet/Shiny sind keine Preset-Bedingungen.
+  Unbekannte gespeicherte Typen/Stats bleiben beim Bearbeiten sichtbar und
+  koennen nicht unbemerkt als reduzierte Regel gespeichert werden.
+- Treffer bekommen `.relic-preset` und `data-relic-preset-names` am Wrapper.
+  Pointer-events-freies Pseudoelement zeigt 3px Blau (#3687ff); zusammen mit
+  `.relic-shiny` inset 6px/2px Blau, sodass der vorhandene pinke Bildrahmen bleibt.
+  Beobachtet nur Raster-ChildList; keine nativen Daten-/UI-Methoden gewrappt,
+  keine Serverrequests, keine neue Filterung oder Sortierung.
+- Versioniertes JSON `{version:1,presets:[...]}` unter
+  `reliquiensrtipz:relic-presets`, pro Browser/Spiel-Origin. Ungueltige Regeln
+  komplett verwerfen statt durch Weglassen von Bedingungen breiter zu matchen.
+  Bei Speicherfehlern fuer die Sitzung weiter nutzbar, mit sichtbarem Hinweis.
+- Opera-Endtest: Testkombination Grossaxt + IDs 5/9 markiert ID 283148 blau;
+  3px-Blau verifiziert, Speicherung nach Reload und Deaktivieren/Reaktivieren
+  bestaetigt. Danach als Nutzerbeispiel `Axt + LK Off` auf Grossaxt + IDs 5/24
+  geaendert und gespeichert. ID 283148 bleibt korrekt unmarkiert (hat 5/9).
+  Suche Sattel -> 0 Kacheln, Suche geleert -> 1; Preset erhalten. Keine
+  Spielaktionen beim Presettest. Reale Doppelmarkierung mangels Shiny im
+  aktuellen Inventar nicht im Spiel getestet; Klassenerhalt per DOM-Test geprueft.
+  Build/Typecheck und 42 Tests erfolgreich.
+
+- Hover-Fenster seit 13.10.2026: eigener `#relic-hover-equip-button` leitet
+  an den originalen `#equip_button` weiter. Native Beschriftung/Verfuegbarkeit
+  uebernehmen; keine eigenen Equip-Requests oder kopierten Spielhandler.
+  Vor der Aktion exakte Hover-Reliquie synchron auswaehlen. Klick auf die Kachel
+  bleibt Auswahl fuer den naechsten Aufwertungsslot, keine direkte Aufwertung.
+- Reproduzierter Hover-Fehler: Verlassen der Kachel liess das Fenster durch den
+  120-ms-Timer sichtbar; Fokusverlust und Rasterersetzung hatten keinen eigenen
+  Schliesspfad. Timer entfernt. Tooltip liegt unmittelbar rechts neben der
+  Kachel (bei Platzmangel links), damit der Ausruesten-Button ohne Luecke erreichbar
+  bleibt. Ausserhalb beider Bereiche, bei Focusout, Escape, Window-Blur,
+  Tabwechsel, Scrollen ausserhalb des Tooltips, Resize oder entfernten Kacheln
+  schliessen und aktive Hover-Referenzen loeschen. Nach Slot-/Equip-Klick sofort
+  schliessen. Native Detail-Mutationen duerfen das Fenster danach nicht wieder oeffnen.
+- Keine Hover-Detail-Cache-Snapshots mehr; Details synchron vom Spiel uebernehmen.
+  Eigener Aktionsbutton bleibt bei Observer-Updates derselbe DOM-Knoten, damit
+  Tastaturfokus erhalten bleibt. DOM-Regressionstests in `relic-hover-details.test.ts`
+  nutzen `jest-environment-jsdom` (Dev-Abhaengigkeit).
+- Opera-Abschlusstest 13.10.2026: neuer Ausruesten-Button mittig unter den
+  Details (Abweichung zur Fenstermitte < 0,01px). Echter Mauswechsel von Kachel
+  ins angrenzende Fenster haelt es offen; Verlassen und Tab-Focusout schliessen
+  sofort. Linksklick legt Grossaxt ID 283148 in Slot 0; Fenster schliesst.
+  Slot anschliessend geleert, keine Aufwertung ausgefuehrt.
+- Klick auf Hover-Ausruesten oeffnet die native `#confirmation-box`. Diese
+  weist auf 24 Stunden Sperre fuer einen Reliquienwechsel hin. Fuer den Test
+  mit `Abbrechen` geschlossen; keine Reliquie ausgeruestet, Dorf und Inventar
+  unveraendert, alle Slots leer. Native Bestätigung weder umgehen noch fuer
+  einen kurzen Funktionstest bestaetigen. Build/Typecheck und 34 Tests bestanden.
+- Opera-Erweiterungsanbindung ueber Browser-ID fuer Opera funktioniert jetzt.
+  Tampermonkey-Seite hat `chrome-extension:`-URL auch in Opera. Zugriff wurde
+  durch Browser-Sicherheitspruefung blockiert; Nutzer schaltet das Userscript
+  selbst aus/ein. Nicht ueber CDP oder andere UI-Werkzeuge umgehen.
+- Lokaler Server am 13.10.2026: `127.0.0.1:9000/bundle.js` liefert den neuen
+  Webpack-Code. Shell-Abruf von `localhost:9000/bundle.js` lieferte 404;
+  mehrere Prozesse lauschen auf Port 9000 (IPv4/IPv6). Bei Loader-Problemen
+  Adresse pruefen statt einen weiteren Server zu starten.
+
+- Sortierung: `.sort-line` direkt zwischen `.search-line` und `.search-status`,
+  22px hoch, `#relic-sort-field` und `#relic-sort-direction`. Nicht im Dockfenster.
+  Registry in `relic-sort.ts`: Standard (native Reihenfolge), Qualitaet nach
+  shoddy/polished/refined/superior/renowned, Typ nach deutschem Optionslabel,
+  Bereich nach numerischem `range`, Shiny-Substats nach Anzahl `perfect === true`.
+- Haupt-/Substats enthalten beobachtet keine separaten numerischen Bonuswerte,
+  nur formatierte Namen/Benefit-Texte. Auf Nutzerwunsch Substat-Sortierung:
+  Optgroup Substat-Staerke im vorhandenen Dropdown, Felder `substat:<id>` aus
+  nativem Substat-Katalog. `substatStrength` extrahiert genau einen Prozentwert
+  als Zahl (Dezimalkomma/-punkt), vergleicht Staerke als Betrag; -10% Kosten
+  staerker als -2%. Fehlend/mehrdeutig zuletzt, niemals als 0 interpretieren.
+  Auswahl startet absteigend, Pfeil kehrt um. Keine zusaetzliche Filterung.
+  Endtest Katapult-Verteidigung: +2% vor +1%, umgekehrt korrekt; ohne Stat zuletzt.
+  Zeile weiterhin 22px hoch. Build und 27 Tests bestanden.
+  `groupRelics` behaelt die Reihenfolge des ersten Auftretens per Map bei.
+- Pipeline: originales updateData -> eigene Filter -> sortRelics -> native
+  Gruppierung/Paginierung. Sortiert Kopie, Gleichstaende behalten native Reihenfolge,
+  fehlende Werte immer zuletzt. Standard stellt Originalfilterreihenfolge her;
+  Richtung dabei deaktiviert. Sortierwechsel auf Seite 0; Reset setzt alles zurueck.
+- Sortier-Endtest: Zeilenposition/-hoehe bestaetigt, Typen alphabetisch nach
+  deutschen Namen; Suche hufeisen sattel + Shiny absteigend zeigt 12 Treffer und
+  ID 59659 zuerst. Reset liefert exakt die urspruengliche ID-Reihenfolge.
+  Build inklusive Typecheck und 25 Unit-Tests bestanden.
+- Filterfenster-Refactor: `#relic-filter-window` enthaelt alle sechs Sektionen,
+  aktive Chips und Suchhilfe. Inventar `#relic-search` enthaelt nur Suchzeile
+  mit Filter-Schalter/Reset und Trefferzahl; keine leeren Filter-Platzhalter.
+- Gemeinsames Dock-System bietet `addDockedPanel(element, title, top)` mit
+  `setVisible` / `setTitle`. Verwendet unveraenderten Drag-, Tastatur-, Resize-,
+  Kollisions- und LocalStorage-Pfad. Versteckte Panels nehmen keinen Kollisionsplatz
+  ein. Fenster ist 220px breit, scrollbar, am Rand ohne Rundung.
+- Filter-Schalter toggelt Fenster; Schliessen gibt Fokus an Schalter zurueck.
+  Position persistent, Sichtbarkeit wie bei vorhandenen Fenstern nicht gespeichert.
+  Titel/Schalter und geschlossene Sektionen zeigen aktive Filterzahlen inklusive
+  erkannter Query-Filter. SearchState ist einzige Quelle; Parsergebnis abgeleitet,
+  kein eigener Zustand im Fenster. Vorhandene Such-/Toggle-UND-Semantik erhalten.
+- Endtest Refactor: 0 Inline-Sektionen, 6 im Fenster; shiny -katapult unveraendert;
+  Hufeisen+Sattel 12 Treffer, Titel Filter (2), Typ (2). Schliessen/oeffnen behaelt
+  Suche. Per Maus links angedockt, drei Panels ohne Ueberlappung; Seite/Position
+  nach Reload wiederhergestellt. Reset liefert 34 Treffer und 0 aktive Chips.
+- Smarte Suche: `src/ui/relic-search.ts` versteckt `.ui-dropdown` im
+  Reliquiencontainer. Optionskatalog aus `inventory_filter_quality`,
+  `inventory_filter_type`, `inventory_filter_sub1`; zweite Substat-Auswahl entfällt.
+- Eigene Filter: Qualitaet, Typ, Eigenschaften, Einheiten/Gebaeude, Substat-IDs,
+  Shiny. Innerhalb einer Gruppe ODER, zwischen Gruppen UND; Substats optional
+  ALLE erforderlich. Aktive Chips sind entfernbar; Gruppen aufklappbar.
+- Parser `relic-search-model.ts`: Qualitaets-/Typbegriffe werden als Filter
+  erkannt, weitere Begriffe durchsuchen Name, Typ, Haupt-/Substats (UND).
+  Shiny/pink, ohne/kein/nicht shiny, -shiny; Ausschluss -begriff, zitierte
+  Phrasen. Kuerzel lk/sk/kata/off/def/speed; Umlaute und ae/oe/ue normalisiert.
+  Mehrere erkannte Typen/Qualitaeten als ODER; Suche und manuelle Chips als UND.
+  Erkannte Suchfilter erscheinen separat als entfernbare Suche-Chips.
+- Integration: Wrapper um `Inventory.updateData` setzt native Filter auf null,
+  ruft Original auf (Dorf, Handel, Aufwertungsslots bleiben ausgeschlossen),
+  filtert danach `inventory_relics`. Keine Spielserver-Requests durch Filter.
+  Wrapper um `updateUI` begrenzt page und aktualisiert Treffer-/Seitenzahl.
+  Native `getGroupedInventoryRelics` arbeitet auf dem gefilterten Array.
+  Bei Eingaben Seite 0, Auswahl/Tooltip zuruecksetzen; bei Gruppenhoehenwechsel
+  Rasterkapazitaet ueber resize neu berechnen. Keine Such-Persistenz implementiert.
+- Endtest Suche: shiny katapult verteidigung / shiny kata def -> ID 59659,
+  Hufeisen + Sattel -> 12 Treffer beider Typen; ohne shiny -> 11 Treffer.
+  Hover mit 429 Zeichen bestaetigt. Linksklick entfernt passenden Treffer in
+  Slot 0; Entfernen aus Slot bringt ihn in die Suche zurueck. Abschliessend
+  Filter zurueckgesetzt, 34 Treffer, Slots leer. Build und 20 Unit-Tests bestanden.
+- Raster: volle Containerbreite, maximal 10 Spalten und 8 Reihen, 2px Abstand.
+  `src/ui/relic-grid-layout.ts` berechnet Spalten mit 55,25px Mindestziel und
+  Reihen aus Fensterhoehe minus Rasteroberkante minus 40px Fussbereich.
+  Kacheln bleiben quadratisch und fuellen die Breite. ResizeObserver und
+  Fenster-resize aktualisieren das Layout, mindestens eine Reihe/Spalte.
+- Native Paginierung in `RelicSystem.Inventory`: `relics_per_page` (nativ 20),
+  nullbasierte `page`, `getMaxPage()`, `getGroupedInventoryRelics()`, `updateUI()`.
+  RelicSystem ist ein globales lexikalisches Binding, KEINE window-Eigenschaft.
+  Seitengroesse auf Spalten x Reihen setzen, Seite anhand des vorherigen ersten
+  Eintrags neu berechnen und begrenzen. `updateUI()` rendert Bilder plus leere
+  Platzhalter, installiert Bildlistener und aktualisiert Pfeile/Filter-/Slotansicht.
+- `single-page` am Container aendert die Pfeilbreite; ResizeObserver gleicht
+  die resultierende Rasterbreite ab. Native Filter und Blaetterhandler beibehalten.
+- Raster-Endtest: bei 855px Fensterhoehe 10 Spalten x 6 Reihen, Kapazitaet 60,
+  alle 34 Inventargruppen sichtbar, Hover mit Detailinhalt bestaetigt. Bei 600px
+  Fensterhoehe 30 Plaetze, zweite Seite mit 4 Bildern per echtem Mausklick geprueft.
+  Fenstergroesse danach zurueckgesetzt: Seite 0, Kapazitaet 60, 34 Bilder.
+  Build/Typecheck und 14 Unit-Tests bestanden.
+- `.relic-dock` auf Dorf-/Aufwertungs-Panel, Breite 220px, direkt buendig am
+  linken oder rechten Rand, 9px Rundung nur an der vom Rand abgewandten Seite
+  und 8px Abstand nur zwischen Panels.
+  `src/ui/docked-panels.ts`, Kollisionsberechnung `src/ui/dock-layout.ts`.
+- Panelhoehen werden bei Platzmangel begrenzt, Inhalt scrollbar.
+- `.relic-details` hat nativ 10px linken Aussenabstand: im Panel auf 0 setzen,
+  sonst horizontaler Ueberlauf. Originale Kacheln/Slots/Spiel-Listener behalten.
+- Randwechsel jetzt bei 40% von der Startseite: links -> rechts ab x=40%,
+  rechts -> links ab x=60%. Startseite fuer einen Drag festhalten (kein Flackern).
+- Spielkopfzeile endet beobachtet bei etwa 47px; Panels werden vorsichtshalber
+  erst ab y=57px positioniert, damit sie nie hinter der Kopfzeile liegen.
+- Speicherung unter `reliquiensrtipz:docked-panels`, je Panel `side` und `top`.
+- Entdeckt-von-Schalter: `src/ui/discovered-by-toggle.ts`; findet die passende
+  `table.vis` ueber ihren Inventar-Link, ergaenzt rechts den Toggle und speichert
+  die Sichtbarkeit unter `reliquiensrtipz:show-discovered-by`. CSS blendet
+  global `.discovered_by` aus, daher gilt die Wahl fuer Hover-, Dorf- und
+  Aufwertungsvorschau-Details.
+- Vorschau: `src/ui/upgrade-preview.ts`, Regeln `src/ui/upgrade-preview-model.ts`.
+- Gezielte Tests: `node node_modules/jest/bin/jest.js --runInBand`.
+  Build: `node node_modules/webpack/bin/webpack.js --mode development`.
+  npm alternativ temporaer verfuegbar, siehe README/Handoff bei Bedarf.
+
+## Letzter gezielter Abschlusstest
+
+- Drei gleiche Hufeisen: Vorschau zeigte Basisdetails, Substats stimmten exakt
+  mit der ersten ausgewaehlten Reliquie ueberein.
+- Ein Material gegen Handsaege getauscht: Anzeige wechselte auf Zufallsaufwertung.
+- Slots anschliessend geleert; keine Aufwertung ausgefuehrt/keine Reliquien verbraucht.
+- Randwechsel nahe der Mitte getestet; kein Ueberlappen.
+- Pink/Shiny-Farberhalt ist implementiert, wurde noch nicht mit einer echten
+  Shiny-Reliquie im Spiel verifiziert.
+- Build und 9 Unit-Tests erfolgreich. Ein gebuendelter Browser-Abschlusstest,
+  ohne Screenshots oder vollstaendige DOM-Dumps.
+- Nach Layoutanpassung: 10 Unit-Tests bestanden; Endkontrolle bestaetigte
+  linke Buendigkeit, 9px Rundung und Top y=57px unter der Kopfzeile.
+- Rasterdetails: `#selected_relic_details` bleibt fuer Spielhandler im DOM,
+  ist aber unsichtbar. `src/ui/relic-hover-details.ts` waehlt eine Kachel beim
+  Hover bewusst aus, damit die Spielseite ihre Details sofort liefert und im
+  Tooltip anzeigt. Der Tooltip hat keinen eigenen Aufwertungsbutton.
+- Verifiziert im Spielcode: Der native Auswahlhandler sitzt auf `#relics img`,
+  NICHT auf dem umgebenden Div. `tile.click()` loest ihn nicht aus und war die
+  Ursache fuer den leeren Hover und die wirkungslose Slot-Auswahl.
+- `RelicDetailsPanel.showRelic` rendert synchron per `innerHTML` und installiert
+  sofort den nativen Aufwertungs-Auswahlbutton. Die fruehere Annahme eines
+  verzoegerten Renderings war falsch. Nach `image.click()` Details direkt kopieren;
+  keine Renderframe-Verzoegerung vor der Slot-Auswahl (verhindert Verwechslungen
+  bei schnellem Wechsel). Der MutationObserver deckt weitere Detailaenderungen ab.
+- Linksklick auf `#relics > div` wird im Capture-Handler abgefangen und klickt
+  den nativen `#add_relic_to_upgrade_panel_button`; das Spiel fuellt dadurch
+  den naechsten freien Aufwertungsslot. Falls die Kachel noch nicht ausgewaehlt
+  war, erfolgt zuerst `image.click()` unter einer Rekursionssperre. Danach wird
+  der native Button synchron geklickt. Beim erneuten Klick auf ein bereits
+  ausgewaehltes Bild wuerde das Spiel die Auswahl aufheben; diesen Bildklick
+  deshalb ueberspringen.
+- Das Userscript registriert keinen `contextmenu`-Handler am Raster. Rechtsklick
+  veraendert daher keine Aufwertungsslots.
+- Hover-Fenster erhaelt die Details der ersten angeklickten Kachel korrekt;
+  die Dockkante am linken Rand wurde mit 0px, die aeussere Ecke mit 9px geprueft.
+- Navbar-Toggle: im letzten Zellenplatz der Reliquien-Subnavigation bestaetigt;
+  Aus- und Einschalten blendet `.discovered_by` korrekt aus/ein und stellt die
+  vorherige Einstellung wieder her.
+- Abschlusstest nach Korrektur des Bild-Handlers: echter Maus-Hover per CDP
+  zeigt Handsaegen-Details (424 Zeichen), alle Slots bleiben leer. Linksklick
+  legt ID 84618 in Slot 0; Basisvorschau stimmt. Nach Raster-Neuaufbau zeigt
+  Hover Hufeisen-Details; Linksklick legt ID 60974 in Slot 1. Rechtsklick laesst
+  die Slots unveraendert. Beide Testslots anschliessend entfernt, keine
+  Aufwertung ausgefuehrt. Typecheck, Build und 10 bestehende Unit-Tests bestanden.
+- Browser-Testhinweis: `playwright.evaluate` ist nur lesend, bietet keine echten
+  DOM-Events oder `.click()`. Fuer Maus-Hover `Input.dispatchMouseEvent` ueber die
+  dokumentierte CDP-Capability nutzen. Nicht aus einem wirkungslosen Containerklick
+  auf einen Fehler des Browseradapters schliessen.
