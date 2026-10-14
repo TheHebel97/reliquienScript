@@ -1,0 +1,64 @@
+Threadtitel: [Userscript] Reliquien-Inventarhelfer – Suche, Filter und Highlight-Presets
+
+Hallo zusammen,
+
+ich möchte meinen Reliquien-Inventarhelfer für den deutschen Markt zur Prüfung einreichen. Das Script erweitert die Inventaransicht um lokale Suche, Filter, Sortierung, Highlight-Presets und kompakte Randfenster.
+
+[TABLE]
+[TR][TH]Script-Informationen[/TH][TH]Konfiguration[/TH][/TR]
+[TR][TD]Scriptname:[/TD][TD]Reliquien-Inventarhelfer[/TD][/TR]
+[TR][TD]Autor:[/TD][TD]TheHebel97 – Kontakt über das Forum; Repository: https://github.com/TheHebel97/reliquienScript[/TD][/TR]
+[TR][TD]Premium-Account erforderlich:[/TD][TD]Nein.[/TD][/TR]
+[TR][TD]Aktuelle Version / Einreichdatum:[/TD][TD]1.0.1 / 2026-10-14[/TD][/TR]
+[TR][TD]Auf welchen Ansichten wird das Script ausgeführt:[/TD][TD]Reliquien → Inventar (screen=relic_system), deutsche Spielwelten. Der Userscript-Match ist auf screen=relic_* unter *.die-staemme.de begrenzt.[/TD][/TR]
+[TR][TD]Funktion des Scripts:[/TD][TD]
+[LIST]
+[*]Dynamisches Inventarraster mit bis zu zehn Spalten und acht Reihen, passend zur verfügbaren Fenstergröße.
+[*]Stats als mausdurchlässige Hover-Vorschau direkt an der jeweiligen Reliquie.
+[*]Linksklick legt die angeklickte Reliquie in den nächsten freien nativen Aufwertungsslot. Die eigentliche Aufwertung wird danach vom Spieler über den normalen Aufwertungsbutton gestartet.
+[*]Rechtsklick wählt die Reliquie in einem separaten Ausrüstfenster aus. Der dortige Button öffnet die native Spielbestätigung; diese wird nicht automatisch bestätigt.
+[*]Lokale Suche nach Namen, Typen und Boni sowie Filter nach Qualität, Typ, Substats und Shiny.
+[*]Sortierung nach Qualität, Typ, Bereich, perfekten Substats oder einzelnen Substat-Stärken.
+[*]Konfigurierbare Highlight-Presets mit Hauptbonus/Typ und gewünschten Substats; sechs Kampf-Vorgaben und eine Rohstoff-Gruppenregel sind enthalten.
+[*]Kombinierte Angriffs-/Verteidigungsboni erfüllen die passende Einzelbonus-Bedingung. Eine Rohstoff-Gruppenregel trifft nur, wenn Hauptbonus und beide Substats aus der festgelegten Auswahl stammen.
+[*]Presetfarbe frei einstellbar, standardmäßig gedecktes Neon-Gelb. Perfekte Substats werden zusätzlich pink markiert; beide Markierungen können gleichzeitig sichtbar sein. Presets können auf Shiny-Reliquien beschränkt werden.
+[*]Randfenster lassen sich verschieben und wechseln bei Platzmangel automatisch die Seite. Einstellungen und Presets bleiben lokal im Browser gespeichert.
+[*]Kurze Einführung beim ersten Start; über „?“ neben der Suche jederzeit erneut aufrufbar.
+[/LIST]
+[/TD][/TR]
+[TR][TD]Anleitung:[/TD][TD]
+1. Die für die Prüfung bereitgestellte, vollständige Userscript-Datei enthält bereits den Tampermonkey-Header und benötigt keinen lokalen Server.
+2. Auf der Inventarseite können Reliquien über die Suchzeile und „Filter“ eingegrenzt werden. Beispielsuchen: „shiny kata def“, „hufeisen“ oder „ohne shiny“.
+3. Überfahren zeigt Details; Linksklick fügt in die Aufwertungsauswahl ein, Rechtsklick öffnet das Ausrüstfenster. Erst die jeweiligen nativen Spielaktionen führen Aufwertung bzw. Ausrüsten aus.
+4. „Presets“ öffnet die gespeicherten Regeln. Checkboxen aktivieren/deaktivieren Regeln; der Stift öffnet das Bearbeitungsfenster. Neue Regeln, Shiny-Bedingung und Rahmenfarbe sind dort konfigurierbar.
+5. „Zurücksetzen“ leert Suche und Filter und stellt die Standardsortierung wieder her. Gespeicherte Presets bleiben erhalten.
+Die Nutzung durch Spieler soll nach Freigabe über den vom Stämme-Team vorgesehenen Veröffentlichungsweg erfolgen.
+[/TD][/TR]
+[TR][TD]Parameter / Konfigurationen:[/TD][TD]Keine externen Initialisierungsparameter nötig. Filter, Sortierung, Presets, Shiny-Bedingung, Rahmenfarbe, Fensterpositionen und die Entdeckeranzeige werden über die Oberfläche eingestellt. Presets, Rahmenfarbe, Fensterpositionen, Entdeckeranzeige und der Einführungsstatus werden in LocalStorage gespeichert. Die Suche selbst wird nicht dauerhaft gespeichert.[/TD][/TR]
+[TR][TD]Funktionierende Konfiguration (= Initialisierungsscript zum Einfügen in der Scriptdatenbank):[/TD][TD]Der Prüfstand ist die vollständige, direkt ausführbare Datei reliquiensrtipz.user.js (Link unten), ohne weitere Parameter oder Bibliotheksdownloads. Sie registriert sich vor dem Aufbau der Oberfläche über ScriptAPI.register. Für einen separaten Produktionsloader fehlt noch die vom Team vergebene Hosting-URL; dafür wird keine GitHub-URL als Spieler-Loader vorgesehen.[/TD][/TR]
+[TR][TD]Script-Quellcode:[/TD][TD]
+GitHub-Datei: https://github.com/TheHebel97/reliquienScript/blob/main/reliquiensrtipz.user.js
+Direkter Dateiinhalt: https://raw.githubusercontent.com/TheHebel97/reliquienScript/main/reliquiensrtipz.user.js
+Entwicklungsquellcode: https://github.com/TheHebel97/reliquienScript/tree/main/src
+Changelog: https://github.com/TheHebel97/reliquienScript/blob/main/CHANGELOG.md
+Lizenz: MIT – https://github.com/TheHebel97/reliquienScript/blob/main/LICENSE
+[/TD][/TR]
+[/TABLE]
+
+[B]Bereitstellung zur Prüfung[/B]
+Anstelle eines passwortgeschützten Pastebin-Links stelle ich den lesbaren Prüfstand als einzelne kompilierte JavaScript-Datei im GitHub-Repository bereit. Es ist kein Passwort erforderlich. Bitte gebt kurz Bescheid, falls für die interne Prüfung ein anderer Bereitstellungsweg erforderlich ist. GitHub dient hier als Prüfquelle; das für Spieler freigegebene Script soll anschließend durch das Stämme-Team gehostet werden.
+
+[B]Technische Hinweise für die Prüfung[/B]
+Die vollständige ScriptAPI-Registrierung lautet:
+[CODE=javascript]
+api.register('Reliquien-Inventarhelfer', true, 'TheHebel97', 'support-nur-im-forum@die-staemme.de');
+[/CODE]
+Die API wird über unsafeWindow.ScriptAPI bzw. window.ScriptAPI verwendet. Bei fehlender API oder Ablehnung wird die Oberfläche nicht aufgebaut; native API-Fehler werden nicht abgefangen oder umgangen.
+
+Das Script ist nicht minifiziert oder verschleiert. Der Build enthält die MIT-Lizenz und benötigt weder eval noch den lokalen Entwicklungsloader. Es gibt keine eigenen fetch-, Ajax- oder XMLHttpRequest-Aufrufe, keine Timer für Spielaktionen und keine automatische Verarbeitung einer Liste von Spielaktionen. Einheitenbilder verwenden die offiziellen Grafikpfade der Spielseite.
+
+Bitte prüft insbesondere die geänderte Klickbedienung: Für die Hover-Details wird das native Reliquienbild lokal ausgewählt. Der Linksklick ruft den nativen Button für die Aufwertungsauswahl auf. Im Ausrüstfenster wird vor dem nativen Ausrüstbutton die genau per Rechtsklick ausgewählte Reliquie wieder ausgewählt. Es gibt keine automatische Aufwertung und keine automatische Bestätigung des Ausrüstvorgangs.
+
+Die Freigabe dieser Bedienung und des Scripts insgesamt wird mit dieser Einreichung beantragt; eine bestehende Genehmigung wird nicht vorausgesetzt.
+
+Vielen Dank für die Prüfung!

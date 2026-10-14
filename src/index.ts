@@ -7,8 +7,10 @@ import { installRelicShinyHighlight } from './ui/relic-shiny-highlight';
 import { installRelicSearch } from './ui/relic-search';
 import { installRelicPresets } from './ui/relic-presets';
 import { installRelicOnboarding } from './ui/relic-onboarding';
+import { registerScript } from './script-api';
 
 function main(): void {
+  if (!registerScript()) return;
   installRelicGridLayout();
   installDockedPanels();
   installUpgradePreview();

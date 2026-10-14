@@ -22,7 +22,14 @@ nur bei Bedarf fuer Setup bzw. historische Hintergruende lesen.
 - Einstiegspunkt: `src/index.ts`. Lokaler Tampermonkey-Loader: `devUserscript.js`.
 - Standalone-Userscript: `npm run build:userscript` oder
   `node node_modules/webpack/bin/webpack.js --config webpack.userscript.config.js`.
-  Ergebnis `dist/reliquiensrtipz.user.js` mit Header, ohne lokalen Dev-Server.
+  Ergebnis `reliquiensrtipz.user.js` im Repo-Stamm, versioniert, lesbar ohne
+  Minifizierung/eval/Dev-Server; Metadatenheader und vollstaendige MIT-Lizenz.
+  Nach Quellcodeaenderungen neu bauen. `npm run verify:userscript` prueft den Build
+  offline einschliesslich API-Ablehnung. `src/script-api.ts` registriert vor jeder
+  UI-Aenderung bei der Spiel-API; fehlende/ablehnende API oder Fehler nicht umgehen.
+  Forenentwurf: `docs/forum-einreichung.txt`, nur Deutsch. GitHub liefert den
+  Pruefstand statt Pastebin; freigegebene Auslieferung erfolgt laut Regeln durch
+  das Staemme-Team. Changelog und Versionen bei Einreichungsupdates pflegen.
 - Fuer Browser-Tests ausschliesslich Opera mit der ChatGPT-Erweiterung
   verwenden. Keine Verbindung zur Chrome-ChatGPT-Erweiterung herstellen.
   Diese Nutzervorgabe vom 13.10.2026 ersetzt die fruehere Chrome-Vorgabe.

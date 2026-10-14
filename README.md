@@ -1,5 +1,14 @@
 # Reliquiensrtipz
 
+Veröffentlichungsname: **Reliquien-Inventarhelfer** (Version 1.0.1, MIT).
+Die Einreichung zur Freigabe steht noch aus. Das Repository stellt den Prüfstand
+bereit; die freigegebene Veröffentlichung soll über das Stämme-Team erfolgen.
+
+Der deutsche Forenentwurf liegt in [docs/forum-einreichung.txt](docs/forum-einreichung.txt).
+Die lesbare, kompilierte Datei [reliquiensrtipz.user.js](reliquiensrtipz.user.js)
+enthält bereits Metadatenheader, Lizenz und die vorgeschriebene ScriptAPI-Registrierung.
+Änderungen sind in [CHANGELOG.md](CHANGELOG.md) dokumentiert.
+
 TypeScript-Userscript-Grundgeruest, uebernommen aus
 [TheHebel97/standdeff-organizer](https://github.com/TheHebel97/standdeff-organizer)
 (Branch `master`, abgerufen am 11.09.2026).
@@ -79,16 +88,17 @@ Website-Struktur und effiziente Arbeitsweise sind in `SITE_NOTES.md` und
 
 Voraussetzung: Node.js mit npm.
 
-Fuer die dauerhafte Nutzung in Opera das Standalone-Userscript bauen:
+Fuer die Einreichung oder eine freigegebene Testumgebung das Standalone-Userscript bauen:
 
 ```sh
 npm run build:userscript
 ```
 
-`dist/reliquiensrtipz.user.js` in Tampermonkey importieren und aktivieren,
-anschliessend die Reliquienseite neu laden. Dieser Build enthaelt den
-Tampermonkey-Header und braucht keinen lokalen Server. Einen vorhandenen
-Development-Loader deaktivieren, damit das Script nicht doppelt startet.
+`reliquiensrtipz.user.js` wird direkt im Repository erzeugt und versioniert.
+In einer freigegebenen Testumgebung kann diese Datei in Tampermonkey importiert
+werden. Sie braucht keinen lokalen Server. Einen vorhandenen Development-Loader
+deaktivieren, damit das Script nicht doppelt startet. Fehlt die Spiel-ScriptAPI,
+startet das Script nicht; deren Ablehnung oder Fehler wird nicht umgangen.
 Browser-Tests erfolgen ausschliesslich in Opera; die Chrome-ChatGPT-Erweiterung
 wird nicht verbunden. Den Login uebernimmt der Nutzer.
 
@@ -115,7 +125,8 @@ Dies ist ein Userscript-Projekt; es gibt keine eigenstaendige HTML-Startseite.
 | `npm start` | Entwicklungsserver auf Port 9000 |
 | `npm run build` | Entwicklungsbundle unter `dist/bundle.js` |
 | `npm run build:production` | Minimiertes Bundle unter `dist/bundle.js` |
-| `npm run build:userscript` | Standalone-Tampermonkey-Script unter `dist/reliquiensrtipz.user.js` |
+| `npm run build:userscript` | Lesbares Standalone-Userscript im Repository: `reliquiensrtipz.user.js` |
+| `npm run verify:userscript` | Header/Lizenz/Standalone-Datei sowie tatsächlichen API-Startpfad offline prüfen |
 | `npm run typecheck` | TypeScript-Pruefung ohne Dateiausgabe |
 | `npm test` | Jest-Tests fuer Layout, Suche, Sortierung, Vorschau, Hover-Aktionen und Presets |
 

@@ -4,6 +4,28 @@ Stand: 13.10.2026. Vor Browserzugriff diese bekannten Strukturen verwenden.
 
 ## Umgebung
 
+- Einreichungsvorbereitung 14.10.2026: Regelthemen aus dem verlinkten Forum in
+  Opera gelesen, Web-Suche fuer diesen Host durch robots.txt gesperrt.
+  Quellen: Genehmigungsprozess (Thread 192975), Template (192974), Script API
+  (192973), Scripting-Regeln (192969). Nutzer moechte ausschliesslich deutschen
+  Forenentwurf als TXT; keine englische Ticketfassung erstellen. Eine im Prozess
+  verlinkte Ankuendigung zur Skriptbibliothek nennt Tickets; der Nutzer hat diesen
+  Weg fuer seinen Vorgang ausdruecklich als veraltet korrigiert.
+  GitHub statt passwortgeschuetztem Pastebin ist Nutzerwunsch fuer die Pruefdatei,
+  im Entwurf als Abweichung klar benannt. Nicht als Spieler-Hosting/Freigabe ausgeben:
+  die gelesenen Regeln verlangen Team-Hosting. Offizielle Loader-URL steht noch aus.
+  API-Aufruf vor allen UI-Installern: register('Reliquien-Inventarhelfer', true,
+  'TheHebel97', 'support-nur-im-forum@die-staemme.de'), ueber window/unsafeWindow.
+  Keine Umgehung bei fehlender/ablehnender API oder nativen Exceptions.
+  Version 1.0.1, MIT-Lizenz und Changelog hinzugefuegt; kompilierter Pruefstand
+  `reliquiensrtipz.user.js` im Repo-Stamm, ohne Minifizierung/Dev-Loader/eval.
+  Offline-Startpruefung am wirklichen kompilierten Bundle; keine weiteren Live-
+  Spieltests fuer die Einreichungsvorbereitung. Klickweiterleitungen/Hoverauswahl
+  und offizielle Grafikbilder im Entwurf offen beschreiben, Freigabe nicht behaupten.
+  Build/Typecheck und 65 Tests bestanden; separate Offline-Bundlepruefung bestaetigt
+  Registrierung vor DOM-Aenderungen, Abbruch bei fehlender/ablehnender API und
+  Exception sowie korrekten Header/Lizenz und fehlenden Dev-Loader/eval/Ajax.
+
 - Lesende Spielcode-Pruefung 12.09.2026 auf Dorfübersicht, ohne Navigation,
   Klicks oder Spielaktionen: geladenes `merged/game.7681c0.js` enthaelt einen
   verschleierten Pruefblock, initialisiert durch `a9fb6feee2c()`.
