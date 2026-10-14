@@ -34,8 +34,31 @@ ich möchte mein Script „reliquienUI“ für den deutschen Markt zur Prüfung 
 5. „Zurücksetzen“ leert Suche und Filter und stellt die Standardsortierung wieder her. Gespeicherte Presets bleiben erhalten.
 Die Nutzung durch Spieler soll nach Freigabe über den vom Stämme-Team vorgesehenen Veröffentlichungsweg erfolgen.
 [/TD][/TR]
-[TR][TD]Parameter / Konfigurationen:[/TD][TD]Keine externen Initialisierungsparameter nötig. Filter, Sortierung, Presets, Shiny-Bedingung, Rahmenfarbe, Fensterpositionen und die Entdeckeranzeige werden über die Oberfläche eingestellt. Presets, Rahmenfarbe, Fensterpositionen, Entdeckeranzeige und der Einführungsstatus werden in LocalStorage gespeichert. Die Suche selbst wird nicht dauerhaft gespeichert.[/TD][/TR]
-[TR][TD]Funktionierende Konfiguration (= Initialisierungsscript zum Einfügen in der Scriptdatenbank):[/TD][TD]Der Prüfstand ist die vollständige, direkt ausführbare Datei reliquiensrtipz.user.js (Link unten), ohne weitere Parameter oder Bibliotheksdownloads. Sie registriert sich vor dem Aufbau der Oberfläche über ScriptAPI.register. Für einen separaten Produktionsloader fehlt noch die vom Team vergebene Hosting-URL; dafür wird keine GitHub-URL als Spieler-Loader vorgesehen.[/TD][/TR]
+[TR][TD]Parameter / Konfigurationen:[/TD][TD]Keine Konfigurationsvariablen im Initialisierungscode. Einstellungen erfolgen über die Oberfläche.[/TD][/TR]
+[TR][TD]Funktionierende Konfiguration (= Initialisierungsscript zum Einfügen in der Scriptdatenbank):[/TD][TD]
+[SPOILER="Code"]
+[CODE=javascript]
+// ==UserScript==
+// @name         reliquienUI
+// @namespace    https://github.com/TheHebel97/reliquienScript
+// @version      1.0.3
+// @author       TheHebel97
+// @license      MIT
+// @description  Reliquien-Inventar mit Suche, Filtern und Highlight-Presets.
+// @match        https://*.die-staemme.de/game.php?village=*&screen=relic_*
+// @run-at       document-idle
+// @grant        none
+// @noframes
+// ==/UserScript==
+
+var api = typeof unsafeWindow != 'undefined' ? unsafeWindow.ScriptAPI : window.ScriptAPI;
+api.register('reliquienUI', true, 'TheHebel97', 'support-nur-im-forum@die-staemme.de');
+
+$.getScript('HIER_DIE_SERVER_URL_DES_STAEMME_TEAMS_EINTRAGEN');
+[/CODE]
+[/SPOILER]
+Die Server-URL ist ein Platzhalter und wird durch die vom Stämme-Team vergebene URL ersetzt.
+[/TD][/TR]
 [TR][TD]Script-Quellcode:[/TD][TD]
 GitHub-Datei: https://github.com/TheHebel97/reliquienScript/blob/main/reliquiensrtipz.user.js
 Direkter Dateiinhalt: https://raw.githubusercontent.com/TheHebel97/reliquienScript/main/reliquiensrtipz.user.js
@@ -49,14 +72,9 @@ Lizenz: MIT – https://github.com/TheHebel97/reliquienScript/blob/main/LICENSE
 Anstelle eines passwortgeschützten Pastebin-Links stelle ich den lesbaren Prüfstand als einzelne kompilierte JavaScript-Datei im GitHub-Repository bereit. Es ist kein Passwort erforderlich. Bitte gebt kurz Bescheid, falls für die interne Prüfung ein anderer Bereitstellungsweg erforderlich ist. GitHub dient hier als Prüfquelle; das für Spieler freigegebene Script soll anschließend durch das Stämme-Team gehostet werden.
 
 [B]Technische Hinweise für die Prüfung[/B]
-Die vollständige ScriptAPI-Registrierung lautet:
-[CODE=javascript]
-var api = typeof unsafeWindow != 'undefined' ? unsafeWindow.ScriptAPI : window.ScriptAPI;
-api.register('reliquienUI', true, 'TheHebel97', 'support-nur-im-forum@die-staemme.de');
-[/CODE]
-Dies entspricht der offiziellen Userscript-Vorlage. Der Aufruf steht direkt vor dem Aufbau der Oberfläche. Native API-Fehler werden nicht abgefangen oder umgangen; es gibt keine eigene Registrierungsfunktion oder Rückgabewertprüfung.
+Der Initialisierungscode verwendet die offizielle ScriptAPI-Vorlage und lädt anschließend einmalig den Hauptcode vom Team-Server.
 
-Das Script ist nicht minifiziert oder verschleiert. Der Build enthält die MIT-Lizenz und benötigt weder eval noch den lokalen Entwicklungsloader. Es gibt keine eigenen fetch-, Ajax- oder XMLHttpRequest-Aufrufe, keine Timer für Spielaktionen und keine automatische Verarbeitung einer Liste von Spielaktionen. Einheitenbilder verwenden die offiziellen Grafikpfade der Spielseite.
+Der Hauptcode ist nicht minifiziert oder verschleiert. Der Build enthält die MIT-Lizenz und benötigt weder eval noch den lokalen Entwicklungsloader. Der Hauptcode enthält keine eigenen fetch-, Ajax- oder XMLHttpRequest-Aufrufe, keine Timer für Spielaktionen und keine automatische Verarbeitung einer Liste von Spielaktionen. Einheitenbilder verwenden die offiziellen Grafikpfade der Spielseite.
 
 Bitte prüft insbesondere die geänderte Klickbedienung: Für die Hover-Details wird das native Reliquienbild lokal ausgewählt. Der Linksklick ruft den nativen Button für die Aufwertungsauswahl auf. Im Ausrüstfenster wird vor dem nativen Ausrüstbutton die genau per Rechtsklick ausgewählte Reliquie wieder ausgewählt. Es gibt keine automatische Aufwertung und keine automatische Bestätigung des Ausrüstvorgangs.
 

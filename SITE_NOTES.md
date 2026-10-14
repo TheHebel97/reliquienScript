@@ -4,6 +4,12 @@ Stand: 13.10.2026. Vor Browserzugriff diese bekannten Strukturen verwenden.
 
 ## Umgebung
 
+- Foren-Initialisierung 14.10.2026 nach Nutzerkorrektur: Codefeld im TXT-Template
+  enthaelt Tampermonkey-Header, offizielle Zwei-Zeilen-ScriptAPI und getScript mit
+  ausdruecklichem Platzhalter fuer die Team-Server-URL. Keine Konfigurationsvariablen;
+  Einstellungen erfolgen in der UI. Dieser Loader ist vom vollstaendigen GitHub-
+  Pruefstand zu unterscheiden; dessen Hauptcode bleibt unveraendert.
+
 - API-Vereinfachung 14.10.2026, Version 1.0.3: Nutzer verlangt die offizielle
   Zwei-Zeilen-Vorlage direkt am Anfang von main(). Eigene Registrierungsfunktion,
   Verfuegbarkeits-/Rueckgabewertpruefung und zugehoerige Wrapper-Tests entfernt.
