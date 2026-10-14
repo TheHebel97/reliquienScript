@@ -26,8 +26,10 @@ nur bei Bedarf fuer Setup bzw. historische Hintergruende lesen.
   Ergebnis `reliquiensrtipz.user.js` im Repo-Stamm, versioniert, lesbar ohne
   Minifizierung/eval/Dev-Server; Metadatenheader und vollstaendige MIT-Lizenz.
   Nach Quellcodeaenderungen neu bauen. `npm run verify:userscript` prueft den Build
-  offline einschliesslich API-Ablehnung. `src/script-api.ts` registriert vor jeder
-  UI-Aenderung bei der Spiel-API; fehlende/ablehnende API oder Fehler nicht umgehen.
+  offline einschliesslich nativer API-Fehler. `src/index.ts` nutzt direkt die
+  offizielle Zwei-Zeilen-Registrierung vor jeder UI-Aenderung, ohne eigene Wrapper/
+  Verfuegbarkeits-/Rueckgabewertpruefung. Reine TS-Typen in `src/types/script-api.d.ts`.
+  Native API-Fehler nicht abfangen oder umgehen.
   Forenentwurf: `docs/forum-einreichung.txt`, nur Deutsch. GitHub liefert den
   Pruefstand statt Pastebin; freigegebene Auslieferung erfolgt laut Regeln durch
   das Staemme-Team. Changelog und Versionen bei Einreichungsupdates pflegen.

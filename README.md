@@ -1,6 +1,6 @@
 # reliquienUI
 
-Veröffentlichungsname: **reliquienUI** (Version 1.0.2, MIT).
+Veröffentlichungsname: **reliquienUI** (Version 1.0.3, MIT).
 Die Einreichung zur Freigabe steht noch aus. Das Repository stellt den Prüfstand
 bereit; die freigegebene Veröffentlichung soll über das Stämme-Team erfolgen.
 
@@ -97,8 +97,8 @@ npm run build:userscript
 `reliquiensrtipz.user.js` wird direkt im Repository erzeugt und versioniert.
 In einer freigegebenen Testumgebung kann diese Datei in Tampermonkey importiert
 werden. Sie braucht keinen lokalen Server. Einen vorhandenen Development-Loader
-deaktivieren, damit das Script nicht doppelt startet. Fehlt die Spiel-ScriptAPI,
-startet das Script nicht; deren Ablehnung oder Fehler wird nicht umgangen.
+deaktivieren, damit das Script nicht doppelt startet. Die ScriptAPI-Registrierung
+verwendet direkt die offizielle Zwei-Zeilen-Vorlage; native Fehler werden nicht umgangen.
 Browser-Tests erfolgen ausschliesslich in Opera; die Chrome-ChatGPT-Erweiterung
 wird nicht verbunden. Den Login uebernimmt der Nutzer.
 

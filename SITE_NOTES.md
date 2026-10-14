@@ -4,6 +4,13 @@ Stand: 13.10.2026. Vor Browserzugriff diese bekannten Strukturen verwenden.
 
 ## Umgebung
 
+- API-Vereinfachung 14.10.2026, Version 1.0.3: Nutzer verlangt die offizielle
+  Zwei-Zeilen-Vorlage direkt am Anfang von main(). Eigene Registrierungsfunktion,
+  Verfuegbarkeits-/Rueckgabewertpruefung und zugehoerige Wrapper-Tests entfernt.
+  TypeScript-Typen stehen separat in einer d.ts-Datei und erscheinen nicht im Build.
+  Native Exceptions nicht abfangen. Offline-Bundlepruefung deckt window und
+  unsafeWindow sowie fehlende API/nativen Abbruch vor DOM-Aenderungen ab.
+
 - Namenskorrektur 14.10.2026: offizieller Name laut Nutzer `reliquienUI`.
   API-Registrierung, Header, Dev-Loader, Forenentwurf und Pruefungen entsprechend
   korrigiert; Version 1.0.2. Dateiname/Repository/Persistenzkeys bleiben erhalten.

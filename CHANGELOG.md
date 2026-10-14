@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.3 – 2026-10-14
+
+- ScriptAPI durch den offiziellen Zwei-Zeilen-Aufruf direkt am Start ersetzt.
+  Eigene Registrierungsfunktion, Verfügbarkeits- und Rückgabewertprüfung entfernt.
+- Native API-Fehler bleiben unverändert; keine Umgehung der Kompatibilitätsprüfung.
+- Forenentwurf und fertige JavaScript-Datei entsprechend aktualisiert.
+
 ## 1.0.2 – 2026-10-14
 
 - Offiziellen Scriptnamen auf `reliquienUI` korrigiert: ScriptAPI, Userscript-

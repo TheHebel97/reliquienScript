@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         reliquienUI
 // @namespace    https://github.com/TheHebel97/reliquienScript
-// @version      1.0.2
+// @version      1.0.3
 // @author       TheHebel97
 // @license      MIT
 // @homepageURL  https://github.com/TheHebel97/reliquienScript
@@ -38,28 +38,6 @@ SOFTWARE.
 /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
-
-/***/ 548:
-/***/ ((__unused_webpack_module, exports) => {
-
-
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.registerScript = void 0;
-// Required by the German script submission rules. Keep this before all UI changes.
-function registerScript() {
-    var gameWindow = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
-    var api = gameWindow.ScriptAPI;
-    if (!api || typeof api.register !== 'function') {
-        console.warn('[reliquiensrtipz] ScriptAPI fehlt; das Script wird nicht gestartet.');
-        return false;
-    }
-    // The team can set compatibility to false. Do not catch or bypass API errors.
-    return api.register('reliquienUI', true, 'TheHebel97', 'support-nur-im-forum@die-staemme.de') !== false;
-}
-exports.registerScript = registerScript;
-
-
-/***/ }),
 
 /***/ 868:
 /***/ ((__unused_webpack_module, exports) => {
@@ -2280,10 +2258,9 @@ var relic_shiny_highlight_1 = __webpack_require__(639);
 var relic_search_1 = __webpack_require__(421);
 var relic_presets_1 = __webpack_require__(877);
 var relic_onboarding_1 = __webpack_require__(288);
-var script_api_1 = __webpack_require__(548);
 function main() {
-    if (!(0, script_api_1.registerScript)())
-        return;
+    var api = typeof unsafeWindow != 'undefined' ? unsafeWindow.ScriptAPI : window.ScriptAPI;
+    api.register('reliquienUI', true, 'TheHebel97', 'support-nur-im-forum@die-staemme.de');
     (0, relic_grid_1.installRelicGridLayout)();
     (0, docked_panels_1.installDockedPanels)();
     (0, upgrade_preview_1.installUpgradePreview)();

@@ -26,26 +26,33 @@ function run(register) {
   return { dom, window, execute: () => vm.runInContext(source, dom.getInternalVMContext(), { timeout: 2000 }) };
 }
 
-// Exercise the compiled entry point offline: rejection must leave the page untouched.
-for (const api of [undefined, () => false]) {
-  const test = run(api);
-  try { test.execute(); assert.equal(test.window.document.head.childElementCount, 0); }
-  finally { test.window.close(); }
-}
+// Exercise the official registration in the actual compiled entry point offline.
+const missing = run();
+try {
+  assert.throws(missing.execute, /register/);
+  assert.equal(missing.window.document.head.childElementCount, 0);
+} finally { missing.window.close(); }
 const denied = run(() => { throw new Error('API rejected'); });
 try {
   assert.throws(denied.execute, /API rejected/);
   assert.equal(denied.window.document.head.childElementCount, 0);
 } finally { denied.window.close(); }
 
-let calls = 0;
-const accepted = run((...args) => {
-  calls++;
-  assert.equal(accepted.window.document.head.childElementCount, 0);
-  assert.deepEqual(args, ['reliquienUI', true, 'TheHebel97', 'support-nur-im-forum@die-staemme.de']);
-});
-try {
-  accepted.execute(); assert.equal(calls, 1);
-  assert.ok(accepted.window.document.head.childElementCount > 0);
-} finally { accepted.window.close(); }
+for (const useUnsafeWindow of [false, true]) {
+  let calls = 0;
+  const register = (...args) => {
+    calls++;
+    assert.equal(accepted.window.document.head.childElementCount, 0);
+    assert.deepEqual(args, ['reliquienUI', true, 'TheHebel97', 'support-nur-im-forum@die-staemme.de']);
+  };
+  const accepted = run(register);
+  if (useUnsafeWindow) {
+    accepted.window.unsafeWindow = { ScriptAPI: { register } };
+    accepted.window.ScriptAPI.register = () => { throw new Error('wrong API scope'); };
+  }
+  try {
+    accepted.execute(); assert.equal(calls, 1);
+    assert.ok(accepted.window.document.head.childElementCount > 0);
+  } finally { accepted.window.close(); }
+}
 console.log(`Userscript ${version}: Header, MIT notice, standalone build and ScriptAPI startup checks passed.`);

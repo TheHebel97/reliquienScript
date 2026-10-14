@@ -9,7 +9,7 @@ ich möchte mein Script „reliquienUI“ für den deutschen Markt zur Prüfung 
 [TR][TD]Scriptname:[/TD][TD]reliquienUI[/TD][/TR]
 [TR][TD]Autor:[/TD][TD]TheHebel97 – Kontakt über das Forum; Repository: https://github.com/TheHebel97/reliquienScript[/TD][/TR]
 [TR][TD]Premium-Account erforderlich:[/TD][TD]Nein.[/TD][/TR]
-[TR][TD]Aktuelle Version / Einreichdatum:[/TD][TD]1.0.2 / 2026-10-14[/TD][/TR]
+[TR][TD]Aktuelle Version / Einreichdatum:[/TD][TD]1.0.3 / 2026-10-14[/TD][/TR]
 [TR][TD]Auf welchen Ansichten wird das Script ausgeführt:[/TD][TD]Reliquien → Inventar (screen=relic_system), deutsche Spielwelten. Der Userscript-Match ist auf screen=relic_* unter *.die-staemme.de begrenzt.[/TD][/TR]
 [TR][TD]Funktion des Scripts:[/TD][TD]
 [LIST]
@@ -51,9 +51,10 @@ Anstelle eines passwortgeschützten Pastebin-Links stelle ich den lesbaren Prüf
 [B]Technische Hinweise für die Prüfung[/B]
 Die vollständige ScriptAPI-Registrierung lautet:
 [CODE=javascript]
+var api = typeof unsafeWindow != 'undefined' ? unsafeWindow.ScriptAPI : window.ScriptAPI;
 api.register('reliquienUI', true, 'TheHebel97', 'support-nur-im-forum@die-staemme.de');
 [/CODE]
-Die API wird über unsafeWindow.ScriptAPI bzw. window.ScriptAPI verwendet. Bei fehlender API oder Ablehnung wird die Oberfläche nicht aufgebaut; native API-Fehler werden nicht abgefangen oder umgangen.
+Dies entspricht der offiziellen Userscript-Vorlage. Der Aufruf steht direkt vor dem Aufbau der Oberfläche. Native API-Fehler werden nicht abgefangen oder umgangen; es gibt keine eigene Registrierungsfunktion oder Rückgabewertprüfung.
 
 Das Script ist nicht minifiziert oder verschleiert. Der Build enthält die MIT-Lizenz und benötigt weder eval noch den lokalen Entwicklungsloader. Es gibt keine eigenen fetch-, Ajax- oder XMLHttpRequest-Aufrufe, keine Timer für Spielaktionen und keine automatische Verarbeitung einer Liste von Spielaktionen. Einheitenbilder verwenden die offiziellen Grafikpfade der Spielseite.
 
