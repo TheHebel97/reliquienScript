@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         Reliquien-Inventarhelfer
+// @name         reliquienUI
 // @namespace    https://github.com/TheHebel97/reliquienScript
-// @version      1.0.1
+// @version      1.0.2
 // @author       TheHebel97
 // @license      MIT
 // @homepageURL  https://github.com/TheHebel97/reliquienScript
@@ -54,7 +54,7 @@ function registerScript() {
         return false;
     }
     // The team can set compatibility to false. Do not catch or bypass API errors.
-    return api.register('Reliquien-Inventarhelfer', true, 'TheHebel97', 'support-nur-im-forum@die-staemme.de') !== false;
+    return api.register('reliquienUI', true, 'TheHebel97', 'support-nur-im-forum@die-staemme.de') !== false;
 }
 exports.registerScript = registerScript;
 

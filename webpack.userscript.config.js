@@ -15,7 +15,7 @@ module.exports = {
     raw: true,
     entryOnly: true,
     banner: `// ==UserScript==
-// @name         Reliquien-Inventarhelfer
+// @name         reliquienUI
 // @namespace    https://github.com/TheHebel97/reliquienScript
 // @version      ${version}
 // @author       TheHebel97

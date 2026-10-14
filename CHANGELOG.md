@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.2 – 2026-10-14
+
+- Offiziellen Scriptnamen auf `reliquienUI` korrigiert: ScriptAPI, Userscript-
+  Metadaten, Development-Loader und Forenentwurf stimmen damit überein.
+- Fertige JavaScript-Datei neu gebaut; Dateipfad und gespeicherte Einstellungen
+  bleiben erhalten.
+
 ## 1.0.1 – 2026-10-14
 
 - Vorbereitung der ersten Einreichung für den deutschen Markt.

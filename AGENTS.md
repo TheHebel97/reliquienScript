@@ -19,6 +19,7 @@ nur bei Bedarf fuer Setup bzw. historische Hintergruende lesen.
   wiederholt komplett ausgeben.
 
 - TypeScript-/Webpack-Userscript fuer Die Staemme mit einem dynamischen Reliquienraster.
+- Offizieller Scriptname: `reliquienUI` (auch ScriptAPI und Userscript-Header).
 - Einstiegspunkt: `src/index.ts`. Lokaler Tampermonkey-Loader: `devUserscript.js`.
 - Standalone-Userscript: `npm run build:userscript` oder
   `node node_modules/webpack/bin/webpack.js --config webpack.userscript.config.js`.

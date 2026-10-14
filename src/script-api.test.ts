@@ -10,7 +10,7 @@ afterEach(() => {
 test('registers descriptive metadata on the game API before allowing initialization', () => {
   const register = jest.fn(); Object.assign(window, { ScriptAPI: { register } });
   expect(registerScript()).toBe(true);
-  expect(register).toHaveBeenCalledWith('Reliquien-Inventarhelfer', true, 'TheHebel97', 'support-nur-im-forum@die-staemme.de');
+  expect(register).toHaveBeenCalledWith('reliquienUI', true, 'TheHebel97', 'support-nur-im-forum@die-staemme.de');
 });
 
 test('supports unsafeWindow without falling back around its rejection', () => {

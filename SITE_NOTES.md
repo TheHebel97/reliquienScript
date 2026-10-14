@@ -4,6 +4,10 @@ Stand: 13.10.2026. Vor Browserzugriff diese bekannten Strukturen verwenden.
 
 ## Umgebung
 
+- Namenskorrektur 14.10.2026: offizieller Name laut Nutzer `reliquienUI`.
+  API-Registrierung, Header, Dev-Loader, Forenentwurf und Pruefungen entsprechend
+  korrigiert; Version 1.0.2. Dateiname/Repository/Persistenzkeys bleiben erhalten.
+
 - Einreichungsvorbereitung 14.10.2026: Regelthemen aus dem verlinkten Forum in
   Opera gelesen, Web-Suche fuer diesen Host durch robots.txt gesperrt.
   Quellen: Genehmigungsprozess (Thread 192975), Template (192974), Script API

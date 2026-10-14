@@ -1,6 +1,6 @@
-# Reliquiensrtipz
+# reliquienUI
 
-Veröffentlichungsname: **Reliquien-Inventarhelfer** (Version 1.0.1, MIT).
+Veröffentlichungsname: **reliquienUI** (Version 1.0.2, MIT).
 Die Einreichung zur Freigabe steht noch aus. Das Repository stellt den Prüfstand
 bereit; die freigegebene Veröffentlichung soll über das Stämme-Team erfolgen.
 

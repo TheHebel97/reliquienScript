@@ -42,7 +42,7 @@ let calls = 0;
 const accepted = run((...args) => {
   calls++;
   assert.equal(accepted.window.document.head.childElementCount, 0);
-  assert.deepEqual(args, ['Reliquien-Inventarhelfer', true, 'TheHebel97', 'support-nur-im-forum@die-staemme.de']);
+  assert.deepEqual(args, ['reliquienUI', true, 'TheHebel97', 'support-nur-im-forum@die-staemme.de']);
 });
 try {
   accepted.execute(); assert.equal(calls, 1);

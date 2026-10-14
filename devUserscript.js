@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Reliquiensrtipz - Development
+// @name         reliquienUI - Development
 // @version      0.1.0
 // @description  Laedt das lokale Webpack-Bundle zur Entwicklung.
 // @match        https://*.die-staemme.de/game.php?village=*&screen=relic_*

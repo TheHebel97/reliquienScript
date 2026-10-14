@@ -13,5 +13,5 @@ export function registerScript(): boolean {
     return false;
   }
   // The team can set compatibility to false. Do not catch or bypass API errors.
-  return api.register('Reliquien-Inventarhelfer', true, 'TheHebel97', 'support-nur-im-forum@die-staemme.de') !== false;
+  return api.register('reliquienUI', true, 'TheHebel97', 'support-nur-im-forum@die-staemme.de') !== false;
 }
