@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.5 – 2026-10-17
+
+- Shiny faerbt das Originalbild mit einer Regenbogen-Schattierung um.
+  SVG-Farbmischung erhaelt die Bilddetails und benoetigt keine Ersatzdateien;
+  native Bildknoten, URLs und Spielaktionen bleiben erhalten.
+- Beide Preset-Trefferstufen erhalten durchgehende, kraeftige 4px-Rahmen mit
+  dunkler Kontur. Gespeicherte Farben fuer Volltreffer und 2/3 bleiben erhalten.
+- Hilfe, Forenentwurf und Standalone-Userscript aktualisiert.
+
 ## 1.0.4 – 2026-10-17
 
 - Kompakte Preset-Anzeige auf Bogenwelten: Icons für beide Bogeneinheiten,

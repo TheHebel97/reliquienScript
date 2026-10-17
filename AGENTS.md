@@ -75,7 +75,7 @@ nur bei Bedarf fuer Setup bzw. historische Hintergruende lesen.
   Sanitisiertes Detailklonen/Disabled-Pruefung gemeinsam in `relic-details-dom.ts`.
 - Native Auswahl sitzt auf `#relics img`: immer das Bild klicken, nicht das
   Wrapper-Div. Details und Auswahlbutton werden vom Spiel synchron erzeugt.
-- Shiny-Glanz: `src/ui/relic-shiny-highlight.ts` legt einen durchlaessigen Glanz ueber Rasterbilder, ohne Rahmen,
+- Shiny-Glanz: `src/ui/relic-shiny-highlight.ts` faerbt native Rasterbilder per SVG-Filter mit Regenbogen-Schattierung um, ohne Rahmen,
   wenn mindestens ein `sub_stats[].perfect === true` ist; auch ohne Hover.
 - Eigene Highlight-Presets: `src/ui/relic-presets.ts`, reine Regeln/Speicherformat
   in `relic-preset-model.ts`. Schalter neben Filter oeffnet `#relic-preset-window`
@@ -93,9 +93,9 @@ nur bei Bedarf fuer Setup bzw. historische Hintergruende lesen.
   Konfigurierbare globale Rahmenfarbe ueber `#relic-preset-color`, im gleichen
   Speicherformat als `color` gespeichert. Default gedecktes Neon-Gelb #d2d51b;
   CSS-Variable `--relic-preset-color`, dunkle Innenkontur fuer Kontrast.
-  Volltreffer: durchgehender Rahmen; 2/3-Treffer: gestrichelt, Default #e69732.
+  Beide Trefferstufen: kraeftiger 4px-Rahmen, durchgehend; 2/3-Default #e69732.
   Zweite Farbe in `partialColor`, Picker `#relic-preset-partial-color`.
-  Volltreffer haben Vorrang; Shiny-Glanz ist mit beiden Stufen kombinierbar.
+  Volltreffer haben Vorrang; Shiny-Schattierung ist mit beiden Stufen kombinierbar.
   `matchesPreset` prueft weiterhin Volltreffer, `presetMatchLevel` liefert 0/2/3.
   LK-Angriffsdefaults nutzen `light-attack` statt numerischer ID 26; native Namen
   unterscheiden LK von berittenen Boegen bei widerspruechlicher Welt-Beschriftung.

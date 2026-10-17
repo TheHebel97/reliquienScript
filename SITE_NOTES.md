@@ -2,6 +2,29 @@
 
 Stand: 13.10.2026. Vor Browserzugriff diese bekannten Strukturen verwenden.
 
+## Update 17.10.2026: kraeftige Rahmen und Regenbogen-Shiny (1.0.5)
+
+- Ersetzt das vorherige Glanzoverlay und die gestrichelte Trefferstufe:
+  beide Presetstufen jetzt 4px solide, dunkle Innen-/Aussenkontur, z-index 2.
+  Vorhandene globale Farben und Trefferprioritaet bleiben erhalten.
+- Originalbild `greataxe_shoddy.webp` ist RGB/184px, ohne Alphakanal. Daher keine
+  CSS-Maske mit dem Originalbild als vermeintlicher Gegenstands-Silhouette verwenden.
+- Shiny per inline SVG-Filter `reliquien-shiny-rainbow`: selbst enthaltenes
+  Gradient-SVG als feImage, feBlend/color mit SourceGraphic, leichter Helligkeits-
+  und Saettigungsboost. Weiche radiale Farbmaske bewahrt die Bildecken weitgehend;
+  sie ist keine exakte Gegenstandsfreistellung. Keine neuen Bild-Assets pro Typ.
+- `primitiveUnits=objectBoundingBox` und feImage-Breite/-Hoehe 1 verwenden;
+  Prozentwerte am 0px-Defs-SVG ergeben keine sichtbare Regenbogenquelle.
+  Zusaetzliches feComposite nach dem Farbblend zeigte in Opera keine Faerbung;
+  der direkte feBlend-Ausgang funktioniert. SVG-Definitionen einmalig erstellen.
+- Auch nach Grid-Neuaufbau nur `relic-shiny` setzen/entfernen, Original-img und
+  src fuer native Aktionen behalten. Keine Canvas-Lesezugriffe/CORS-Abhaengigkeit.
+- Lokal existierte noch ein veraltetes `dist/reliquiensrtipz.user.js` (1.0.0).
+  Diese ignorierte Altdatei wurde entfernt; fertiges Userscript nur im Repo-Stamm.
+- Endkontrolle in Opera mit kurz simulierter `relic-shiny`-Klasse: Regenbogen
+  sichtbar, beide Rahmen 4px/solid mit korrekter gespeicherter Farbe. Testklasse
+  danach entfernt; native Reliquiendaten unberuehrt. 70 Tests und Bundlepruefung bestanden.
+
 ## Update 17.10.2026: Bogenwelt, Shiny und Preset-Trefferstufen
 
 - Lesend in Opera auf Welt 259 bestaetigt: zusaetzliche Typen `longbow` und

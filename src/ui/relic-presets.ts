@@ -78,12 +78,12 @@ export function installRelicPresets(): void {
   style.textContent = `
     #relics > div.relic-preset { position: relative; }
     #relics > div.relic-preset::after {
-      content: ''; position: absolute; inset: 0; border: 3px solid var(--relic-preset-color, ${DEFAULT_PRESET_COLOR});
-      box-sizing: border-box; pointer-events: none; z-index: 1;
-      box-shadow: 0 0 0 1px #443b29 inset;
+      content: ''; position: absolute; inset: 0; border: 4px solid var(--relic-preset-color, ${DEFAULT_PRESET_COLOR});
+      box-sizing: border-box; pointer-events: none; z-index: 2;
+      box-shadow: 0 0 0 1px #211a10 inset, 0 0 0 1px #211a10;
     }
     #relics > div.relic-preset-partial::after {
-      border: 2px dashed var(--relic-preset-partial-color, ${DEFAULT_PARTIAL_COLOR});
+      border-color: var(--relic-preset-partial-color, ${DEFAULT_PARTIAL_COLOR});
     }
     :is(#${WINDOW_ID},#${EDITOR_ID}) { color: #412b13; font-size: 12px; }
     :is(#${WINDOW_ID},#${EDITOR_ID}).relic-dock { gap: 4px; }
@@ -144,7 +144,7 @@ export function installRelicPresets(): void {
   const colorLabel = document.createElement('label'); colorLabel.className = 'preset-color-label';
   colorLabel.append(document.createTextNode('3/3'), colorPicker);
   const partialPicker = document.createElement('input'); partialPicker.type = 'color'; partialPicker.id = 'relic-preset-partial-color'; partialPicker.value = partialColor;
-  partialPicker.setAttribute('aria-label', 'Preset-Rahmenfarbe: zwei Boni'); partialPicker.title = 'Zwei passende Boni: gestrichelter Rahmen (2/3)';
+  partialPicker.setAttribute('aria-label', 'Preset-Rahmenfarbe: zwei Boni'); partialPicker.title = 'Zwei passende Boni: durchgehender Rahmen (2/3)';
   const partialLabel = document.createElement('label'); partialLabel.className = 'preset-color-label';
   partialLabel.append(document.createTextNode('2/3'), partialPicker); toolbar.append(count, colorLabel, partialLabel);
   colorPicker.addEventListener('input', () => { color = colorPicker.value; applyColor(); });

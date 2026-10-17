@@ -1,6 +1,6 @@
 # reliquienUI
 
-Veröffentlichungsname: **reliquienUI** (Version 1.0.4, MIT).
+Veröffentlichungsname: **reliquienUI** (Version 1.0.5, MIT).
 Die Einreichung zur Freigabe steht noch aus. Das Repository stellt den Prüfstand
 bereit; die freigegebene Veröffentlichung soll über das Stämme-Team erfolgen.
 
@@ -64,10 +64,10 @@ Bei Dreierkombinationen werden auch zwei passende Boni markiert, entweder
 Hauptbonus plus Substat oder beide Substats. Jeder Bonusplatz zaehlt einmal;
 Treffer werden nicht aus verschiedenen Regeln zusammengesetzt. Typ oder
 Substats koennen weiterhin einzeln als vollstaendige Regel verwendet werden.
-Volltreffer erhalten einen durchgehenden Rahmen (Standard: gedecktes Neon-Gelb),
-2/3-Treffer einen gestrichelten Rahmen (Standard: Orange), mit dunkler Innenkontur.
+Volltreffer erhalten einen kräftigen, durchgehenden Rahmen (Standard: gedecktes Neon-Gelb),
+2/3-Treffer einen ebenso kräftigen, durchgehenden Rahmen (Standard: Orange), mit dunkler Innenkontur.
 Die beiden Farbfelder im Presetfenster gelten fuer alle Presets und bleiben
-gespeichert. Volltreffer haben Vorrang. Shiny zeigt sich als Glanz ueber dem Bild
+gespeichert. Volltreffer haben Vorrang. Shiny zeigt sich als Regenbogen-Schattierung des Originalbildes
 ohne eigenen Rahmen und ist mit beiden Trefferstufen kombinierbar. Die Suche und Sortierung
 werden dadurch nicht geaendert. Presets bleiben im Browser fuer diese Spielwelt
 gespeichert, auch nach Neuladen oder Zuruecksetzen der Suche.

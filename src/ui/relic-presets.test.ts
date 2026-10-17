@@ -157,7 +157,7 @@ test('actual shiny highlighting coexists with presets after toggles and native g
   expect(tile('1').classList.contains('relic-shiny')).toBe(true);
   expect(tile('1').classList.contains('relic-preset')).toBe(true);
   expect(tile('2').classList.contains('relic-shiny')).toBe(false);
-  expect(document.getElementById('reliquiensrtipz-shiny-highlight')!.textContent).toContain('linear-gradient');
+  expect(document.querySelector('#reliquien-shiny-rainbow feBlend')?.getAttribute('mode')).toBe('color');
   expect(document.getElementById('reliquiensrtipz-shiny-highlight')!.textContent).not.toMatch(/outline:|border:/);
   const picker = document.getElementById('relic-preset-color') as HTMLInputElement;
   expect(picker.value).toBe(DEFAULT_PRESET_COLOR);
@@ -192,4 +192,26 @@ test('full matches win over partial matches and both colors survive saving and r
   installRelicPresets();
   expect((document.getElementById('relic-preset-partial-color') as HTMLInputElement).value).toBe('#44aabb');
   expect(tile('1').dataset.relicPresetLevel).toBe('2');
+});
+
+test('rainbow shading retains native images and events and follows perfect stats after updates', async () => {
+  let perfect = true;
+  Object.defineProperty(globalThis, 'RelicSystem', { configurable: true, value: {
+    getRelicById: () => ({ sub_stats: [{ perfect }] })
+  } });
+  const image = tile('1').querySelector('img')!;
+  image.setAttribute('src', 'https://example.test/greataxe.webp');
+  const nativeClick = jest.fn(); image.addEventListener('click', nativeClick);
+  installRelicShinyHighlight(); installRelicShinyHighlight();
+  expect(document.querySelectorAll('#reliquien-shiny-rainbow-defs')).toHaveLength(1);
+  const gradientSource = document.querySelector('#reliquien-shiny-rainbow feImage')!.getAttribute('href')!;
+  expect(decodeURIComponent(gradientSource)).toContain('<linearGradient');
+  expect(tile('1').querySelector('img')).toBe(image);
+  expect(image.getAttribute('src')).toBe('https://example.test/greataxe.webp');
+  image.click(); expect(nativeClick).toHaveBeenCalledTimes(1);
+  expect(tile('1').classList.contains('relic-shiny')).toBe(true);
+  perfect = false;
+  document.getElementById('relics')!.append(document.createTextNode(''));
+  await Promise.resolve();
+  expect(tile('1').classList.contains('relic-shiny')).toBe(false);
 });
