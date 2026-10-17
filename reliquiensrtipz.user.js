@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         reliquienUI
 // @namespace    https://github.com/TheHebel97/reliquienScript
-// @version      1.0.3
+// @version      1.0.4
 // @author       TheHebel97
 // @license      MIT
 // @homepageURL  https://github.com/TheHebel97/reliquienScript
@@ -863,7 +863,7 @@ function installRelicOnboarding() {
     dialog.id = DIALOG_ID;
     dialog.setAttribute('aria-labelledby', 'relic-onboarding-title');
     dialog.setAttribute('aria-describedby', 'relic-onboarding-intro');
-    dialog.innerHTML = "\n    <h2 id=\"relic-onboarding-title\" tabindex=\"-1\">Reliquien \u2013 kurz erkl\u00E4rt</h2>\n    <p id=\"relic-onboarding-intro\" class=\"intro\">Die wichtigsten Handgriffe f\u00FCr dein Inventar.</p>\n    <dl class=\"tips\">\n      <div class=\"click-tip\"><dt>Linksklick \u2192 Aufwertung</dt><dd>Legt die Reliquie in den n\u00E4chsten freien Aufwertungsslot. Die eigentliche Aufwertung startest du danach \u00FCber den Aufwertungsbutton.</dd></div>\n      <div class=\"click-tip\"><dt>Rechtsklick \u2192 Ausr\u00FCsten</dt><dd>W\u00E4hlt die Reliquie im Ausr\u00FCstfenster am Rand aus. Dort kannst du auf \u201EAusr\u00FCsten\u201C klicken und die Spielbest\u00E4tigung pr\u00FCfen.</dd></div>\n      <div><dt>Hover-Vorschau</dt><dd>Fahre \u00FCber eine Kachel, um ihre Stats zu sehen. Du kannst direkt weiter \u00FCber andere Kacheln fahren; die Vorschau ist f\u00FCr die Maus durchl\u00E4ssig.</dd></div>\n      <div><dt>Suche</dt><dd>Durchsuche Namen, Typen und Boni, zum Beispiel mit \u201Eshiny kata def\u201C. Die Treffer passen sich sofort an.</dd></div>\n      <div><dt>Filter & Sortierung</dt><dd>Grenze nach Qualit\u00E4t, Typ, Substats oder Shiny ein und \u00E4ndere die Reihenfolge. \u201EZur\u00FCcksetzen\u201C leert Suche und Filter und stellt die Standardsortierung her.</dd></div>\n      <div><dt>Presets</dt><dd>Aktiviere deine Wunschkombinationen: Passende Reliquien bekommen einen farbigen Rahmen. Der Stift \u00F6ffnet den Editor. Pink markiert zus\u00E4tzlich perfekte Substats.</dd></div>\n    </dl>\n    <p class=\"footer-note\">Die Randfenster kannst du an den Kopfzeilen verschieben. Diese Hilfe findest du sp\u00E4ter \u00FCber \u201E?\u201C neben der Suche.</p>\n  ";
+    dialog.innerHTML = "\n    <h2 id=\"relic-onboarding-title\" tabindex=\"-1\">Reliquien \u2013 kurz erkl\u00E4rt</h2>\n    <p id=\"relic-onboarding-intro\" class=\"intro\">Die wichtigsten Handgriffe f\u00FCr dein Inventar.</p>\n    <dl class=\"tips\">\n      <div class=\"click-tip\"><dt>Linksklick \u2192 Aufwertung</dt><dd>Legt die Reliquie in den n\u00E4chsten freien Aufwertungsslot. Die eigentliche Aufwertung startest du danach \u00FCber den Aufwertungsbutton.</dd></div>\n      <div class=\"click-tip\"><dt>Rechtsklick \u2192 Ausr\u00FCsten</dt><dd>W\u00E4hlt die Reliquie im Ausr\u00FCstfenster am Rand aus. Dort kannst du auf \u201EAusr\u00FCsten\u201C klicken und die Spielbest\u00E4tigung pr\u00FCfen.</dd></div>\n      <div><dt>Hover-Vorschau</dt><dd>Fahre \u00FCber eine Kachel, um ihre Stats zu sehen. Du kannst direkt weiter \u00FCber andere Kacheln fahren; die Vorschau ist f\u00FCr die Maus durchl\u00E4ssig.</dd></div>\n      <div><dt>Suche</dt><dd>Durchsuche Namen, Typen und Boni, zum Beispiel mit \u201Eshiny kata def\u201C. Die Treffer passen sich sofort an.</dd></div>\n      <div><dt>Filter & Sortierung</dt><dd>Grenze nach Qualit\u00E4t, Typ, Substats oder Shiny ein und \u00E4ndere die Reihenfolge. \u201EZur\u00FCcksetzen\u201C leert Suche und Filter und stellt die Standardsortierung her.</dd></div>\n      <div><dt>Presets</dt><dd>Aktiviere deine Wunschkombinationen: Volltreffer bekommen einen durchgehenden Rahmen, zwei von drei passenden Boni einen gestrichelten. Beide Farben sind einstellbar. Der Stift \u00F6ffnet den Editor. Shiny erkennst du am Glanz auf dem Bild, auch zusammen mit einem Preset-Rahmen.</dd></div>\n    </dl>\n    <p class=\"footer-note\">Die Randfenster kannst du an den Kopfzeilen verschieben. Diese Hilfe findest du sp\u00E4ter \u00FCber \u201E?\u201C neben der Suche.</p>\n  ";
     document.body.append(dialog);
     var help = document.createElement('button');
     help.type = 'button';
@@ -964,8 +964,8 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.seedDefaultPresets = exports.DEFAULT_PRESETS = void 0;
 exports.DEFAULT_PRESETS = [
-    { id: 'default:axe-off', name: 'Axt · Axt + LK Angriff', enabled: true, type: 'greataxe', substats: ['24', '26'] },
-    { id: 'default:light-off', name: 'LK · Axt + LK Angriff', enabled: true, type: 'shortspear', substats: ['24', '26'] },
+    { id: 'default:axe-off', name: 'Axt · Axt + LK Angriff', enabled: true, type: 'greataxe', substats: ['24', 'light-attack'] },
+    { id: 'default:light-off', name: 'LK · Axt + LK Angriff', enabled: true, type: 'shortspear', substats: ['24', 'light-attack'] },
     { id: 'default:spear-heavy-def', name: 'Speer · SK + Speer Def', enabled: true, type: 'halberd', substats: ['37', '31'] },
     { id: 'default:heavy-spear-def', name: 'SK · Speer + SK Def', enabled: true, type: 'banner', substats: ['31', '37'] },
     { id: 'default:sword-spear-def', name: 'Schwert · Schwert + Speer Def', enabled: true, type: 'longsword', substats: ['32', '31'] },
@@ -973,7 +973,17 @@ exports.DEFAULT_PRESETS = [
     { id: 'default:economy', name: 'Rohstoffe & Beute', enabled: true, type: '', substats: ['15', '16', '14', 'barracks-cost', '13'], allBonuses: true }
 ];
 function seedDefaultPresets(presets, installed) {
-    var next = presets.slice();
+    var next = presets.map(function (preset) {
+        var original = exports.DEFAULT_PRESETS.find(function (p) { return p.id === preset.id; });
+        // Upgrade only the original condition pair; preserve custom edits and the
+        // user's enabled/name/shiny settings. Deleted defaults stay deleted.
+        if (original && ['default:axe-off', 'default:light-off'].includes(preset.id) &&
+            preset.type === original.type && !preset.allBonuses &&
+            preset.substats.length === 2 && preset.substats.includes('24') && preset.substats.includes('26')) {
+            return __assign(__assign({}, preset), { substats: original.substats.slice() });
+        }
+        return preset;
+    });
     exports.DEFAULT_PRESETS.forEach(function (preset) {
         if (!installed.includes(preset.id) && !next.some(function (p) { return p.id === preset.id; }))
             next.push(__assign(__assign({}, preset), { substats: preset.substats.slice() }));
@@ -1026,16 +1036,19 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     return to.concat(ar || Array.prototype.slice.call(from));
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.writePresets = exports.installedDefaultIds = exports.readPresets = exports.matchesPreset = exports.MAIN_BONUSES = exports.presetColor = exports.DEFAULT_PRESET_COLOR = void 0;
+exports.writePresets = exports.installedDefaultIds = exports.readPresets = exports.presetMatchLevel = exports.matchesPreset = exports.MAIN_BONUSES = exports.presetColor = exports.DEFAULT_PARTIAL_COLOR = exports.DEFAULT_PRESET_COLOR = void 0;
 exports.DEFAULT_PRESET_COLOR = '#d2d51b';
-function presetColor(raw) {
+exports.DEFAULT_PARTIAL_COLOR = '#e69732';
+function presetColor(raw, partial) {
     var _a;
+    if (partial === void 0) { partial = false; }
+    var fallback = partial ? exports.DEFAULT_PARTIAL_COLOR : exports.DEFAULT_PRESET_COLOR;
     try {
-        var color = (_a = JSON.parse(raw || 'null')) === null || _a === void 0 ? void 0 : _a.color;
-        return typeof color === 'string' && /^#[0-9a-f]{6}$/i.test(color) ? color.toLowerCase() : exports.DEFAULT_PRESET_COLOR;
+        var color = (_a = JSON.parse(raw || 'null')) === null || _a === void 0 ? void 0 : _a[partial ? 'partialColor' : 'color'];
+        return typeof color === 'string' && /^#[0-9a-f]{6}$/i.test(color) ? color.toLowerCase() : fallback;
     }
     catch (_b) {
-        return exports.DEFAULT_PRESET_COLOR;
+        return fallback;
     }
 }
 exports.presetColor = presetColor;
@@ -1043,40 +1056,84 @@ exports.MAIN_BONUSES = {
     halberd: '1', longsword: '2', greataxe: '3', shortspear: '5', banner: '7',
     bonfire: '8', morningstar: '9', dummy: '10', horseshoe: '11', wheel: '12',
     backpack: 'barracks-cost', chisel: '14', axe: '15', pickaxe: '16',
-    saddle: 'stable-cost', handsaw: 'workshop-cost'
+    saddle: 'stable-cost', handsaw: 'workshop-cost', longbow: '4', shortbow: '6'
 };
 var COMBINED = {
     '22': '1', '31': '1', '23': '2', '32': '2', '24': '3', '33': '3',
-    '26': '5', '35': '5', '28': '7', '37': '7'
+    '26': '5', '35': '5', '28': '7', '37': '7',
+    '25': '4', '34': '4', '27': '6', '36': '6'
 };
-function accepts(actual, wanted) {
+function unitBonus(label) {
+    var parts = label === null || label === void 0 ? void 0 : label.match(/^([^:]+):.*?(Angriffs- und Verteidigungsstärke|Angriffsstärke|Verteidigungsstärke)/i);
+    return parts ? { unit: parts[1].toLowerCase(), kind: parts[2].toLowerCase() } : undefined;
+}
+function accepts(actual, wanted, labels) {
     var id = String(actual.id);
+    // The archer-world dropdown labels ID 26 as mounted archers. Defaults must
+    // request light cavalry semantically, without accepting that other unit.
+    if (wanted === 'light-attack') {
+        var label = actual.name || (labels === null || labels === void 0 ? void 0 : labels.get(id));
+        if (label)
+            return /^Leichte Kavallerie:.*Angriff/i.test(label);
+        return id === '5' || id === '26';
+    }
+    // Resolve this world's displayed unit conditions before using numeric
+    // fallbacks: the native catalog can disagree with another world's labels.
+    var wantedUnit = unitBonus(labels === null || labels === void 0 ? void 0 : labels.get(wanted));
+    if (wantedUnit) {
+        var actualUnit = unitBonus(actual.name || (labels === null || labels === void 0 ? void 0 : labels.get(id)));
+        if (actualUnit)
+            return actualUnit.unit === wantedUnit.unit &&
+                (actualUnit.kind === wantedUnit.kind || actualUnit.kind === 'angriffs- und verteidigungsstärke');
+    }
     if (id === wanted)
         return true;
     if (wanted === 'barracks-cost')
         return /(?:rekrutierungskosten.*kaserne|kaserne.*rekrutierungskosten)/i.test(actual.name || '');
     return COMBINED[wanted] === id;
 }
-function matchesPreset(relic, preset) {
+function presetScore(relic, preset, labels) {
+    var none = { hits: 0, required: 3 };
     if (!preset.enabled || (!preset.type && !preset.substats.length))
-        return false;
+        return none;
     var stats = relic.sub_stats || [];
     if (preset.shinyOnly && !stats.some(function (stat) { return stat.perfect === true; }))
-        return false;
+        return none;
     if (preset.allBonuses) {
         var main_1 = exports.MAIN_BONUSES[relic.type];
-        return stats.length === 2 && !!main_1 && preset.substats.some(function (wanted) { return accepts({ id: main_1 }, wanted); }) &&
-            stats.every(function (stat) { return preset.substats.some(function (wanted) { return accepts(stat, wanted); }); });
+        if (stats.length !== 2)
+            return none;
+        var mainHit = !!main_1 && preset.substats.some(function (wanted) { return accepts({ id: main_1 }, wanted, labels); });
+        return { hits: Number(mainHit) + stats.filter(function (stat) { return preset.substats.some(function (wanted) { return accepts(stat, wanted, labels); }); }).length, required: 3 };
     }
-    if (preset.type && relic.type !== preset.type)
-        return false;
     // Each condition needs its own stat; a combined bonus must not fill two slots.
-    var match = function (index, used) { return index === preset.substats.length ||
-        stats.some(function (stat, slot) { return !used.has(slot) && accepts(stat, preset.substats[index]) &&
-            match(index + 1, new Set(__spreadArray(__spreadArray([], __read(used), false), [slot], false))); }); };
-    return match(0, new Set());
+    var match = function (index, used) {
+        if (index === preset.substats.length)
+            return 0;
+        var best = match(index + 1, used);
+        stats.forEach(function (stat, slot) {
+            if (!used.has(slot) && accepts(stat, preset.substats[index], labels)) {
+                best = Math.max(best, 1 + match(index + 1, new Set(__spreadArray(__spreadArray([], __read(used), false), [slot], false))));
+            }
+        });
+        return best;
+    };
+    return { hits: Number(!!preset.type && relic.type === preset.type) + match(0, new Set()), required: Number(!!preset.type) + preset.substats.length };
+}
+function matchesPreset(relic, preset, labels) {
+    var score = presetScore(relic, preset, labels);
+    return score.hits === score.required;
 }
 exports.matchesPreset = matchesPreset;
+// Shorter custom rules still require all their conditions; partial matching is
+// for a three-bonus combination only, never a mixture of different presets.
+function presetMatchLevel(relic, preset, labels) {
+    var score = presetScore(relic, preset, labels);
+    if (score.hits === score.required)
+        return 3;
+    return score.required === 3 && score.hits === 2 ? 2 : 0;
+}
+exports.presetMatchLevel = presetMatchLevel;
 // Reject a malformed rule as a whole: dropping one condition would broaden it.
 function readPresets(raw) {
     try {
@@ -1118,10 +1175,11 @@ function installedDefaultIds(raw) {
     }
 }
 exports.installedDefaultIds = installedDefaultIds;
-function writePresets(presets, installedDefaults, color) {
+function writePresets(presets, installedDefaults, color, partialColor) {
     if (installedDefaults === void 0) { installedDefaults = []; }
     if (color === void 0) { color = exports.DEFAULT_PRESET_COLOR; }
-    return JSON.stringify({ version: 2, presets: presets, installedDefaults: installedDefaults, color: color });
+    if (partialColor === void 0) { partialColor = exports.DEFAULT_PARTIAL_COLOR; }
+    return JSON.stringify({ version: 2, presets: presets, installedDefaults: installedDefaults, color: color, partialColor: partialColor });
 }
 exports.writePresets = writePresets;
 
@@ -1179,13 +1237,16 @@ function installRelicPresets() {
     if (!types.length || !stats.length)
         return;
     stats.push({ value: 'barracks-cost', label: 'Kaserne: Rekrutierungskosten reduzieren' });
+    stats.push({ value: 'light-attack', label: 'Leichte Kavallerie: +x% Angriffsstärke' });
+    var bonusLabels = new Map(stats.map(function (stat) { return [stat.value, stat.label]; }));
     // Reuse this world's current asset version instead of pinning a CDN hash.
     var graphicImage = Array.from(document.images).find(function (image) { return image.src.includes('/graphic/'); });
     var graphicBase = graphicImage === null || graphicImage === void 0 ? void 0 : graphicImage.src.split('/graphic/')[0];
     var units = [
         ['Speerträger', 'spear'], ['Schwertkämpfer', 'sword'], ['Axtkämpfer', 'axe'],
         ['Leichte Kavallerie', 'light'], ['Schwere Kavallerie', 'heavy'], ['Späher', 'spy'],
-        ['Rammbock', 'ram'], ['Katapult', 'catapult']
+        ['Rammbock', 'ram'], ['Katapult', 'catapult'],
+        ['Bogenschütze', 'archer'], ['Berittener Bogenschütze', 'marcher']
     ];
     var bonusBadge = function (fullLabel, main, compact) {
         var _a, _b;
@@ -1203,38 +1264,44 @@ function installRelicPresets() {
         badge.title = clean;
         badge.setAttribute('aria-label', clean);
         var caption = clean;
+        var fallback = compact ? (unit ? unit[1].slice(0, 3).toUpperCase() : '…') : clean;
         if (unit && graphicBase) {
-            var image = document.createElement('img');
-            image.src = "".concat(graphicBase, "/graphic/unit/unit_").concat(unit[1], ".webp");
-            image.alt = unit[0];
-            image.width = 18;
-            image.height = 18;
+            var image_1 = document.createElement('img');
+            image_1.src = "".concat(graphicBase, "/graphic/unit/unit_").concat(unit[1], ".webp");
+            image_1.alt = unit[0];
+            image_1.width = 18;
+            image_1.height = 18;
             caption = compact ? '' : clean.slice(unit[0].length + 1).trim()
                 .replace('Angriffs- und Verteidigungsstärke', 'Angr./Vert.')
                 .replace('Angriffsstärke', 'Angriff').replace('Verteidigungsstärke', 'Verteidigung');
-            image.addEventListener('error', function () { badge.replaceChildren(document.createTextNode(clean)); }, { once: true });
-            badge.append(image);
+            image_1.addEventListener('error', function () { image_1.replaceWith(document.createTextNode(fallback)); }, { once: true });
+            badge.append(image_1);
+        }
+        else if (compact) {
+            badge.append(document.createTextNode(fallback));
         }
         if (compact && unit) {
             var kind = document.createElement('sup');
             kind.textContent = /Angriffs- und Verteidigungs/.test(clean) ? 'A/D' : /Angriff/.test(clean) ? 'A' : /Verteidigung/.test(clean) ? 'D' : '';
             badge.append(kind);
         }
-        else if (caption)
+        else if (caption && !compact)
             badge.append(document.createTextNode(caption));
         return badge;
     };
     var presets = [];
     var installed = [];
     var color = relic_preset_model_1.DEFAULT_PRESET_COLOR;
+    var partialColor = relic_preset_model_1.DEFAULT_PARTIAL_COLOR;
     var storageMessage = '';
     try {
         var raw = localStorage.getItem(STORAGE_KEY);
         color = (0, relic_preset_model_1.presetColor)(raw);
+        partialColor = (0, relic_preset_model_1.presetColor)(raw, true);
         var seeded = (0, relic_preset_defaults_1.seedDefaultPresets)((0, relic_preset_model_1.readPresets)(raw), (0, relic_preset_model_1.installedDefaultIds)(raw));
         presets = seeded.presets;
         installed = seeded.installed;
-        localStorage.setItem(STORAGE_KEY, (0, relic_preset_model_1.writePresets)(presets, installed, color));
+        localStorage.setItem(STORAGE_KEY, (0, relic_preset_model_1.writePresets)(presets, installed, color, partialColor));
     }
     catch (_a) {
         var seeded = (0, relic_preset_defaults_1.seedDefaultPresets)(presets, installed);
@@ -1245,7 +1312,7 @@ function installRelicPresets() {
     var editingId = null;
     var selectedStats = new Set();
     var style = document.createElement('style');
-    style.textContent = "\n    #relics > div.relic-preset { position: relative; }\n    #relics > div.relic-preset::after {\n      content: ''; position: absolute; inset: 0; border: 3px solid var(--relic-preset-color, ".concat(relic_preset_model_1.DEFAULT_PRESET_COLOR, ");\n      box-sizing: border-box; pointer-events: none; z-index: 1;\n      box-shadow: 0 0 0 1px #443b29 inset;\n    }\n    #relics > div.relic-preset.relic-shiny::after { inset: 6px; border-width: 2px; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") { color: #412b13; font-size: 12px; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ").relic-dock { gap: 4px; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") [hidden] { display: none !important; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") button:not(.relic-dock-handle) { cursor: pointer; font: inherit; padding: 3px 7px; border: 1px solid #b39a6b; border-radius: 8px; color: inherit; background: #f4e4c2; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") :is(button,input,select):focus-visible { outline: 2px solid #3687ff; outline-offset: 1px; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-list { display: grid; gap: 0; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-card { display: flex; align-items: center; gap: 3px; height: 20px; border-left: 2px solid var(--relic-preset-color, ").concat(relic_preset_model_1.DEFAULT_PRESET_COLOR, "); padding-left: 3px; }\n    #").concat(WINDOW_ID, " .preset-toolbar { display: flex; align-items: center; justify-content: space-between; min-height: 18px; }\n    #").concat(WINDOW_ID, " .preset-color-label { display: flex; align-items: center; gap: 4px; font-size: 11px; }\n    #").concat(WINDOW_ID, " input[type=\"color\"] { width: 24px; height: 18px; padding: 0; border: 1px solid #ab8955; cursor: pointer; background: transparent; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-card > label { display: flex; align-items: center; gap: 4px; flex: 1; min-width: 0; cursor: pointer; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-card .preset-name { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-card .preset-summary { display: flex; align-items: center; gap: 2px; margin: 0; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-card .preset-bonus { padding: 0; gap: 0; background: transparent; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-card sup { font-size: 8px; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-card .preset-edit { padding: 1px 4px; margin-left: auto; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-group { font-size: 10px; line-height: 12px; margin: 2px 0 0; }\n    #").concat(EDITOR_ID, " { width: min(420px,calc(100vw - 48px)); max-height: calc(100vh - 80px); box-sizing: border-box; padding: 18px; border: 1px solid #ab8955; border-radius: 8px; background: #fff0cf; }\n    #").concat(EDITOR_ID, "::backdrop { background: #0006; }\n    #").concat(EDITOR_ID, " .preset-summary { margin-top: 8px; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-summary { display: grid; gap: 4px; font-size: 11px; margin: 5px 0; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-bonuses { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-bonus { display: inline-flex; align-items: center; gap: 3px; min-height: 18px; padding: 2px 4px; background: #f4e4c2; border-radius: 4px; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-bonus img { width: 18px; height: 18px; flex-shrink: 0; object-fit: contain; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-actions { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") form { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") form > :is(strong,.preset-stat-editor,.preset-actions) { grid-column: 1 / -1; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") form > label { display: grid; gap: 3px; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") :is(input[type=\"text\"],select) { width: 100%; box-sizing: border-box; min-width: 0; padding: 4px; color: inherit; background: #fff6df; border: 1px solid #ab8955; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-stat-editor { display: grid; gap: 4px; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-stat-picker { display: flex; gap: 5px; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-stat-picker select { flex: 1; width: 0; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-selected-stats { display: flex; flex-wrap: wrap; gap: 4px; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-selected-stats button { font-size: 11px; text-align: left; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") input[type=\"checkbox\"] { flex-shrink: 0; margin: 1px 0; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-empty, :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") output { font-size: 11px; margin: 0; overflow-wrap: anywhere; }\n  ");
+    style.textContent = "\n    #relics > div.relic-preset { position: relative; }\n    #relics > div.relic-preset::after {\n      content: ''; position: absolute; inset: 0; border: 3px solid var(--relic-preset-color, ".concat(relic_preset_model_1.DEFAULT_PRESET_COLOR, ");\n      box-sizing: border-box; pointer-events: none; z-index: 1;\n      box-shadow: 0 0 0 1px #443b29 inset;\n    }\n    #relics > div.relic-preset-partial::after {\n      border: 2px dashed var(--relic-preset-partial-color, ").concat(relic_preset_model_1.DEFAULT_PARTIAL_COLOR, ");\n    }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") { color: #412b13; font-size: 12px; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ").relic-dock { gap: 4px; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") [hidden] { display: none !important; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") button:not(.relic-dock-handle) { cursor: pointer; font: inherit; padding: 3px 7px; border: 1px solid #b39a6b; border-radius: 8px; color: inherit; background: #f4e4c2; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") :is(button,input,select):focus-visible { outline: 2px solid #3687ff; outline-offset: 1px; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-list { display: grid; gap: 0; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-card { display: flex; align-items: center; gap: 3px; height: 20px; border-left: 2px solid var(--relic-preset-color, ").concat(relic_preset_model_1.DEFAULT_PRESET_COLOR, "); padding-left: 3px; }\n    #").concat(WINDOW_ID, " .preset-toolbar { display: flex; align-items: center; justify-content: space-between; min-height: 18px; }\n    #").concat(WINDOW_ID, " .preset-color-label { display: flex; align-items: center; gap: 4px; font-size: 11px; }\n    #").concat(WINDOW_ID, " input[type=\"color\"] { width: 24px; height: 18px; padding: 0; border: 1px solid #ab8955; cursor: pointer; background: transparent; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-card > label { display: flex; align-items: center; gap: 4px; flex: 1; min-width: 0; cursor: pointer; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-card .preset-name { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-card .preset-summary { display: flex; align-items: center; gap: 2px; margin: 0; min-width: 0; overflow: hidden; white-space: nowrap; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-card .preset-bonus { padding: 0; gap: 0; background: transparent; flex-shrink: 0; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-card sup { font-size: 8px; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-card .preset-edit { padding: 1px 4px; margin-left: auto; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-group { font-size: 10px; line-height: 12px; margin: 2px 0 0; }\n    #").concat(EDITOR_ID, " { width: min(420px,calc(100vw - 48px)); max-height: calc(100vh - 80px); box-sizing: border-box; padding: 18px; border: 1px solid #ab8955; border-radius: 8px; background: #fff0cf; }\n    #").concat(EDITOR_ID, "::backdrop { background: #0006; }\n    #").concat(EDITOR_ID, " .preset-summary { margin-top: 8px; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-summary { display: grid; gap: 4px; font-size: 11px; margin: 5px 0; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-bonuses { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-bonus { display: inline-flex; align-items: center; gap: 3px; min-height: 18px; padding: 2px 4px; background: #f4e4c2; border-radius: 4px; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-bonus img { width: 18px; height: 18px; flex-shrink: 0; object-fit: contain; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-actions { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") form { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") form > :is(strong,.preset-stat-editor,.preset-actions) { grid-column: 1 / -1; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") form > label { display: grid; gap: 3px; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") :is(input[type=\"text\"],select) { width: 100%; box-sizing: border-box; min-width: 0; padding: 4px; color: inherit; background: #fff6df; border: 1px solid #ab8955; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-stat-editor { display: grid; gap: 4px; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-stat-picker { display: flex; gap: 5px; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-stat-picker select { flex: 1; width: 0; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-selected-stats { display: flex; flex-wrap: wrap; gap: 4px; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-selected-stats button { font-size: 11px; text-align: left; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") input[type=\"checkbox\"] { flex-shrink: 0; margin: 1px 0; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-empty, :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") output { font-size: 11px; margin: 0; overflow-wrap: anywhere; }\n  ");
     document.head.append(style);
     var button = function (label, action) {
         var b = document.createElement('button');
@@ -1277,14 +1344,25 @@ function installRelicPresets() {
     colorPicker.type = 'color';
     colorPicker.id = 'relic-preset-color';
     colorPicker.value = color;
-    colorPicker.setAttribute('aria-label', 'Preset-Rahmenfarbe');
-    colorPicker.title = 'Preset-Rahmenfarbe';
+    colorPicker.setAttribute('aria-label', 'Preset-Rahmenfarbe: vollständig');
+    colorPicker.title = 'Volltreffer: durchgehender Rahmen (3/3)';
     var colorLabel = document.createElement('label');
     colorLabel.className = 'preset-color-label';
-    colorLabel.append(document.createTextNode('Farbe'), colorPicker);
-    toolbar.append(count, colorLabel);
+    colorLabel.append(document.createTextNode('3/3'), colorPicker);
+    var partialPicker = document.createElement('input');
+    partialPicker.type = 'color';
+    partialPicker.id = 'relic-preset-partial-color';
+    partialPicker.value = partialColor;
+    partialPicker.setAttribute('aria-label', 'Preset-Rahmenfarbe: zwei Boni');
+    partialPicker.title = 'Zwei passende Boni: gestrichelter Rahmen (2/3)';
+    var partialLabel = document.createElement('label');
+    partialLabel.className = 'preset-color-label';
+    partialLabel.append(document.createTextNode('2/3'), partialPicker);
+    toolbar.append(count, colorLabel, partialLabel);
     colorPicker.addEventListener('input', function () { color = colorPicker.value; applyColor(); });
     colorPicker.addEventListener('change', function () { color = colorPicker.value; applyColor(); persist(); });
+    partialPicker.addEventListener('input', function () { partialColor = partialPicker.value; applyColor(); });
+    partialPicker.addEventListener('change', function () { partialColor = partialPicker.value; applyColor(); persist(); });
     var list = document.createElement('div');
     list.className = 'preset-list';
     var message = document.createElement('output');
@@ -1300,7 +1378,12 @@ function installRelicPresets() {
     modal.id = EDITOR_ID;
     modal.setAttribute('aria-labelledby', heading.id);
     document.body.append(modal);
-    function applyColor() { [grid, panel, modal].forEach(function (element) { return element.style.setProperty('--relic-preset-color', color); }); }
+    function applyColor() {
+        [grid, panel, modal].forEach(function (element) {
+            element.style.setProperty('--relic-preset-color', color);
+            element.style.setProperty('--relic-preset-partial-color', partialColor);
+        });
+    }
     applyColor();
     var returnFocus = null;
     var editorMessage = document.createElement('output');
@@ -1315,7 +1398,7 @@ function installRelicPresets() {
     type.id = 'relic-preset-type';
     var mode = document.createElement('select');
     mode.id = 'relic-preset-mode';
-    mode.innerHTML = '<option value="exact">Typ und gewünschte Substats</option><option value="all">Alle 3 Boni aus der Auswahl</option>';
+    mode.innerHTML = '<option value="exact">Typ und gewünschte Substats</option><option value="all">Boni aus der Auswahl (2/3 oder 3/3)</option>';
     var shiny = document.createElement('input');
     shiny.type = 'checkbox';
     shiny.id = 'relic-preset-shiny';
@@ -1430,21 +1513,26 @@ function installRelicPresets() {
         var marked = 0;
         grid.querySelectorAll('img[data-id]').forEach(function (image) {
             var relic = RelicSystem.getRelicById(image.dataset.id);
-            var matching = relic ? presets.filter(function (preset) { return (0, relic_preset_model_1.matchesPreset)(relic, preset); }) : [];
+            var matching = relic ? presets.map(function (preset) { return ({ preset: preset, level: (0, relic_preset_model_1.presetMatchLevel)(relic, preset, bonusLabels) }); }).filter(function (match) { return match.level > 0; }) : [];
             var tile = image.parentElement;
             tile.classList.toggle('relic-preset', matching.length > 0);
+            var level = matching.some(function (match) { return match.level === 3; }) ? 3 : matching.length ? 2 : 0;
+            tile.classList.toggle('relic-preset-partial', level === 2);
             if (matching.length) {
-                tile.dataset.relicPresetNames = matching.map(function (p) { return p.name; }).join(' · ');
+                tile.dataset.relicPresetNames = matching.map(function (match) { return "".concat(match.preset.name, " (").concat(match.level === 3 ? 'vollständig' : '2/3', ")"); }).join(' · ');
+                tile.dataset.relicPresetLevel = String(level);
                 marked++;
             }
-            else
+            else {
                 delete tile.dataset.relicPresetNames;
+                delete tile.dataset.relicPresetLevel;
+            }
         });
         count.textContent = "Markiert: ".concat(marked);
     };
     function persist() {
         try {
-            localStorage.setItem(STORAGE_KEY, (0, relic_preset_model_1.writePresets)(presets, installed, color));
+            localStorage.setItem(STORAGE_KEY, (0, relic_preset_model_1.writePresets)(presets, installed, color, partialColor));
             message.textContent = '';
         }
         catch (_a) {
@@ -1497,8 +1585,8 @@ function installRelicPresets() {
                 summary.className = 'preset-summary';
                 var typeName = preset.type ? ((_a = types.find(function (t) { return t.value === preset.type; })) === null || _a === void 0 ? void 0 : _a.label) || "Nicht verf\u00FCgbar: ".concat(preset.type) : 'Beliebiger Typ';
                 if (preset.allBonuses) {
-                    summary.textContent = "".concat(preset.name, " \u00B7 3/3");
-                    summary.title = preset.substats.map(statLabel).join(' / ');
+                    summary.textContent = preset.name;
+                    summary.title = "2/3 oder 3/3: ".concat(preset.substats.map(statLabel).join(' / '));
                 }
                 else {
                     summary.append(bonusBadge(typeName, true, true), document.createTextNode('›'));
@@ -1959,7 +2047,7 @@ function installRelicShinyHighlight() {
         return;
     var style = document.createElement('style');
     style.id = STYLE_ID;
-    style.textContent = "\n    #relics > div.relic-shiny > img {\n      outline: 3px solid #ff4fc3;\n      outline-offset: -3px;\n    }\n  ";
+    style.textContent = "\n    #relics > div.relic-shiny { position: relative; }\n    #relics > div.relic-shiny > img {\n      filter: saturate(1.15) brightness(1.08);\n    }\n    #relics > div.relic-shiny::before {\n      content: ''; position: absolute; inset: 0; pointer-events: none;\n      z-index: 1;\n      background: linear-gradient(125deg, transparent 22%, #fff5 34%, #ffd7f280 39%, #fff9 42%, transparent 49%),\n        radial-gradient(ellipse at 75% 22%, #fff9 0%, #ffb8e840 16%, transparent 38%);\n    }\n  ";
     document.head.appendChild(style);
     var highlight = function () {
         if (typeof RelicSystem === 'undefined')

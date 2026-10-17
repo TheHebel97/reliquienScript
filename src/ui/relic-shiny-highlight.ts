@@ -11,9 +11,15 @@ export function installRelicShinyHighlight(): void {
   const style = document.createElement('style');
   style.id = STYLE_ID;
   style.textContent = `
+    #relics > div.relic-shiny { position: relative; }
     #relics > div.relic-shiny > img {
-      outline: 3px solid #ff4fc3;
-      outline-offset: -3px;
+      filter: saturate(1.15) brightness(1.08);
+    }
+    #relics > div.relic-shiny::before {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+      z-index: 1;
+      background: linear-gradient(125deg, transparent 22%, #fff5 34%, #ffd7f280 39%, #fff9 42%, transparent 49%),
+        radial-gradient(ellipse at 75% 22%, #fff9 0%, #ffb8e840 16%, transparent 38%);
     }
   `;
   document.head.appendChild(style);

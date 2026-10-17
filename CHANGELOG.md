@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.0.4 – 2026-10-17
+
+- Kompakte Preset-Anzeige auf Bogenwelten: Icons für beide Bogeneinheiten,
+  begrenzte Zeilen und kurze Ersatztexte bei fehlenden Bildern.
+- LK-Angriffsdefaults unabhängig von der abweichenden Stat-26-Beschriftung
+  auf Bogenwelten zuordnen; ursprüngliche Defaultregeln behutsam migrieren.
+- Shiny als Glanzeffekt über dem Reliquienbild, ohne eigenen Rahmen.
+- Presets markieren auch zwei von drei passenden Boni: gestrichelt und orange;
+  Volltreffer bleiben durchgehend und neon-gelb. Beide Farben sind einstellbar.
+- Jede Bedingung belegt einen eigenen Bonusplatz, Volltreffer haben Vorrang.
+  Shiny-Bedingungen bleiben für beide Trefferstufen wirksam.
+- Hilfe, Forenentwurf und kompilierte JavaScript-Datei aktualisiert.
+
 ## 1.0.3 – 2026-10-14
 
 - ScriptAPI durch den offiziellen Zwei-Zeilen-Aufruf direkt am Start ersetzt.

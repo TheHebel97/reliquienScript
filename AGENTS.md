@@ -75,23 +75,31 @@ nur bei Bedarf fuer Setup bzw. historische Hintergruende lesen.
   Sanitisiertes Detailklonen/Disabled-Pruefung gemeinsam in `relic-details-dom.ts`.
 - Native Auswahl sitzt auf `#relics img`: immer das Bild klicken, nicht das
   Wrapper-Div. Details und Auswahlbutton werden vom Spiel synchron erzeugt.
-- Shiny-Rahmen: `src/ui/relic-shiny-highlight.ts` markiert Rasterbilder pink,
+- Shiny-Glanz: `src/ui/relic-shiny-highlight.ts` legt einen durchlaessigen Glanz ueber Rasterbilder, ohne Rahmen,
   wenn mindestens ein `sub_stats[].perfect === true` ist; auch ohne Hover.
 - Eigene Highlight-Presets: `src/ui/relic-presets.ts`, reine Regeln/Speicherformat
   in `relic-preset-model.ts`. Schalter neben Filter oeffnet `#relic-preset-window`
   im Dock-System. Name, optionaler Typ/Hauptbonus und beliebig viele Substat-IDs;
-  alle Bedingungen UND, mehrere aktive Presets ODER. Keine Filterung/Sortierung.
+  Volltreffer: alle Bedingungen UND, mehrere aktive Presets ODER. Dreierregeln
+  markieren zusaetzlich zwei passende Boni (Hauptbonus + Substat oder beide Substats).
+  Keine Treffer ueber verschiedene Regeln zusammenzaehlen. Keine Filterung/Sortierung.
   Speichern, Bearbeiten, Aktivieren/Deaktivieren, Loeschen; LocalStorage unter
   `reliquiensrtipz:relic-presets` mit Formatversion 2 (liest auch Version 1).
   Defaults in `relic-preset-defaults.ts` einmalig installieren, installierte IDs
   speichern, damit Aenderungen/Deaktivierung/Loeschung nicht zurueckgesetzt werden.
   Kombinierte Einheitenboni erfuellen passende Angriff-/Verteidigungsbedingungen;
   jede Bedingung braucht einen eigenen Substat. Optional `shinyOnly`.
-  `allBonuses` verlangt Hauptbonus und genau zwei Substats aus dem erlaubten Pool.
+  `allBonuses` zaehlt Hauptbonus und genau zwei Substats aus dem erlaubten Pool (2/3 oder 3/3).
   Konfigurierbare globale Rahmenfarbe ueber `#relic-preset-color`, im gleichen
   Speicherformat als `color` gespeichert. Default gedecktes Neon-Gelb #d2d51b;
   CSS-Variable `--relic-preset-color`, dunkle Innenkontur fuer Kontrast.
-  Bei Shiny-Treffern farbiger Innenrahmen plus vorhandener pinker Aussenrahmen.
+  Volltreffer: durchgehender Rahmen; 2/3-Treffer: gestrichelt, Default #e69732.
+  Zweite Farbe in `partialColor`, Picker `#relic-preset-partial-color`.
+  Volltreffer haben Vorrang; Shiny-Glanz ist mit beiden Stufen kombinierbar.
+  `matchesPreset` prueft weiterhin Volltreffer, `presetMatchLevel` liefert 0/2/3.
+  LK-Angriffsdefaults nutzen `light-attack` statt numerischer ID 26; native Namen
+  unterscheiden LK von berittenen Boegen bei widerspruechlicher Welt-Beschriftung.
+  Nur originale Defaultbedingungen migrieren, deaktivierte/angepasste/geloeschte Regeln respektieren.
   Presetfenster wie die anderen Randfenster 220px breit, 340px Mindesthoehe.
   Kompakte 20px-Schalterzeilen, keine Paginierung; zehn Regeln passen gemeinsam.
   Editor als natives `#relic-preset-editor`-Dialogmodal (420px), Escape/Abbrechen

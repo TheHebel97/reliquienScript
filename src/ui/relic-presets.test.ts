@@ -51,7 +51,7 @@ test('saves exact combinations and preserves shiny classes, search and native gr
   expect(stored()).toEqual([{ id: 'preset-id', name: 'Axt + LK Off', enabled: true, type: 'greataxe', substats: ['5', '24'] }]);
   expect(tile('1').classList.contains('relic-preset')).toBe(true);
   expect(tile('1').classList.contains('relic-shiny')).toBe(true);
-  expect(tile('2').classList.contains('relic-preset')).toBe(false);
+  expect(tile('2').classList.contains('relic-preset-partial')).toBe(true);
   expect(tile('1').querySelector('img')).toBe(image);
   expect((document.getElementById('search') as HTMLInputElement).value).toBe('meine Suche');
   expect(Array.from(card().querySelectorAll<HTMLImageElement>('.preset-bonus img')).map(i => i.src)).toEqual([
@@ -63,7 +63,7 @@ test('saves exact combinations and preserves shiny classes, search and native gr
   expect(card().querySelectorAll('.preset-bonus')[2].getAttribute('aria-label')).toContain('Angriffsstärke');
   const failed = card().querySelector<HTMLImageElement>('.preset-bonus img')!;
   failed.dispatchEvent(new Event('error'));
-  expect(card().querySelector('.preset-summary')!.textContent).toContain('Axtkämpfer');
+  expect(card().querySelector('.preset-summary')!.textContent).toContain('AXE');
 });
 
 test('toggles, edits a disabled preset without enabling it, then deletes it', () => {
@@ -80,6 +80,7 @@ test('toggles, edits a disabled preset without enabling it, then deletes it', ()
   document.querySelector<HTMLButtonElement>('#relic-preset-form .preset-actions button:last-child')!.click();
   expect(stored()).toEqual([]);
   expect(tile('2').classList.contains('relic-preset')).toBe(false);
+  expect(tile('2').classList.contains('relic-preset-partial')).toBe(false);
 });
 
 test('loads saved presets and reapplies them after native paging or filtering rebuilds tiles', async () => {
@@ -89,7 +90,7 @@ test('loads saved presets and reapplies them after native paging or filtering re
   document.getElementById('relics')!.innerHTML = '<div><img data-id="2"></div><div><img data-id="1"></div>';
   await Promise.resolve();
   expect(tile('1').classList.contains('relic-preset')).toBe(true);
-  expect(tile('2').classList.contains('relic-preset')).toBe(false);
+  expect(tile('2').classList.contains('relic-preset-partial')).toBe(true);
   expect(card().textContent).toContain('Gespeichert');
 });
 
@@ -125,6 +126,18 @@ test('shows ten switches together and edits in a separate modal without replacin
   expect(stored()).toHaveLength(10);
 });
 
+test('keeps archer-world rows compact, including failed icon downloads', () => {
+  document.getElementById('inventory_filter_type')!.insertAdjacentHTML('beforeend', '<option value="longbow">Langbogen</option><option value="shortbow">Kurzbogen</option>');
+  document.getElementById('inventory_filter_sub1')!.insertAdjacentHTML('beforeend', '<option value="4">Bogenschütze: +x% Angriffs- und Verteidigungsstärke</option><option value="6">Berittener Bogenschütze: +x% Angriffs- und Verteidigungsstärke</option><option value="26">Berittener Bogenschütze: +x% Angriffsstärke</option>');
+  localStorage.setItem(key, writePresets([{ id: 'archer', name: 'Bögen', enabled: true, type: 'longbow', substats: ['6', '26'] }], DEFAULT_PRESETS.map(p => p.id)));
+  installRelicPresets();
+  const badges = Array.from(card().querySelectorAll<HTMLElement>('.preset-bonus'));
+  expect(badges.map(b => b.querySelector('img')?.getAttribute('src')?.split('/').pop())).toEqual(['unit_archer.webp', 'unit_marcher.webp', 'unit_marcher.webp']);
+  badges.forEach(b => b.querySelector('img')!.dispatchEvent(new Event('error')));
+  expect(badges.every(b => b.textContent!.length <= 8)).toBe(true);
+  expect(badges[1].getAttribute('aria-label')).toContain('Berittener Bogenschütze');
+});
+
 test('actual shiny highlighting coexists with presets after toggles and native grid replacement', async () => {
   Object.defineProperty(globalThis, 'RelicSystem', { configurable: true, value: {
     getRelicById: (id: keyof typeof records) => ({ ...records[id], sub_stats: records[id].sub_stats.map((s, i) => ({ ...s, perfect: id === '1' && i === 0 })) })
@@ -144,8 +157,8 @@ test('actual shiny highlighting coexists with presets after toggles and native g
   expect(tile('1').classList.contains('relic-shiny')).toBe(true);
   expect(tile('1').classList.contains('relic-preset')).toBe(true);
   expect(tile('2').classList.contains('relic-shiny')).toBe(false);
-  expect(document.getElementById('reliquiensrtipz-shiny-highlight')!.textContent).toContain('outline: 3px solid #ff4fc3');
-  expect(document.head.textContent).toContain('.relic-preset.relic-shiny::after { inset: 6px; border-width: 2px; }');
+  expect(document.getElementById('reliquiensrtipz-shiny-highlight')!.textContent).toContain('linear-gradient');
+  expect(document.getElementById('reliquiensrtipz-shiny-highlight')!.textContent).not.toMatch(/outline:|border:/);
   const picker = document.getElementById('relic-preset-color') as HTMLInputElement;
   expect(picker.value).toBe(DEFAULT_PRESET_COLOR);
   picker.value = '#c73721'; picker.dispatchEvent(new Event('input')); picker.dispatchEvent(new Event('change'));
@@ -154,4 +167,29 @@ test('actual shiny highlighting coexists with presets after toggles and native g
   expect(stored()[0].shinyOnly).toBe(true);
   expect(tile('1').classList.contains('relic-shiny')).toBe(true);
   expect(tile('1').classList.contains('relic-preset')).toBe(true);
+});
+
+test('full matches win over partial matches and both colors survive saving and reinstallation', () => {
+  localStorage.setItem(key, writePresets([
+    { id: 'partial', name: 'Teiltreffer', enabled: true, type: 'greataxe', substats: ['5', '9'] },
+    { id: 'full', name: 'Volltreffer', enabled: true, type: 'greataxe', substats: ['5', '24'] }
+  ], DEFAULT_PRESETS.map(p => p.id), '#bada55', '#ff8800'));
+  installRelicPresets();
+  expect(tile('1').dataset.relicPresetLevel).toBe('3');
+  expect(tile('1').classList.contains('relic-preset-partial')).toBe(false);
+  const fullSwitch = document.querySelector<HTMLInputElement>('[data-preset-id="full"] input')!;
+  fullSwitch.click();
+  expect(tile('1').dataset.relicPresetLevel).toBe('2');
+  expect(tile('1').classList.contains('relic-preset-partial')).toBe(true);
+  const picker = document.getElementById('relic-preset-partial-color') as HTMLInputElement;
+  expect(picker.value).toBe('#ff8800');
+  picker.value = '#44aabb'; picker.dispatchEvent(new Event('change'));
+  expect(presetColor(localStorage.getItem(key), true)).toBe('#44aabb');
+  expect(presetColor(localStorage.getItem(key))).toBe('#bada55');
+  document.getElementById('relic-preset-window')!.remove();
+  document.getElementById('relic-preset-editor')!.remove();
+  document.getElementById('relic-preset-trigger')!.remove();
+  installRelicPresets();
+  expect((document.getElementById('relic-preset-partial-color') as HTMLInputElement).value).toBe('#44aabb');
+  expect(tile('1').dataset.relicPresetLevel).toBe('2');
 });

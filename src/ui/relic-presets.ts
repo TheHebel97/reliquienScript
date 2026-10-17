@@ -1,6 +1,6 @@
 import { addDockedPanel } from './docked-panels';
 import { Choice } from './relic-search-model';
-import { DEFAULT_PRESET_COLOR, installedDefaultIds, MAIN_BONUSES, matchesPreset, presetColor, PresetRelic, readPresets, RelicPreset, writePresets } from './relic-preset-model';
+import { DEFAULT_PARTIAL_COLOR, DEFAULT_PRESET_COLOR, installedDefaultIds, MAIN_BONUSES, presetMatchLevel, presetColor, PresetRelic, readPresets, RelicPreset, writePresets } from './relic-preset-model';
 import { seedDefaultPresets } from './relic-preset-defaults';
 
 const WINDOW_ID = 'relic-preset-window';
@@ -18,13 +18,16 @@ export function installRelicPresets(): void {
   const stats = options('inventory_filter_sub1');
   if (!types.length || !stats.length) return;
   stats.push({ value: 'barracks-cost', label: 'Kaserne: Rekrutierungskosten reduzieren' });
+  stats.push({ value: 'light-attack', label: 'Leichte Kavallerie: +x% Angriffsstärke' });
+  const bonusLabels = new Map(stats.map(stat => [stat.value, stat.label]));
   // Reuse this world's current asset version instead of pinning a CDN hash.
   const graphicImage = Array.from(document.images).find(image => image.src.includes('/graphic/'));
   const graphicBase = graphicImage?.src.split('/graphic/')[0];
   const units: Array<[string, string]> = [
     ['Speerträger', 'spear'], ['Schwertkämpfer', 'sword'], ['Axtkämpfer', 'axe'],
     ['Leichte Kavallerie', 'light'], ['Schwere Kavallerie', 'heavy'], ['Späher', 'spy'],
-    ['Rammbock', 'ram'], ['Katapult', 'catapult']
+    ['Rammbock', 'ram'], ['Katapult', 'catapult'],
+    ['Bogenschütze', 'archer'], ['Berittener Bogenschütze', 'marcher']
   ];
   const bonusBadge = (fullLabel: string, main = false, compact = false): HTMLElement => {
     const badge = document.createElement('span'); badge.className = 'preset-bonus';
@@ -34,32 +37,37 @@ export function installRelicPresets(): void {
     const unit = units.find(([label]) => clean.startsWith(`${label}:`));
     badge.title = clean; badge.setAttribute('aria-label', clean);
     let caption = clean;
+    const fallback = compact ? (unit ? unit[1].slice(0, 3).toUpperCase() : '…') : clean;
     if (unit && graphicBase) {
       const image = document.createElement('img'); image.src = `${graphicBase}/graphic/unit/unit_${unit[1]}.webp`;
       image.alt = unit[0]; image.width = 18; image.height = 18;
       caption = compact ? '' : clean.slice(unit[0].length + 1).trim()
         .replace('Angriffs- und Verteidigungsstärke', 'Angr./Vert.')
         .replace('Angriffsstärke', 'Angriff').replace('Verteidigungsstärke', 'Verteidigung');
-      image.addEventListener('error', () => { badge.replaceChildren(document.createTextNode(clean)); }, { once: true });
+      image.addEventListener('error', () => { image.replaceWith(document.createTextNode(fallback)); }, { once: true });
       badge.append(image);
+    } else if (compact) {
+      badge.append(document.createTextNode(fallback));
     }
     if (compact && unit) {
       const kind = document.createElement('sup');
       kind.textContent = /Angriffs- und Verteidigungs/.test(clean) ? 'A/D' : /Angriff/.test(clean) ? 'A' : /Verteidigung/.test(clean) ? 'D' : '';
       badge.append(kind);
-    } else if (caption) badge.append(document.createTextNode(caption));
+    } else if (caption && !compact) badge.append(document.createTextNode(caption));
     return badge;
   };
   let presets: RelicPreset[] = [];
   let installed: string[] = [];
   let color = DEFAULT_PRESET_COLOR;
+  let partialColor = DEFAULT_PARTIAL_COLOR;
   let storageMessage = '';
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     color = presetColor(raw);
+    partialColor = presetColor(raw, true);
     const seeded = seedDefaultPresets(readPresets(raw), installedDefaultIds(raw));
     presets = seeded.presets; installed = seeded.installed;
-    localStorage.setItem(STORAGE_KEY, writePresets(presets, installed, color));
+    localStorage.setItem(STORAGE_KEY, writePresets(presets, installed, color, partialColor));
   } catch {
     const seeded = seedDefaultPresets(presets, installed); presets = seeded.presets; installed = seeded.installed;
     storageMessage = 'Nur für diese Sitzung: Browser-Speicher nicht verfügbar.';
@@ -74,7 +82,9 @@ export function installRelicPresets(): void {
       box-sizing: border-box; pointer-events: none; z-index: 1;
       box-shadow: 0 0 0 1px #443b29 inset;
     }
-    #relics > div.relic-preset.relic-shiny::after { inset: 6px; border-width: 2px; }
+    #relics > div.relic-preset-partial::after {
+      border: 2px dashed var(--relic-preset-partial-color, ${DEFAULT_PARTIAL_COLOR});
+    }
     :is(#${WINDOW_ID},#${EDITOR_ID}) { color: #412b13; font-size: 12px; }
     :is(#${WINDOW_ID},#${EDITOR_ID}).relic-dock { gap: 4px; }
     :is(#${WINDOW_ID},#${EDITOR_ID}) [hidden] { display: none !important; }
@@ -87,8 +97,8 @@ export function installRelicPresets(): void {
     #${WINDOW_ID} input[type="color"] { width: 24px; height: 18px; padding: 0; border: 1px solid #ab8955; cursor: pointer; background: transparent; }
     :is(#${WINDOW_ID},#${EDITOR_ID}) .preset-card > label { display: flex; align-items: center; gap: 4px; flex: 1; min-width: 0; cursor: pointer; }
     :is(#${WINDOW_ID},#${EDITOR_ID}) .preset-card .preset-name { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-    :is(#${WINDOW_ID},#${EDITOR_ID}) .preset-card .preset-summary { display: flex; align-items: center; gap: 2px; margin: 0; }
-    :is(#${WINDOW_ID},#${EDITOR_ID}) .preset-card .preset-bonus { padding: 0; gap: 0; background: transparent; }
+    :is(#${WINDOW_ID},#${EDITOR_ID}) .preset-card .preset-summary { display: flex; align-items: center; gap: 2px; margin: 0; min-width: 0; overflow: hidden; white-space: nowrap; }
+    :is(#${WINDOW_ID},#${EDITOR_ID}) .preset-card .preset-bonus { padding: 0; gap: 0; background: transparent; flex-shrink: 0; }
     :is(#${WINDOW_ID},#${EDITOR_ID}) .preset-card sup { font-size: 8px; }
     :is(#${WINDOW_ID},#${EDITOR_ID}) .preset-card .preset-edit { padding: 1px 4px; margin-left: auto; }
     :is(#${WINDOW_ID},#${EDITOR_ID}) .preset-group { font-size: 10px; line-height: 12px; margin: 2px 0 0; }
@@ -130,11 +140,17 @@ export function installRelicPresets(): void {
   const count = document.createElement('output'); count.setAttribute('aria-live', 'polite');
   const toolbar = document.createElement('div'); toolbar.className = 'preset-toolbar';
   const colorPicker = document.createElement('input'); colorPicker.type = 'color'; colorPicker.id = 'relic-preset-color'; colorPicker.value = color;
-  colorPicker.setAttribute('aria-label', 'Preset-Rahmenfarbe'); colorPicker.title = 'Preset-Rahmenfarbe';
+  colorPicker.setAttribute('aria-label', 'Preset-Rahmenfarbe: vollständig'); colorPicker.title = 'Volltreffer: durchgehender Rahmen (3/3)';
   const colorLabel = document.createElement('label'); colorLabel.className = 'preset-color-label';
-  colorLabel.append(document.createTextNode('Farbe'), colorPicker); toolbar.append(count, colorLabel);
+  colorLabel.append(document.createTextNode('3/3'), colorPicker);
+  const partialPicker = document.createElement('input'); partialPicker.type = 'color'; partialPicker.id = 'relic-preset-partial-color'; partialPicker.value = partialColor;
+  partialPicker.setAttribute('aria-label', 'Preset-Rahmenfarbe: zwei Boni'); partialPicker.title = 'Zwei passende Boni: gestrichelter Rahmen (2/3)';
+  const partialLabel = document.createElement('label'); partialLabel.className = 'preset-color-label';
+  partialLabel.append(document.createTextNode('2/3'), partialPicker); toolbar.append(count, colorLabel, partialLabel);
   colorPicker.addEventListener('input', () => { color = colorPicker.value; applyColor(); });
   colorPicker.addEventListener('change', () => { color = colorPicker.value; applyColor(); persist(); });
+  partialPicker.addEventListener('input', () => { partialColor = partialPicker.value; applyColor(); });
+  partialPicker.addEventListener('change', () => { partialColor = partialPicker.value; applyColor(); persist(); });
   const list = document.createElement('div'); list.className = 'preset-list';
   const message = document.createElement('output'); message.setAttribute('aria-live', 'polite'); message.id = 'relic-preset-message';
   const form = document.createElement('form'); form.id = 'relic-preset-form';
@@ -143,7 +159,12 @@ export function installRelicPresets(): void {
   heading.id = 'relic-preset-editor-title';
   const modal = document.createElement('dialog'); modal.id = EDITOR_ID;
   modal.setAttribute('aria-labelledby', heading.id); document.body.append(modal);
-  function applyColor(): void { [grid!, panel, modal].forEach(element => element.style.setProperty('--relic-preset-color', color)); }
+  function applyColor(): void {
+    [grid!, panel, modal].forEach(element => {
+      element.style.setProperty('--relic-preset-color', color);
+      element.style.setProperty('--relic-preset-partial-color', partialColor);
+    });
+  }
   applyColor();
   let returnFocus: HTMLElement | null = null;
   const editorMessage = document.createElement('output'); editorMessage.setAttribute('aria-live', 'polite');
@@ -151,7 +172,7 @@ export function installRelicPresets(): void {
   name.placeholder = 'z. B. Axt + LK Off';
   const type = document.createElement('select'); type.id = 'relic-preset-type';
   const mode = document.createElement('select'); mode.id = 'relic-preset-mode';
-  mode.innerHTML = '<option value="exact">Typ und gewünschte Substats</option><option value="all">Alle 3 Boni aus der Auswahl</option>';
+  mode.innerHTML = '<option value="exact">Typ und gewünschte Substats</option><option value="all">Boni aus der Auswahl (2/3 oder 3/3)</option>';
   const shiny = document.createElement('input'); shiny.type = 'checkbox'; shiny.id = 'relic-preset-shiny';
   mode.addEventListener('change', () => { type.disabled = mode.value === 'all'; if (type.disabled) type.value = ''; });
   const label = (text: string, control: HTMLElement): HTMLLabelElement => {
@@ -221,16 +242,20 @@ export function installRelicPresets(): void {
     let marked = 0;
     grid.querySelectorAll<HTMLImageElement>('img[data-id]').forEach(image => {
       const relic = RelicSystem!.getRelicById(image.dataset.id!);
-      const matching = relic ? presets.filter(preset => matchesPreset(relic, preset)) : [];
+      const matching = relic ? presets.map(preset => ({ preset, level: presetMatchLevel(relic, preset, bonusLabels) })).filter(match => match.level > 0) : [];
       const tile = image.parentElement!;
       tile.classList.toggle('relic-preset', matching.length > 0);
-      if (matching.length) { tile.dataset.relicPresetNames = matching.map(p => p.name).join(' · '); marked++; }
-      else delete tile.dataset.relicPresetNames;
+      const level = matching.some(match => match.level === 3) ? 3 : matching.length ? 2 : 0;
+      tile.classList.toggle('relic-preset-partial', level === 2);
+      if (matching.length) {
+        tile.dataset.relicPresetNames = matching.map(match => `${match.preset.name} (${match.level === 3 ? 'vollständig' : '2/3'})`).join(' · ');
+        tile.dataset.relicPresetLevel = String(level); marked++;
+      } else { delete tile.dataset.relicPresetNames; delete tile.dataset.relicPresetLevel; }
     });
     count.textContent = `Markiert: ${marked}`;
   };
   function persist(): void {
-    try { localStorage.setItem(STORAGE_KEY, writePresets(presets, installed, color)); message.textContent = ''; }
+    try { localStorage.setItem(STORAGE_KEY, writePresets(presets, installed, color, partialColor)); message.textContent = ''; }
     catch { message.textContent = 'Nur für diese Sitzung übernommen: Browser-Speicher ist nicht verfügbar.'; }
     renderList(); highlight();
   }
@@ -258,7 +283,7 @@ export function installRelicPresets(): void {
       card.append(selection);
       const summary = document.createElement('div'); summary.className = 'preset-summary';
       const typeName = preset.type ? types.find(t => t.value === preset.type)?.label || `Nicht verfügbar: ${preset.type}` : 'Beliebiger Typ';
-      if (preset.allBonuses) { summary.textContent = `${preset.name} · 3/3`; summary.title = preset.substats.map(statLabel).join(' / '); }
+      if (preset.allBonuses) { summary.textContent = preset.name; summary.title = `2/3 oder 3/3: ${preset.substats.map(statLabel).join(' / ')}`; }
       else {
         summary.append(bonusBadge(typeName, true, true), document.createTextNode('›'));
         preset.substats.forEach(id => summary.append(bonusBadge(statLabel(id), false, true)));

@@ -1,4 +1,4 @@
-import { matchesPreset, readPresets, RelicPreset, writePresets } from './relic-preset-model';
+import { matchesPreset, presetMatchLevel, readPresets, RelicPreset, writePresets } from './relic-preset-model';
 
 const preset: RelicPreset = { id: 'off', name: 'Axt + LK Off', enabled: true, type: 'greataxe', substats: ['5', '24'] };
 const relic = { type: 'greataxe', sub_stats: [{ id: 24 }, { id: 5 }] };
@@ -57,4 +57,46 @@ test('shiny-only is optional and persists without losing group conditions', () =
   expect(readPresets(writePresets([shiny]))).toEqual([shiny]);
   expect(readPresets(writePresets([{ ...shiny, type: '', allBonuses: true }]))[0].allBonuses).toBe(true);
   expect(readPresets(writePresets([{ ...preset, type: 'axe', allBonuses: true }]))).toEqual([]);
+});
+
+test('grades two distinct matching bonuses, with or without matching main type', () => {
+  expect(presetMatchLevel(relic, preset)).toBe(3);
+  expect(presetMatchLevel({ type: 'greataxe', sub_stats: [{ id: 5 }, { id: 9 }] }, preset)).toBe(2);
+  expect(presetMatchLevel({ ...relic, type: 'horseshoe' }, preset)).toBe(2);
+  expect(presetMatchLevel({ type: 'greataxe', sub_stats: [{ id: 9 }, { id: 10 }] }, preset)).toBe(0);
+  expect(presetMatchLevel({ type: 'greataxe', sub_stats: [{ id: 3 }, { id: 9 }] }, { ...preset, substats: ['24', '33'] })).toBe(2);
+  expect(presetMatchLevel(relic, { ...preset, enabled: false })).toBe(0);
+  expect(presetMatchLevel(relic, { ...preset, shinyOnly: true })).toBe(0);
+  expect(presetMatchLevel({ type: 'greataxe', sub_stats: [{ id: 5, perfect: true }, { id: 9 }] }, { ...preset, shinyOnly: true })).toBe(2);
+  expect(presetMatchLevel(relic, { ...preset, substats: [] })).toBe(3);
+  expect(presetMatchLevel({ type: 'horseshoe', sub_stats: [{ id: 5 }] }, { ...preset, type: '' })).toBe(0);
+});
+
+test('grades economy using all three actual bonus slots rather than the pool size', () => {
+  const economy = { ...preset, type: '', substats: ['14', '15', '16', '13', 'barracks-cost'], allBonuses: true };
+  expect(presetMatchLevel({ type: 'axe', sub_stats: [{ id: 14 }, { id: 16 }] }, economy)).toBe(3);
+  expect(presetMatchLevel({ type: 'greataxe', sub_stats: [{ id: 14 }, { id: 15 }] }, economy)).toBe(2);
+  expect(presetMatchLevel({ type: 'axe', sub_stats: [{ id: 14 }, { id: 24 }] }, economy)).toBe(2);
+  expect(presetMatchLevel({ type: 'axe', sub_stats: [{ id: 24 }, { id: 26 }] }, economy)).toBe(0);
+  expect(presetMatchLevel({ type: 'axe', sub_stats: [{ id: 14 }] }, economy)).toBe(0);
+});
+
+test('light-cavalry defaults do not accidentally match the archer-world dropdown label for ID 26', () => {
+  const light = { ...preset, substats: ['24', 'light-attack'] };
+  expect(matchesPreset({ ...relic, sub_stats: [{ id: 24 }, { id: 5, name: 'Leichte Kavallerie: +2% Angriffs- und Verteidigungsstärke' }] }, light)).toBe(true);
+  expect(matchesPreset({ ...relic, sub_stats: [{ id: 24 }, { id: 26, name: 'Berittener Bogenschütze: +2% Angriffsstärke' }] }, light)).toBe(false);
+  expect(matchesPreset({ ...relic, sub_stats: [{ id: 24 }, { id: 26, name: 'Leichte Kavallerie: +2% Angriffsstärke' }] }, light)).toBe(true);
+  expect(matchesPreset({ type: 'longbow', sub_stats: [{ id: 4 }, { id: 6 }] }, { ...preset, type: 'longbow', substats: ['25', '36'] })).toBe(true);
+});
+
+test('custom archer-world conditions use the current catalog rather than another world numeric mapping', () => {
+  const labels = new Map([
+    ['5', 'Leichte Kavallerie: +x% Angriffs- und Verteidigungsstärke'],
+    ['6', 'Berittener Bogenschütze: +x% Angriffs- und Verteidigungsstärke'],
+    ['26', 'Berittener Bogenschütze: +x% Angriffsstärke']
+  ]);
+  const archer = { ...preset, type: '', substats: ['26'] };
+  expect(matchesPreset({ type: 'greataxe', sub_stats: [{ id: 5 }] }, archer, labels)).toBe(false);
+  expect(matchesPreset({ type: 'greataxe', sub_stats: [{ id: 6 }] }, archer, labels)).toBe(true);
+  expect(matchesPreset({ type: 'greataxe', sub_stats: [{ id: 26, name: 'Leichte Kavallerie: +2% Angriffsstärke' }] }, archer, labels)).toBe(false);
 });

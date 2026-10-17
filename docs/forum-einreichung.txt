@@ -10,7 +10,7 @@ ich möchte mein Script „reliquienUI“ für den deutschen Markt zur Prüfung 
 [TR][TD]Autor:[/TD][TD]TheHebel97 – Kontakt über das Forum[/TD][/TR]
 [TR][TD]Repository:[/TD][TD]https://github.com/TheHebel97/reliquienScript[/TD][/TR]
 [TR][TD]Premium-Account erforderlich:[/TD][TD]Nein.[/TD][/TR]
-[TR][TD]Aktuelle Version / Einreichdatum:[/TD][TD]1.0.3 / 2026-10-14[/TD][/TR]
+[TR][TD]Aktuelle Version / Einreichdatum:[/TD][TD]1.0.4 / 2026-10-17[/TD][/TR]
 [TR][TD]Auf welchen Ansichten wird das Script ausgeführt:[/TD][TD]Reliquien → Inventar (screen=relic_system), deutsche Spielwelten. Der Userscript-Match ist auf screen=relic_* unter *.die-staemme.de begrenzt.[/TD][/TR]
 [TR][TD]Funktion des Scripts:[/TD][TD]
 [LIST]
@@ -21,8 +21,8 @@ ich möchte mein Script „reliquienUI“ für den deutschen Markt zur Prüfung 
 [*]Lokale Suche nach Namen, Typen und Boni sowie Filter nach Qualität, Typ, Substats und Shiny.
 [*]Sortierung nach Qualität, Typ, Bereich, perfekten Substats oder einzelnen Substat-Stärken.
 [*]Konfigurierbare Highlight-Presets mit Hauptbonus/Typ und gewünschten Substats; sechs Kampf-Vorgaben und eine Rohstoff-Gruppenregel sind enthalten.
-[*]Kombinierte Angriffs-/Verteidigungsboni erfüllen die passende Einzelbonus-Bedingung. Eine Rohstoff-Gruppenregel trifft nur, wenn Hauptbonus und beide Substats aus der festgelegten Auswahl stammen.
-[*]Presetfarbe frei einstellbar, standardmäßig gedecktes Neon-Gelb. Perfekte Substats werden zusätzlich pink markiert; beide Markierungen können gleichzeitig sichtbar sein. Presets können auf Shiny-Reliquien beschränkt werden.
+[*]Kombinierte Angriffs-/Verteidigungsboni erfüllen die passende Einzelbonus-Bedingung. Bei Rohstoff-Gruppenregeln werden zwei oder drei Boni aus der festgelegten Auswahl markiert.
+[*]Volltreffer erhalten einen durchgehenden Rahmen (standardmäßig gedecktes Neon-Gelb), zwei von drei passenden Boni einen gestrichelten Rahmen (standardmäßig Orange). Beide Farben sind einstellbar. Shiny erscheint als Glanz über dem Bild ohne eigenen Rahmen, kombinierbar mit beiden Trefferstufen. Presets können auf Shiny-Reliquien beschränkt werden.
 [*]Randfenster lassen sich verschieben und wechseln bei Platzmangel automatisch die Seite. Einstellungen und Presets bleiben lokal im Browser gespeichert.
 [*]Kurze Einführung beim ersten Start; über „?“ neben der Suche jederzeit erneut aufrufbar.
 [/LIST]
@@ -31,7 +31,7 @@ ich möchte mein Script „reliquienUI“ für den deutschen Markt zur Prüfung 
 1. Die für die Prüfung bereitgestellte, vollständige Userscript-Datei enthält bereits den Tampermonkey-Header und benötigt keinen lokalen Server.
 2. Auf der Inventarseite können Reliquien über die Suchzeile und „Filter“ eingegrenzt werden. Beispielsuchen: „shiny kata def“, „hufeisen“ oder „ohne shiny“.
 3. Überfahren zeigt Details; Linksklick fügt in die Aufwertungsauswahl ein, Rechtsklick öffnet das Ausrüstfenster. Erst die jeweiligen nativen Spielaktionen führen Aufwertung bzw. Ausrüsten aus.
-4. „Presets“ öffnet die gespeicherten Regeln. Checkboxen aktivieren/deaktivieren Regeln; der Stift öffnet das Bearbeitungsfenster. Neue Regeln, Shiny-Bedingung und Rahmenfarbe sind dort konfigurierbar.
+4. „Presets“ öffnet die gespeicherten Regeln. Checkboxen aktivieren/deaktivieren Regeln; der Stift öffnet das Bearbeitungsfenster. Neue Regeln, Shiny-Bedingung und beide Rahmenfarben sind konfigurierbar.
 5. „Zurücksetzen“ leert Suche und Filter und stellt die Standardsortierung wieder her. Gespeicherte Presets bleiben erhalten.
 Die Nutzung durch Spieler soll nach Freigabe über den vom Stämme-Team vorgesehenen Veröffentlichungsweg erfolgen.
 [/TD][/TR]
@@ -42,7 +42,7 @@ Die Nutzung durch Spieler soll nach Freigabe über den vom Stämme-Team vorgeseh
 // ==UserScript==
 // @name         reliquienUI
 // @namespace    https://github.com/TheHebel97/reliquienScript
-// @version      1.0.3
+// @version      1.0.4
 // @author       TheHebel97
 // @license      MIT
 // @description  Reliquien-Inventar mit Suche, Filtern und Highlight-Presets.

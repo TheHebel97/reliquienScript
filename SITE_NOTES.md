@@ -2,6 +2,36 @@
 
 Stand: 13.10.2026. Vor Browserzugriff diese bekannten Strukturen verwenden.
 
+## Update 17.10.2026: Bogenwelt, Shiny und Preset-Trefferstufen
+
+- Lesend in Opera auf Welt 259 bestaetigt: zusaetzliche Typen `longbow` und
+  `shortbow`, kombinierte Einheitenboni 4 (Bogen) und 6 (berittener Bogen).
+  Native Assets `unit_archer.webp` / `unit_marcher.webp` unter aktuellem Graphic-Base.
+- Native Substat-Auswahl bezeichnet 26 hier als berittenen Bogen-Angriff und
+  enthaelt keinen separaten LK-Angriff. Die bisherige Annahme, dass die Beschriftung
+  fuer 26 auf allen Welten LK ist, ist damit ungueltig. Echte Substat-Daten liefern
+  `name` und `benefit.img`; nicht nur aus der UI-Beschriftung auf LK schliessen.
+- LK-Defaults verwenden `light-attack`: bei vorhandenen Namen nur LK-Angriff oder
+  LK-Angriff/Verteidigung akzeptieren. Numerischer Fallback nur ohne native Namen.
+  Originale Defaultpaare [24,26] werden migriert; geloeschte oder fachlich bearbeitete
+  Defaults nicht wiederherstellen. Eigene numerische Bedingungen bleiben erhalten.
+- Preset-Zeilen bleiben 20px/Panel 220px. Unbekannte Boni kompakt mit Auslassung,
+  defekte Icons mit kurzem Einheitenkuerzel; voller Text in Titel/ARIA, kein Ueberlauf.
+- Shiny: durchlaessiges ::before-Glanzoverlay und leichter Bildfilter, kein Rahmen.
+  Preset: ::after-Rahmen, Volltreffer solide in `color`, 2/3 gestrichelt in
+  `partialColor`. Volltreffer gewinnt, jede Bedingung braucht eigenen Bonusplatz.
+  Kurze eigene Regeln bleiben Volltrefferregeln; 2/3 nur bei drei Bedingungen.
+  Rohstoffgruppen zaehlen die drei tatsaechlichen Boni statt der Poolgroesse.
+  Speicherformat bleibt Version 2, neue Farbe optional mit kompatiblem Default.
+- Eigene numerische Einheitenbedingungen werden gegen den Katalog der aktuellen
+  Welt und den nativen Namen des tatsaechlichen Substats geprueft. Damit erfuellt
+  LK-Angriff/Verteidigung die hier als Bogen-Angriff bezeichnete Auswahl 26 nicht.
+- Abschluss in Opera/Welt 259: Panel 220px, sieben Reihen je 20px ohne Ueberlauf;
+  Icons einschliesslich beider Bogeneinheiten geladen. Temporäres Preset wechselt
+  2/3 gestrichelt -> Volltreffer solide -> nach Shiny-Bedingung zurueck zu 2/3.
+  Testpreset entfernt, keine Spielaktion ausgefuehrt. Echte Shiny nicht vorhanden;
+  Glanz/CSS ohne Rahmen und Kombinationen ueber automatisierte Tests abgedeckt.
+
 ## Umgebung
 
 - Foren-Initialisierung 14.10.2026 nach Nutzerkorrektur: Codefeld im TXT-Template

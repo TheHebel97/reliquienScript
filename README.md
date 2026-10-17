@@ -1,6 +1,6 @@
 # reliquienUI
 
-Veröffentlichungsname: **reliquienUI** (Version 1.0.3, MIT).
+Veröffentlichungsname: **reliquienUI** (Version 1.0.4, MIT).
 Die Einreichung zur Freigabe steht noch aus. Das Repository stellt den Prüfstand
 bereit; die freigegebene Veröffentlichung soll über das Stämme-Team erfolgen.
 
@@ -59,11 +59,16 @@ Entdeckerzeile in allen Reliquien-Details. Die Wahl bleibt gespeichert.
 `Presets` neben dem Filter-Schalter oeffnet ein eigenes Randfenster. Dort lassen
 sich benannte Highlight-Regeln mit einem Reliquien-Typ/Hauptbonus und gewuenschten
 Substats speichern, bearbeiten, ein-/ausschalten und loeschen. Alle Bedingungen
-eines Presets muessen passen; die Reihenfolge der Substats ist egal. Typ oder
-Substats koennen einzeln verwendet werden. Treffer erhalten einen konfigurierbaren
-Rahmen (Standard: gedecktes Neon-Gelb mit dunkler Innenkontur). Das Farbfeld im
-Presetfenster gilt fuer alle Presets und bleibt gespeichert. Bei Shiny-Treffern
-bleiben Presetfarbe und Pink sichtbar. Die Suche und Sortierung
+eines Presets ergeben einen Volltreffer; die Reihenfolge der Substats ist egal.
+Bei Dreierkombinationen werden auch zwei passende Boni markiert, entweder
+Hauptbonus plus Substat oder beide Substats. Jeder Bonusplatz zaehlt einmal;
+Treffer werden nicht aus verschiedenen Regeln zusammengesetzt. Typ oder
+Substats koennen weiterhin einzeln als vollstaendige Regel verwendet werden.
+Volltreffer erhalten einen durchgehenden Rahmen (Standard: gedecktes Neon-Gelb),
+2/3-Treffer einen gestrichelten Rahmen (Standard: Orange), mit dunkler Innenkontur.
+Die beiden Farbfelder im Presetfenster gelten fuer alle Presets und bleiben
+gespeichert. Volltreffer haben Vorrang. Shiny zeigt sich als Glanz ueber dem Bild
+ohne eigenen Rahmen und ist mit beiden Trefferstufen kombinierbar. Die Suche und Sortierung
 werden dadurch nicht geaendert. Presets bleiben im Browser fuer diese Spielwelt
 gespeichert, auch nach Neuladen oder Zuruecksetzen der Suche.
 Das Presetfenster ist 220px breit mit 340px Mindesthoehe. Zehn kompakte
@@ -72,8 +77,9 @@ Hauptbonus und Substats. `Neues Preset` oder der Stift oeffnet ein separates Mod
 Escape/Abbrechen verwirft den Entwurf. Dort lassen sich auch Shiny-only-Regeln
 und Gruppenregeln fuer alle drei Boni einstellen.
 Sechs Kampfdefaults und die Gruppe `Rohstoffe & Beute` werden einmalig angelegt.
-Bei dieser Gruppe muessen Hauptbonus und beide Substats aus Holz-/Eisen-/Lehmproduktion,
-Kaserne-Kostenreduktion oder Beutekapazitaet stammen. Kombinierte Einheitenboni
+Bei dieser Gruppe ergeben Hauptbonus und beide Substats aus Holz-/Eisen-/Lehmproduktion,
+Kaserne-Kostenreduktion oder Beutekapazitaet einen Volltreffer, zwei davon einen
+2/3-Treffer. Kombinierte Einheitenboni
 erfuellen passende Angriff- oder Verteidigungsbedingungen. Bearbeitete,
 deaktivierte und geloeschte Defaults werden beim Neuladen nicht zurueckgesetzt.
 
