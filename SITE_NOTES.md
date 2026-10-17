@@ -2,6 +2,17 @@
 
 Stand: 13.10.2026. Vor Browserzugriff diese bekannten Strukturen verwenden.
 
+## Update 17.10.2026: Development-Port 9001
+
+- Port 9000 laut Nutzer anderweitig belegt. Webpack und Dev-Loader gemeinsam auf
+  `http://127.0.0.1:9001/bundle.js` umgestellt; HTTP 200 mit aktuellem Bundle geprueft.
+  Explizites IPv4 vermeidet die frueheren localhost/IPv6-Verwechslungen.
+- Dev-Loader-Version 0.1.1. Standalone-Userscript enthaelt weiterhin keinen lokalen
+  Loader; Offlinepruefung verwirft lokale Serveradressen jetzt unabhaengig vom Port.
+- Direkter Zugriff auf Tampermonkey-Editor in Opera erneut explizit durch die
+  Browser-URL-Sicherheitspruefung blockiert (nur http/https erlaubt). Nutzer muss
+  die URL im installierten Loader selbst umstellen; keine Umgehung per CDP/UI/API.
+
 ## Update 17.10.2026: Hauptbonus als Pflichtbedingung (1.0.6)
 
 - Nutzerkorrektur ersetzt die fruehere 2/3-Regel: bei gewaehltem Typ muss der

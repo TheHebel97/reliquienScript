@@ -117,7 +117,7 @@ npm ci
 npm start
 ```
 
-Der Webpack-Dev-Server liefert `http://localhost:9000/bundle.js`.
+Der Webpack-Dev-Server liefert `http://127.0.0.1:9001/bundle.js`.
 `devUserscript.js` in Tampermonkey installieren und eine Spielseite auf
 `https://*.die-staemme.de/game.php?village=*&screen=relic_*` neu laden. Der Loader fuehrt das lokale
 Bundle aus. Nach Quellcode-Aenderungen kompiliert Webpack automatisch;
@@ -130,7 +130,7 @@ Dies ist ein Userscript-Projekt; es gibt keine eigenstaendige HTML-Startseite.
 
 | Befehl | Ergebnis |
 | --- | --- |
-| `npm start` | Entwicklungsserver auf Port 9000 |
+| `npm start` | Entwicklungsserver auf Port 9001 |
 | `npm run build` | Entwicklungsbundle unter `dist/bundle.js` |
 | `npm run build:production` | Minimiertes Bundle unter `dist/bundle.js` |
 | `npm run build:userscript` | Lesbares Standalone-Userscript im Repository: `reliquiensrtipz.user.js` |
@@ -162,6 +162,6 @@ jQuery selbst wird wie dort von der Spielseite bereitgestellt.
 Fuer Assets ist bisher kein eigener Webpack-Loader konfiguriert.
 
 Anpassungen: Projektname, minimaler Einstiegspunkt, Loader fuer Spielseiten,
-einheitlicher Port 9000, deaktivierter Dev-Server-Client sowie zusaetzliche
+einheitlicher Port 9001, deaktivierter Dev-Server-Client sowie zusaetzliche
 Build- und Typecheck-Befehle. Das Unix-spezifische `build2` mit `sed` wurde
 nicht uebernommen. Die Standdeff-Fachlogik ist nicht Teil dieses Grundgeruests.

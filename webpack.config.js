@@ -35,7 +35,7 @@ module.exports = {
     compress: true,
     client: false,
     webSocketServer: false,
-    port: 9000,
+    port: 9001,
     host: "127.0.0.1"
   },
 };

@@ -11,7 +11,7 @@ assert.ok(source.startsWith('// ==UserScript=='));
 assert.ok(source.includes(`// @version      ${version}`));
 assert.ok(source.includes('// @license      MIT'));
 assert.ok(source.includes(fs.readFileSync(path.join(root, 'LICENSE'), 'utf8').trim()));
-assert.ok(!/\beval\s*\(|new\s+Function\b|localhost:9000|127\.0\.0\.1:9000|sourceMappingURL/.test(source));
+assert.ok(!/\beval\s*\(|new\s+Function\b|(?:localhost|127\.0\.0\.1):\d+|sourceMappingURL/.test(source));
 assert.ok(!/\bfetch\s*\(|\bXMLHttpRequest\b|\.(?:ajax|getScript)\s*\(/.test(source));
 
 function run(register) {

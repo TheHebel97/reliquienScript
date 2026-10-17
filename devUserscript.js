@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         reliquienUI - Development
-// @version      0.1.0
+// @version      0.1.1
 // @description  Laedt das lokale Webpack-Bundle zur Entwicklung.
 // @match        https://*.die-staemme.de/game.php?village=*&screen=relic_*
 // @grant        none
@@ -8,7 +8,7 @@
 
 (async function () {
   try {
-    const response = await fetch('http://localhost:9000/bundle.js', {
+    const response = await fetch('http://127.0.0.1:9001/bundle.js', {
       cache: 'no-store'
     });
     if (!response.ok) {
