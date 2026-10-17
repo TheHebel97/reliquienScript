@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         reliquienUI
 // @namespace    https://github.com/TheHebel97/reliquienScript
-// @version      1.0.6
+// @version      1.0.7
 // @author       TheHebel97
 // @license      MIT
 // @homepageURL  https://github.com/TheHebel97/reliquienScript
@@ -863,7 +863,7 @@ function installRelicOnboarding() {
     dialog.id = DIALOG_ID;
     dialog.setAttribute('aria-labelledby', 'relic-onboarding-title');
     dialog.setAttribute('aria-describedby', 'relic-onboarding-intro');
-    dialog.innerHTML = "\n    <h2 id=\"relic-onboarding-title\" tabindex=\"-1\">Reliquien \u2013 kurz erkl\u00E4rt</h2>\n    <p id=\"relic-onboarding-intro\" class=\"intro\">Die wichtigsten Handgriffe f\u00FCr dein Inventar.</p>\n    <dl class=\"tips\">\n      <div class=\"click-tip\"><dt>Linksklick \u2192 Aufwertung</dt><dd>Legt die Reliquie in den n\u00E4chsten freien Aufwertungsslot. Die eigentliche Aufwertung startest du danach \u00FCber den Aufwertungsbutton.</dd></div>\n      <div class=\"click-tip\"><dt>Rechtsklick \u2192 Ausr\u00FCsten</dt><dd>W\u00E4hlt die Reliquie im Ausr\u00FCstfenster am Rand aus. Dort kannst du auf \u201EAusr\u00FCsten\u201C klicken und die Spielbest\u00E4tigung pr\u00FCfen.</dd></div>\n      <div><dt>Hover-Vorschau</dt><dd>Fahre \u00FCber eine Kachel, um ihre Stats zu sehen. Du kannst direkt weiter \u00FCber andere Kacheln fahren; die Vorschau ist f\u00FCr die Maus durchl\u00E4ssig.</dd></div>\n      <div><dt>Suche</dt><dd>Durchsuche Namen, Typen und Boni, zum Beispiel mit \u201Eshiny kata def\u201C. Die Treffer passen sich sofort an.</dd></div>\n      <div><dt>Filter & Sortierung</dt><dd>Grenze nach Qualit\u00E4t, Typ, Substats oder Shiny ein und \u00E4ndere die Reihenfolge. \u201EZur\u00FCcksetzen\u201C leert Suche und Filter und stellt die Standardsortierung her.</dd></div>\n      <div><dt>Presets</dt><dd>Aktiviere deine Wunschkombinationen: Der gew\u00E4hlte Hauptbonus muss passen. Hauptbonus plus ein gew\u00FCnschter Substat ergibt 2/3, plus beide Substats einen Volltreffer. Beide bekommen kr\u00E4ftige, durchgehende Rahmen in einstellbaren Farben. Bei Rohstoffregeln muss der Hauptbonus aus der Auswahl stammen. Der Stift \u00F6ffnet den Editor. Shiny erkennst du an der Regenbogen-Schattierung auf dem Gegenstand, auch zusammen mit einem Preset-Rahmen.</dd></div>\n    </dl>\n    <p class=\"footer-note\">Die Randfenster kannst du an den Kopfzeilen verschieben. Diese Hilfe findest du sp\u00E4ter \u00FCber \u201E?\u201C neben der Suche.</p>\n  ";
+    dialog.innerHTML = "\n    <h2 id=\"relic-onboarding-title\" tabindex=\"-1\">Reliquien \u2013 kurz erkl\u00E4rt</h2>\n    <p id=\"relic-onboarding-intro\" class=\"intro\">Die wichtigsten Handgriffe f\u00FCr dein Inventar.</p>\n    <dl class=\"tips\">\n      <div class=\"click-tip\"><dt>Linksklick \u2192 Aufwertung</dt><dd>Legt die Reliquie in den n\u00E4chsten freien Aufwertungsslot. Die eigentliche Aufwertung startest du danach \u00FCber den Aufwertungsbutton.</dd></div>\n      <div class=\"click-tip\"><dt>Rechtsklick \u2192 Ausr\u00FCsten</dt><dd>W\u00E4hlt die Reliquie im Ausr\u00FCstfenster am Rand aus. Dort kannst du auf \u201EAusr\u00FCsten\u201C klicken und die Spielbest\u00E4tigung pr\u00FCfen.</dd></div>\n      <div><dt>Hover-Vorschau</dt><dd>Fahre \u00FCber eine Kachel, um ihre Stats zu sehen. Du kannst direkt weiter \u00FCber andere Kacheln fahren; die Vorschau ist f\u00FCr die Maus durchl\u00E4ssig.</dd></div>\n      <div><dt>Suche</dt><dd>Durchsuche Namen, Typen und Boni, zum Beispiel mit \u201Eshiny kata def\u201C. Die Treffer passen sich sofort an.</dd></div>\n      <div><dt>Filter & Sortierung</dt><dd>Grenze nach Qualit\u00E4t, Typ, Substats oder Shiny ein und \u00E4ndere die Reihenfolge. \u201EZur\u00FCcksetzen\u201C leert Suche und Filter und stellt die Standardsortierung her.</dd></div>\n      <div><dt>Presets</dt><dd>Der Hauptbonus muss zum Preset passen. Die Vorgaben Offensiv, Defensiv und Rohstoffe erlauben beliebige Mischungen aus ihrem Bonus-Pool, auch Wiederholungen. Hauptbonus plus ein passender Substat ergibt 2/3, plus beide einen Volltreffer. Beide bekommen kr\u00E4ftige Rahmen in einstellbaren Farben. Der Stift \u00F6ffnet den Editor; dort sind auch eigene feste Kombinationen m\u00F6glich. Shiny erkennst du an der Regenbogen-Schattierung, auch zusammen mit einem Preset-Rahmen.</dd></div>\n    </dl>\n    <p class=\"footer-note\">Die Randfenster kannst du an den Kopfzeilen verschieben. Diese Hilfe findest du sp\u00E4ter \u00FCber \u201E?\u201C neben der Suche.</p>\n  ";
     document.body.append(dialog);
     var help = document.createElement('button');
     help.type = 'button';
@@ -963,32 +963,40 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.seedDefaultPresets = exports.DEFAULT_PRESETS = void 0;
-exports.DEFAULT_PRESETS = [
+var LEGACY_COMBAT_PRESETS = [
     { id: 'default:axe-off', name: 'Axt · Axt + LK Angriff', enabled: true, type: 'greataxe', substats: ['24', 'light-attack'] },
     { id: 'default:light-off', name: 'LK · Axt + LK Angriff', enabled: true, type: 'shortspear', substats: ['24', 'light-attack'] },
     { id: 'default:spear-heavy-def', name: 'Speer · SK + Speer Def', enabled: true, type: 'halberd', substats: ['37', '31'] },
     { id: 'default:heavy-spear-def', name: 'SK · Speer + SK Def', enabled: true, type: 'banner', substats: ['31', '37'] },
     { id: 'default:sword-spear-def', name: 'Schwert · Schwert + Speer Def', enabled: true, type: 'longsword', substats: ['32', '31'] },
-    { id: 'default:spear-sword-def', name: 'Speer · Schwert + Speer Def', enabled: true, type: 'halberd', substats: ['32', '31'] },
+    { id: 'default:spear-sword-def', name: 'Speer · Schwert + Speer Def', enabled: true, type: 'halberd', substats: ['32', '31'] }
+];
+exports.DEFAULT_PRESETS = [
+    { id: 'default:offence', name: 'Offensiv', enabled: true, type: '', substats: ['24', 'light-attack', '9'], allBonuses: true },
+    { id: 'default:defence', name: 'Defensiv', enabled: true, type: '', substats: ['31', '32', '37'], allBonuses: true },
     { id: 'default:economy', name: 'Rohstoffe & Beute', enabled: true, type: '', substats: ['15', '16', '14', 'barracks-cost', '13'], allBonuses: true }
 ];
 function seedDefaultPresets(presets, installed) {
-    var next = presets.map(function (preset) {
-        var original = exports.DEFAULT_PRESETS.find(function (p) { return p.id === preset.id; });
-        // Upgrade only the original condition pair; preserve custom edits and the
-        // user's enabled/name/shiny settings. Deleted defaults stay deleted.
-        if (original && ['default:axe-off', 'default:light-off'].includes(preset.id) &&
-            preset.type === original.type && !preset.allBonuses &&
-            preset.substats.length === 2 && preset.substats.includes('24') && preset.substats.includes('26')) {
-            return __assign(__assign({}, preset), { substats: original.substats.slice() });
-        }
-        return preset;
+    // Replace untouched combinations with pools. Keep renamed/edited/Shiny-only
+    // rules, and do not activate a pool if all its old defaults were off/deleted.
+    var retired = presets.filter(function (preset) {
+        var original = LEGACY_COMBAT_PRESETS.find(function (p) { return p.id === preset.id; });
+        if (!original || preset.name !== original.name || preset.type !== original.type || preset.allBonuses || preset.shinyOnly)
+            return false;
+        var normalize = function (ids) { return ids.map(function (id) { return original.substats.includes('light-attack') && id === '26' ? 'light-attack' : id; }).sort().join(','); };
+        return normalize(preset.substats) === normalize(original.substats);
     });
+    var next = presets.filter(function (preset) { return !retired.includes(preset); });
     exports.DEFAULT_PRESETS.forEach(function (preset) {
-        if (!installed.includes(preset.id) && !next.some(function (p) { return p.id === preset.id; }))
-            next.push(__assign(__assign({}, preset), { substats: preset.substats.slice() }));
+        if (installed.includes(preset.id) || next.some(function (p) { return p.id === preset.id; }))
+            return;
+        var legacy = preset.id === 'default:offence' ? LEGACY_COMBAT_PRESETS.slice(0, 2) :
+            preset.id === 'default:defence' ? LEGACY_COMBAT_PRESETS.slice(2) : [];
+        var hadLegacy = legacy.some(function (p) { return installed.includes(p.id) || presets.some(function (existing) { return existing.id === p.id; }); });
+        var enabled = hadLegacy ? retired.some(function (p) { return p.enabled && legacy.some(function (old) { return old.id === p.id; }); }) : preset.enabled;
+        next.push(__assign(__assign({}, preset), { enabled: enabled, substats: preset.substats.slice() }));
     });
-    return { presets: next, installed: Array.from(new Set(__spreadArray(__spreadArray([], __read(installed), false), __read(exports.DEFAULT_PRESETS.map(function (p) { return p.id; })), false))) };
+    return { presets: next, installed: Array.from(new Set(__spreadArray(__spreadArray(__spreadArray([], __read(installed), false), __read(LEGACY_COMBAT_PRESETS.map(function (p) { return p.id; })), false), __read(exports.DEFAULT_PRESETS.map(function (p) { return p.id; })), false))) };
 }
 exports.seedDefaultPresets = seedDefaultPresets;
 
@@ -1287,7 +1295,7 @@ function installRelicPresets() {
         }
         if (compact && unit) {
             var kind = document.createElement('sup');
-            kind.textContent = /Angriffs- und Verteidigungs/.test(clean) ? 'A/D' : /Angriff/.test(clean) ? 'A' : /Verteidigung/.test(clean) ? 'D' : '';
+            kind.textContent = /Angriffs- und Verteidigungs/.test(clean) ? 'A/D' : /Angriff/.test(clean) ? 'A' : /Verteidigung/.test(clean) ? 'D' : /Gebäudeschaden/.test(clean) ? 'G' : '';
             badge.append(kind);
         }
         else if (caption && !compact)
@@ -1555,8 +1563,8 @@ function installRelicPresets() {
             list.append(empty);
         }
         var groups = [
-            ['Kampf', presets.filter(function (p) { return p.id.startsWith('default:') && !p.allBonuses; })],
-            ['Rohstoffe', presets.filter(function (p) { return p.id.startsWith('default:') && p.allBonuses; })],
+            ['Kampf', presets.filter(function (p) { return p.id.startsWith('default:') && p.id !== 'default:economy'; })],
+            ['Rohstoffe', presets.filter(function (p) { return p.id === 'default:economy'; })],
             ['Eigene', presets.filter(function (p) { return !p.id.startsWith('default:'); })]
         ];
         groups.forEach(function (_a) {
@@ -1591,7 +1599,10 @@ function installRelicPresets() {
                 var typeName = preset.type ? ((_a = types.find(function (t) { return t.value === preset.type; })) === null || _a === void 0 ? void 0 : _a.label) || "Nicht verf\u00FCgbar: ".concat(preset.type) : 'Beliebiger Typ';
                 if (preset.allBonuses) {
                     summary.textContent = preset.name;
-                    summary.title = "Hauptbonus muss aus der Auswahl stammen (2/3 oder 3/3): ".concat(preset.substats.map(statLabel).join(' / '));
+                    summary.title = "Beliebige Mischung; Hauptbonus muss aus der Auswahl stammen (2/3 oder 3/3): ".concat(preset.substats.map(statLabel).join(' / '));
+                    if (preset.id === 'default:offence' || preset.id === 'default:defence') {
+                        preset.substats.forEach(function (id) { return summary.append(bonusBadge(statLabel(id), false, true)); });
+                    }
                 }
                 else {
                     summary.append(bonusBadge(typeName, true, true), document.createTextNode('›'));

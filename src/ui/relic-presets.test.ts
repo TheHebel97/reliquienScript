@@ -235,3 +235,33 @@ test('never highlights both matching substats under a wrong main type, including
   expect(tile('2').classList.contains('relic-preset-partial')).toBe(false);
   expect(tile('2').dataset.relicPresetLevel).toBeUndefined();
 });
+
+test('migrates the old offensive defaults and highlights the screenshot combination as 3/3', async () => {
+  document.getElementById('inventory_filter_sub1')!.insertAdjacentHTML('beforeend', '<option value="26">Leichte Kavallerie: +x% Angriffsstärke</option>');
+  localStorage.setItem(key, writePresets([
+    { id: 'default:axe-off', name: 'Axt · Axt + LK Angriff', enabled: true, type: 'greataxe', substats: ['24', '26'] }
+  ], ['default:axe-off', 'default:light-off', 'default:spear-heavy-def', 'default:heavy-spear-def', 'default:sword-spear-def', 'default:spear-sword-def', 'default:economy'], '#bada55', '#ff8800'));
+  Object.defineProperty(globalThis, 'RelicSystem', { configurable: true, value: {
+    getRelicById: (id: string) => ({ type: id === '1' ? 'greataxe' : 'saddle', sub_stats: [
+      { id: 5, name: 'Leichte Kavallerie: +3% Angriffs- und Verteidigungsstärke' },
+      { id: 26, name: 'Leichte Kavallerie: +3% Angriffsstärke' }
+    ] })
+  } });
+  installRelicPresets();
+  expect(tile('1').dataset.relicPresetLevel).toBe('3');
+  expect(tile('1').classList.contains('relic-preset-partial')).toBe(false);
+  expect(tile('2').classList.contains('relic-preset')).toBe(false);
+  expect(stored().map(p => p.id)).toEqual(['default:offence', 'default:defence']);
+  expect(presetColor(localStorage.getItem(key))).toBe('#bada55');
+  expect(presetColor(localStorage.getItem(key), true)).toBe('#ff8800');
+  const off = document.querySelector<HTMLElement>('[data-preset-id="default:offence"]')!;
+  off.querySelector<HTMLButtonElement>('button')!.click();
+  expect((document.getElementById('relic-preset-mode') as HTMLSelectElement).value).toBe('all');
+  submit();
+  expect(stored().find(p => p.id === 'default:offence')!.allBonuses).toBe(true);
+  document.querySelector<HTMLInputElement>('[data-preset-id="default:offence"] input')!.click();
+  expect(tile('1').classList.contains('relic-preset')).toBe(false);
+  document.getElementById('relics')!.innerHTML = '<div><img data-id="1"></div><div><img data-id="2"></div>';
+  await Promise.resolve();
+  expect(tile('1').classList.contains('relic-preset')).toBe(false);
+});

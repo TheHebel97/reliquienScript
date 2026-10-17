@@ -37,7 +37,7 @@ export function installRelicOnboarding(): void {
       <div><dt>Hover-Vorschau</dt><dd>Fahre über eine Kachel, um ihre Stats zu sehen. Du kannst direkt weiter über andere Kacheln fahren; die Vorschau ist für die Maus durchlässig.</dd></div>
       <div><dt>Suche</dt><dd>Durchsuche Namen, Typen und Boni, zum Beispiel mit „shiny kata def“. Die Treffer passen sich sofort an.</dd></div>
       <div><dt>Filter & Sortierung</dt><dd>Grenze nach Qualität, Typ, Substats oder Shiny ein und ändere die Reihenfolge. „Zurücksetzen“ leert Suche und Filter und stellt die Standardsortierung her.</dd></div>
-      <div><dt>Presets</dt><dd>Aktiviere deine Wunschkombinationen: Der gewählte Hauptbonus muss passen. Hauptbonus plus ein gewünschter Substat ergibt 2/3, plus beide Substats einen Volltreffer. Beide bekommen kräftige, durchgehende Rahmen in einstellbaren Farben. Bei Rohstoffregeln muss der Hauptbonus aus der Auswahl stammen. Der Stift öffnet den Editor. Shiny erkennst du an der Regenbogen-Schattierung auf dem Gegenstand, auch zusammen mit einem Preset-Rahmen.</dd></div>
+      <div><dt>Presets</dt><dd>Der Hauptbonus muss zum Preset passen. Die Vorgaben Offensiv, Defensiv und Rohstoffe erlauben beliebige Mischungen aus ihrem Bonus-Pool, auch Wiederholungen. Hauptbonus plus ein passender Substat ergibt 2/3, plus beide einen Volltreffer. Beide bekommen kräftige Rahmen in einstellbaren Farben. Der Stift öffnet den Editor; dort sind auch eigene feste Kombinationen möglich. Shiny erkennst du an der Regenbogen-Schattierung, auch zusammen mit einem Preset-Rahmen.</dd></div>
     </dl>
     <p class="footer-note">Die Randfenster kannst du an den Kopfzeilen verschieben. Diese Hilfe findest du später über „?“ neben der Suche.</p>
   `;

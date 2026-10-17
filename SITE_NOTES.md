@@ -2,6 +2,34 @@
 
 Stand: 13.10.2026. Vor Browserzugriff diese bekannten Strukturen verwenden.
 
+## Update 17.10.2026: Kampf-Pools statt fester Kombinationen (1.0.7)
+
+- Nutzerpraezisierung: Offensiv aus Axt-Angriff, LK-Angriff und ausschliesslich
+  Rammbock-Gebaeudeschaden. Defensiv aus Speer-/Schwert-/SK-Verteidigung.
+  Alle drei Plaetze duerfen beliebige Mischungen/Wiederholungen enthalten.
+  Screenshot: Grossaxt + LK A/D + LK Angriff ist damit 3/3.
+- Defaults `default:offence` / `default:defence` verwenden vorhandenes allBonuses;
+  Hauptbonus-Pflicht aus 1.0.6 bleibt. Haupttypen Off: greataxe/shortspear/morningstar;
+  Def: halberd/longsword/banner. Reine Ram-Angriffs-/Verteidigungsstaerke, Katapult-
+  Gebaeudeschaden oder fremder Hauptbonus zaehlen nicht zum Off-Pool.
+- Sechs alte Originaldefaults durch Gruppen ersetzen. Rename, fachliche Aenderung
+  oder Shiny-only behalten die alte Regel. Neue Gruppe nur aktivieren, wenn eine
+  ihrer ersetzten Originalregeln aktiv war; komplett geloeschte/deaktivierte
+  Altgruppen nicht einschalten. Neue IDs/Tombstones fuer alte und neue Defaults
+  merken, neue Gruppen spaeter nicht neu anlegen. Farben unveraendert lassen.
+- UI klassifiziert Kampf/Rohstoffe nach Default-ID, nicht nach allBonuses;
+  Kampf-Pools zeigen Namen + Einheitenicons. Eigene feste Kombinationen bleiben
+  AND-Regeln mit getrennten Substatplaetzen, Poolregeln zaehlen tatsaechliche Boni.
+- Nutzer hat den installierten Opera-Dev-Loader auf Port 9001 umgestellt.
+- Endkontrolle: drei Pools im richtigen Bereich, je 20px ohne Ueberlauf; Off-
+  Schalter entfernt/stellt Rahmen korrekt wieder her, Farben bleiben erhalten.
+  Screenshotfall und alle Wiederholungen/Mischungen automatisiert geprueft;
+  75 Tests, Typecheck und Standalonepruefung erfolgreich.
+- Performance-Eintraege koennen gleichzeitig Bundles von 9000 und 9001 enthalten.
+  HTTP-Pruefung: 9000 liefert ein anderes Projekt, 9001 reliquienUI. Das ist kein
+  Beweis fuer zwei reliquienUI-Loader; gewollte andere Projektskripte nicht pauschal
+  deaktivieren lassen. Aktuelle Pool-UI und 9001-Abruf bestaetigt.
+
 ## Update 17.10.2026: Development-Port 9001
 
 - Port 9000 laut Nutzer anderweitig belegt. Webpack und Dev-Loader gemeinsam auf

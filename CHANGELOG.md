@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.0.7 – 2026-10-17
+
+- Kampf-Defaults als zwei Bonus-Pools statt sechs fester Kombinationen:
+  Offensiv = Axt-Angriff, LK-Angriff und Rammbock-Gebaeudeschaden;
+  Defensiv = Speer-, Schwert- und SK-Verteidigung.
+- Beliebige Mischungen und Wiederholungen erlaubt. Hauptbonus muss zum Pool
+  gehoeren; beide passenden Substats ergeben 3/3, einer 2/3. Kombinierte
+  Angriffs-/Verteidigungsboni zaehlen weiterhin fuer die jeweilige Richtung.
+- Unveraenderte alte Kampfdefaults migrieren; eigene/bearbeitete Regeln,
+  deaktivierte/geloeschte Gruppen und gespeicherte Rahmenfarben respektieren.
+- Rohstoff-Pool bleibt erhalten. Pool-Editor, Hilfe und Forenentwurf aktualisiert.
+
 ## 1.0.6 – 2026-10-17
 
 - Preset-Treffer verlangen immer den ausgewaehlten Hauptbonus. Zwei passende

@@ -51,7 +51,7 @@ export function installRelicPresets(): void {
     }
     if (compact && unit) {
       const kind = document.createElement('sup');
-      kind.textContent = /Angriffs- und Verteidigungs/.test(clean) ? 'A/D' : /Angriff/.test(clean) ? 'A' : /Verteidigung/.test(clean) ? 'D' : '';
+      kind.textContent = /Angriffs- und Verteidigungs/.test(clean) ? 'A/D' : /Angriff/.test(clean) ? 'A' : /Verteidigung/.test(clean) ? 'D' : /Gebäudeschaden/.test(clean) ? 'G' : '';
       badge.append(kind);
     } else if (caption && !compact) badge.append(document.createTextNode(caption));
     return badge;
@@ -263,8 +263,8 @@ export function installRelicPresets(): void {
     list.replaceChildren();
     if (!presets.length) { const empty = document.createElement('p'); empty.className = 'preset-empty'; empty.textContent = 'Keine Presets.'; list.append(empty); }
     const groups: Array<[string, RelicPreset[]]> = [
-      ['Kampf', presets.filter(p => p.id.startsWith('default:') && !p.allBonuses)],
-      ['Rohstoffe', presets.filter(p => p.id.startsWith('default:') && p.allBonuses)],
+      ['Kampf', presets.filter(p => p.id.startsWith('default:') && p.id !== 'default:economy')],
+      ['Rohstoffe', presets.filter(p => p.id === 'default:economy')],
       ['Eigene', presets.filter(p => !p.id.startsWith('default:'))]
     ];
     groups.forEach(([group, rules]) => {
@@ -283,7 +283,13 @@ export function installRelicPresets(): void {
       card.append(selection);
       const summary = document.createElement('div'); summary.className = 'preset-summary';
       const typeName = preset.type ? types.find(t => t.value === preset.type)?.label || `Nicht verfügbar: ${preset.type}` : 'Beliebiger Typ';
-      if (preset.allBonuses) { summary.textContent = preset.name; summary.title = `Hauptbonus muss aus der Auswahl stammen (2/3 oder 3/3): ${preset.substats.map(statLabel).join(' / ')}`; }
+      if (preset.allBonuses) {
+        summary.textContent = preset.name;
+        summary.title = `Beliebige Mischung; Hauptbonus muss aus der Auswahl stammen (2/3 oder 3/3): ${preset.substats.map(statLabel).join(' / ')}`;
+        if (preset.id === 'default:offence' || preset.id === 'default:defence') {
+          preset.substats.forEach(id => summary.append(bonusBadge(statLabel(id), false, true)));
+        }
+      }
       else {
         summary.append(bonusBadge(typeName, true, true), document.createTextNode('›'));
         preset.substats.forEach(id => summary.append(bonusBadge(statLabel(id), false, true)));

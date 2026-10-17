@@ -1,6 +1,6 @@
 # reliquienUI
 
-Veröffentlichungsname: **reliquienUI** (Version 1.0.6, MIT).
+Veröffentlichungsname: **reliquienUI** (Version 1.0.7, MIT).
 Die Einreichung zur Freigabe steht noch aus. Das Repository stellt den Prüfstand
 bereit; die freigegebene Veröffentlichung soll über das Stämme-Team erfolgen.
 
@@ -77,7 +77,15 @@ Schalterzeilen passen gemeinsam ohne Blaettern; native Einheitensymbole zeigen
 Hauptbonus und Substats. `Neues Preset` oder der Stift oeffnet ein separates Modal;
 Escape/Abbrechen verwirft den Entwurf. Dort lassen sich auch Shiny-only-Regeln
 und Gruppenregeln fuer alle drei Boni einstellen.
-Sechs Kampfdefaults und die Gruppe `Rohstoffe & Beute` werden einmalig angelegt.
+Die Gruppen `Offensiv`, `Defensiv` und `Rohstoffe & Beute` werden einmalig angelegt.
+Offensiv erlaubt Axt-Angriff, LK-Angriff und Rammbock-Gebaeudeschaden; Defensiv
+erlaubt Speer-, Schwert- und SK-Verteidigung. Jeder Bonusplatz darf beliebig aus
+dem jeweiligen Pool stammen, auch zweimal derselbe Substat-Bonus. Der Hauptbonus
+muss immer zum Pool passen. Hauptbonus plus beide passenden Substats ergibt 3/3,
+plus ein passender Substat 2/3. Rammbock-Angriffs-/Verteidigungsstaerke und
+Katapult-Gebaeudeschaden gehoeren nicht zum Offensiv-Pool.
+Unveraenderte alte Kampf-Kombinationen werden in diese Gruppen ueberfuehrt;
+eigene/bearbeitete Regeln, deaktivierte oder geloeschte Gruppen und Farben bleiben erhalten.
 Bei dieser Gruppe ergeben Hauptbonus und beide Substats aus Holz-/Eisen-/Lehmproduktion,
 Kaserne-Kostenreduktion oder Beutekapazitaet einen Volltreffer. Fuer einen
 2/3-Treffer muessen der Hauptbonus und ein Substat aus dieser Auswahl stammen.

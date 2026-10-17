@@ -107,7 +107,13 @@ nur bei Bedarf fuer Setup bzw. historische Hintergruende lesen.
   Kompakte 20px-Schalterzeilen, keine Paginierung; zehn Regeln passen gemeinsam.
   Editor als natives `#relic-preset-editor`-Dialogmodal (420px), Escape/Abbrechen
   verwirft Entwurf und gibt Fokus zurueck. Substats per Dropdown/entfernbare Chips.
-  Sechs Kampf-Defaults und eine Rohstoff-Gruppenregel laut Nutzervorgabe.
+  Drei Default-Pools: Offensiv (Axt-/LK-Angriff + Ram-Gebaeudeschaden), Defensiv
+  (Speer-/Schwert-/SK-Verteidigung), Rohstoffe. allBonuses erlaubt beliebige
+  Mischungen/Wiederholungen; Hauptbonus muss im Pool sein. Kampf-Haupttypen:
+  greataxe/shortspear/morningstar bzw. halberd/longsword/banner. Ram-Angriff/
+  Verteidigung und Kata-Gebaeudeschaden sind kein Off-Bonus. Unveraenderte alte
+  Kampfdefaults migrieren; bearbeitete Regeln behalten, alte Deaktivierung/
+  Loeschung und Farben respektieren. Kampf-Kategorie nach ID statt allBonuses.
   Zeilen/Chips zeigen native Einheitensymbole fuer Einheiten-Substats/Hauptboni;
   kurze A/D-, A-, D-Angaben und volle Titel/ARIA-Bezeichnungen.
   Grafik-Assetversion aus aktuellen Seitenbildern ableiten, keinen CDN-Hash fixieren.

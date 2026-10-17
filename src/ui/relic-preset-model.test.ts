@@ -1,4 +1,5 @@
 import { matchesPreset, presetMatchLevel, readPresets, RelicPreset, writePresets } from './relic-preset-model';
+import { DEFAULT_PRESETS } from './relic-preset-defaults';
 
 const preset: RelicPreset = { id: 'off', name: 'Axt + LK Off', enabled: true, type: 'greataxe', substats: ['5', '24'] };
 const relic = { type: 'greataxe', sub_stats: [{ id: 24 }, { id: 5 }] };
@@ -101,4 +102,39 @@ test('custom archer-world conditions use the current catalog rather than another
   expect(matchesPreset({ type: 'greataxe', sub_stats: [{ id: 5 }] }, archer, labels)).toBe(false);
   expect(matchesPreset({ type: 'greataxe', sub_stats: [{ id: 6 }] }, archer, labels)).toBe(true);
   expect(matchesPreset({ type: 'greataxe', sub_stats: [{ id: 26, name: 'Leichte Kavallerie: +2% Angriffsstärke' }] }, archer, labels)).toBe(false);
+});
+
+test('offensive pool accepts the pictured axe with two LK bonuses and arbitrary offensive mixtures', () => {
+  const off = DEFAULT_PRESETS.find(p => p.id === 'default:offence')!;
+  expect(off).toBeDefined();
+  const good = [{ id: 3, name: 'Axtkämpfer: +3% Angriffs- und Verteidigungsstärke' },
+    { id: 24, name: 'Axtkämpfer: +3% Angriffsstärke' },
+    { id: 5, name: 'Leichte Kavallerie: +3% Angriffs- und Verteidigungsstärke' },
+    { id: 26, name: 'Leichte Kavallerie: +3% Angriffsstärke' },
+    { id: 9, name: 'Rammbock: +3% Gebäudeschaden' }];
+  for (const type of ['greataxe', 'shortspear', 'morningstar']) {
+    for (const first of good) for (const second of good) {
+      expect(presetMatchLevel({ type, sub_stats: [first, second] }, off)).toBe(3);
+    }
+    for (const bad of [{ id: 30, name: 'Rammbock: +3% Angriffsstärke' }, { id: 39 }, { id: 33 }, { id: 8 }, { id: 14 }]) {
+      expect(presetMatchLevel({ type, sub_stats: [good[2], bad] }, off)).toBe(2);
+      expect(presetMatchLevel({ type, sub_stats: [bad, bad] }, off)).toBe(0);
+    }
+  }
+  expect(presetMatchLevel({ type: 'halberd', sub_stats: [good[2], good[3]] }, off)).toBe(0);
+  expect(presetMatchLevel({ type: 'greataxe', sub_stats: [good[2], good[3]] }, { ...off, shinyOnly: true })).toBe(0);
+});
+
+test('defensive pool accepts repeated or mixed spear, sword and heavy-cavalry defence bonuses', () => {
+  const def = DEFAULT_PRESETS.find(p => p.id === 'default:defence')!;
+  expect(def).toBeDefined();
+  const good = [1, 2, 7, 31, 32, 37].map(id => ({ id }));
+  for (const type of ['halberd', 'longsword', 'banner']) {
+    for (const first of good) for (const second of good) {
+      expect(presetMatchLevel({ type, sub_stats: [first, second] }, def)).toBe(3);
+    }
+    expect(presetMatchLevel({ type, sub_stats: [good[0], { id: 24 }] }, def)).toBe(2);
+    expect(presetMatchLevel({ type, sub_stats: [{ id: 22 }, { id: 28 }] }, def)).toBe(0);
+  }
+  expect(presetMatchLevel({ type: 'greataxe', sub_stats: [good[0], good[1]] }, def)).toBe(0);
 });
