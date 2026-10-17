@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         reliquienUI
 // @namespace    https://github.com/TheHebel97/reliquienScript
-// @version      1.0.5
+// @version      1.0.6
 // @author       TheHebel97
 // @license      MIT
 // @homepageURL  https://github.com/TheHebel97/reliquienScript
@@ -863,7 +863,7 @@ function installRelicOnboarding() {
     dialog.id = DIALOG_ID;
     dialog.setAttribute('aria-labelledby', 'relic-onboarding-title');
     dialog.setAttribute('aria-describedby', 'relic-onboarding-intro');
-    dialog.innerHTML = "\n    <h2 id=\"relic-onboarding-title\" tabindex=\"-1\">Reliquien \u2013 kurz erkl\u00E4rt</h2>\n    <p id=\"relic-onboarding-intro\" class=\"intro\">Die wichtigsten Handgriffe f\u00FCr dein Inventar.</p>\n    <dl class=\"tips\">\n      <div class=\"click-tip\"><dt>Linksklick \u2192 Aufwertung</dt><dd>Legt die Reliquie in den n\u00E4chsten freien Aufwertungsslot. Die eigentliche Aufwertung startest du danach \u00FCber den Aufwertungsbutton.</dd></div>\n      <div class=\"click-tip\"><dt>Rechtsklick \u2192 Ausr\u00FCsten</dt><dd>W\u00E4hlt die Reliquie im Ausr\u00FCstfenster am Rand aus. Dort kannst du auf \u201EAusr\u00FCsten\u201C klicken und die Spielbest\u00E4tigung pr\u00FCfen.</dd></div>\n      <div><dt>Hover-Vorschau</dt><dd>Fahre \u00FCber eine Kachel, um ihre Stats zu sehen. Du kannst direkt weiter \u00FCber andere Kacheln fahren; die Vorschau ist f\u00FCr die Maus durchl\u00E4ssig.</dd></div>\n      <div><dt>Suche</dt><dd>Durchsuche Namen, Typen und Boni, zum Beispiel mit \u201Eshiny kata def\u201C. Die Treffer passen sich sofort an.</dd></div>\n      <div><dt>Filter & Sortierung</dt><dd>Grenze nach Qualit\u00E4t, Typ, Substats oder Shiny ein und \u00E4ndere die Reihenfolge. \u201EZur\u00FCcksetzen\u201C leert Suche und Filter und stellt die Standardsortierung her.</dd></div>\n      <div><dt>Presets</dt><dd>Aktiviere deine Wunschkombinationen: Volltreffer und zwei von drei passende Boni bekommen kr\u00E4ftige, durchgehende Rahmen in unterschiedlichen Farben. Beide Farben sind einstellbar. Der Stift \u00F6ffnet den Editor. Shiny erkennst du an der Regenbogen-Schattierung auf dem Gegenstand, auch zusammen mit einem Preset-Rahmen.</dd></div>\n    </dl>\n    <p class=\"footer-note\">Die Randfenster kannst du an den Kopfzeilen verschieben. Diese Hilfe findest du sp\u00E4ter \u00FCber \u201E?\u201C neben der Suche.</p>\n  ";
+    dialog.innerHTML = "\n    <h2 id=\"relic-onboarding-title\" tabindex=\"-1\">Reliquien \u2013 kurz erkl\u00E4rt</h2>\n    <p id=\"relic-onboarding-intro\" class=\"intro\">Die wichtigsten Handgriffe f\u00FCr dein Inventar.</p>\n    <dl class=\"tips\">\n      <div class=\"click-tip\"><dt>Linksklick \u2192 Aufwertung</dt><dd>Legt die Reliquie in den n\u00E4chsten freien Aufwertungsslot. Die eigentliche Aufwertung startest du danach \u00FCber den Aufwertungsbutton.</dd></div>\n      <div class=\"click-tip\"><dt>Rechtsklick \u2192 Ausr\u00FCsten</dt><dd>W\u00E4hlt die Reliquie im Ausr\u00FCstfenster am Rand aus. Dort kannst du auf \u201EAusr\u00FCsten\u201C klicken und die Spielbest\u00E4tigung pr\u00FCfen.</dd></div>\n      <div><dt>Hover-Vorschau</dt><dd>Fahre \u00FCber eine Kachel, um ihre Stats zu sehen. Du kannst direkt weiter \u00FCber andere Kacheln fahren; die Vorschau ist f\u00FCr die Maus durchl\u00E4ssig.</dd></div>\n      <div><dt>Suche</dt><dd>Durchsuche Namen, Typen und Boni, zum Beispiel mit \u201Eshiny kata def\u201C. Die Treffer passen sich sofort an.</dd></div>\n      <div><dt>Filter & Sortierung</dt><dd>Grenze nach Qualit\u00E4t, Typ, Substats oder Shiny ein und \u00E4ndere die Reihenfolge. \u201EZur\u00FCcksetzen\u201C leert Suche und Filter und stellt die Standardsortierung her.</dd></div>\n      <div><dt>Presets</dt><dd>Aktiviere deine Wunschkombinationen: Der gew\u00E4hlte Hauptbonus muss passen. Hauptbonus plus ein gew\u00FCnschter Substat ergibt 2/3, plus beide Substats einen Volltreffer. Beide bekommen kr\u00E4ftige, durchgehende Rahmen in einstellbaren Farben. Bei Rohstoffregeln muss der Hauptbonus aus der Auswahl stammen. Der Stift \u00F6ffnet den Editor. Shiny erkennst du an der Regenbogen-Schattierung auf dem Gegenstand, auch zusammen mit einem Preset-Rahmen.</dd></div>\n    </dl>\n    <p class=\"footer-note\">Die Randfenster kannst du an den Kopfzeilen verschieben. Diese Hilfe findest du sp\u00E4ter \u00FCber \u201E?\u201C neben der Suche.</p>\n  ";
     document.body.append(dialog);
     var help = document.createElement('button');
     help.type = 'button';
@@ -1104,8 +1104,13 @@ function presetScore(relic, preset, labels) {
         if (stats.length !== 2)
             return none;
         var mainHit = !!main_1 && preset.substats.some(function (wanted) { return accepts({ id: main_1 }, wanted, labels); });
-        return { hits: Number(mainHit) + stats.filter(function (stat) { return preset.substats.some(function (wanted) { return accepts(stat, wanted, labels); }); }).length, required: 3 };
+        if (!mainHit)
+            return none;
+        return { hits: 1 + stats.filter(function (stat) { return preset.substats.some(function (wanted) { return accepts(stat, wanted, labels); }); }).length, required: 3 };
     }
+    // A partial match can relax a substat condition, never the selected main type.
+    if (preset.type && relic.type !== preset.type)
+        return none;
     // Each condition needs its own stat; a combined bonus must not fill two slots.
     var match = function (index, used) {
         if (index === preset.substats.length)
@@ -1354,7 +1359,7 @@ function installRelicPresets() {
     partialPicker.id = 'relic-preset-partial-color';
     partialPicker.value = partialColor;
     partialPicker.setAttribute('aria-label', 'Preset-Rahmenfarbe: zwei Boni');
-    partialPicker.title = 'Zwei passende Boni: durchgehender Rahmen (2/3)';
+    partialPicker.title = 'Passender Hauptbonus + ein Substat: durchgehender Rahmen (2/3)';
     var partialLabel = document.createElement('label');
     partialLabel.className = 'preset-color-label';
     partialLabel.append(document.createTextNode('2/3'), partialPicker);
@@ -1586,7 +1591,7 @@ function installRelicPresets() {
                 var typeName = preset.type ? ((_a = types.find(function (t) { return t.value === preset.type; })) === null || _a === void 0 ? void 0 : _a.label) || "Nicht verf\u00FCgbar: ".concat(preset.type) : 'Beliebiger Typ';
                 if (preset.allBonuses) {
                     summary.textContent = preset.name;
-                    summary.title = "2/3 oder 3/3: ".concat(preset.substats.map(statLabel).join(' / '));
+                    summary.title = "Hauptbonus muss aus der Auswahl stammen (2/3 oder 3/3): ".concat(preset.substats.map(statLabel).join(' / '));
                 }
                 else {
                     summary.append(bonusBadge(typeName, true, true), document.createTextNode('›'));

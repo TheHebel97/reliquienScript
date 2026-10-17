@@ -215,3 +215,23 @@ test('rainbow shading retains native images and events and follows perfect stats
   await Promise.resolve();
   expect(tile('1').classList.contains('relic-shiny')).toBe(false);
 });
+
+test('never highlights both matching substats under a wrong main type, including native rebuilds', async () => {
+  let secondType = 'saddle';
+  Object.defineProperty(globalThis, 'RelicSystem', { configurable: true, value: {
+    getRelicById: (id: string) => ({ ...records['1'], type: id === '2' ? secondType : 'greataxe' })
+  } });
+  installRelicPresets(); create();
+  expect(tile('1').dataset.relicPresetLevel).toBe('3');
+  expect(tile('2').classList.contains('relic-preset')).toBe(false);
+  const rebuild = async (): Promise<void> => {
+    document.getElementById('relics')!.innerHTML = '<div><img data-id="1"></div><div><img data-id="2"></div>';
+    await Promise.resolve();
+  };
+  secondType = 'greataxe'; await rebuild();
+  expect(tile('2').dataset.relicPresetLevel).toBe('3');
+  secondType = 'saddle'; await rebuild();
+  expect(tile('2').classList.contains('relic-preset')).toBe(false);
+  expect(tile('2').classList.contains('relic-preset-partial')).toBe(false);
+  expect(tile('2').dataset.relicPresetLevel).toBeUndefined();
+});

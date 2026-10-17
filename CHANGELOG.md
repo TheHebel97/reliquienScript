@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.6 – 2026-10-17
+
+- Preset-Treffer verlangen immer den ausgewaehlten Hauptbonus. Zwei passende
+  Substats bei falschem Hauptbonus werden nicht mehr als 2/3 markiert.
+- Auch Rohstoffgruppen verlangen einen Hauptbonus aus der erlaubten Auswahl;
+  ein passender Substat ergibt 2/3, beide ergeben einen Volltreffer.
+- Hilfe, Forenentwurf und fertiges Userscript aktualisiert.
+
 ## 1.0.5 – 2026-10-17
 
 - Shiny faerbt das Originalbild mit einer Regenbogen-Schattierung um.

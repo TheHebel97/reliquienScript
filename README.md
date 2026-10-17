@@ -1,6 +1,6 @@
 # reliquienUI
 
-Veröffentlichungsname: **reliquienUI** (Version 1.0.5, MIT).
+Veröffentlichungsname: **reliquienUI** (Version 1.0.6, MIT).
 Die Einreichung zur Freigabe steht noch aus. Das Repository stellt den Prüfstand
 bereit; die freigegebene Veröffentlichung soll über das Stämme-Team erfolgen.
 
@@ -60,8 +60,9 @@ Entdeckerzeile in allen Reliquien-Details. Die Wahl bleibt gespeichert.
 sich benannte Highlight-Regeln mit einem Reliquien-Typ/Hauptbonus und gewuenschten
 Substats speichern, bearbeiten, ein-/ausschalten und loeschen. Alle Bedingungen
 eines Presets ergeben einen Volltreffer; die Reihenfolge der Substats ist egal.
-Bei Dreierkombinationen werden auch zwei passende Boni markiert, entweder
-Hauptbonus plus Substat oder beide Substats. Jeder Bonusplatz zaehlt einmal;
+Bei Dreierkombinationen muss der gewaehlte Hauptbonus immer passen. Hauptbonus
+plus ein gewuenschter Substat ergibt 2/3; zwei passende Substats bei falschem
+Hauptbonus ergeben keinen Treffer. Jeder Bonusplatz zaehlt einmal;
 Treffer werden nicht aus verschiedenen Regeln zusammengesetzt. Typ oder
 Substats koennen weiterhin einzeln als vollstaendige Regel verwendet werden.
 Volltreffer erhalten einen kräftigen, durchgehenden Rahmen (Standard: gedecktes Neon-Gelb),
@@ -78,8 +79,9 @@ Escape/Abbrechen verwirft den Entwurf. Dort lassen sich auch Shiny-only-Regeln
 und Gruppenregeln fuer alle drei Boni einstellen.
 Sechs Kampfdefaults und die Gruppe `Rohstoffe & Beute` werden einmalig angelegt.
 Bei dieser Gruppe ergeben Hauptbonus und beide Substats aus Holz-/Eisen-/Lehmproduktion,
-Kaserne-Kostenreduktion oder Beutekapazitaet einen Volltreffer, zwei davon einen
-2/3-Treffer. Kombinierte Einheitenboni
+Kaserne-Kostenreduktion oder Beutekapazitaet einen Volltreffer. Fuer einen
+2/3-Treffer muessen der Hauptbonus und ein Substat aus dieser Auswahl stammen.
+Kombinierte Einheitenboni
 erfuellen passende Angriff- oder Verteidigungsbedingungen. Bearbeitete,
 deaktivierte und geloeschte Defaults werden beim Neuladen nicht zurueckgesetzt.
 

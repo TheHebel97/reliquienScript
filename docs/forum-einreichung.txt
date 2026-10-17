@@ -10,7 +10,7 @@ ich möchte mein Script „reliquienUI“ für den deutschen Markt zur Prüfung 
 [TR][TD]Autor:[/TD][TD]TheHebel97 – Kontakt über das Forum[/TD][/TR]
 [TR][TD]Repository:[/TD][TD]https://github.com/TheHebel97/reliquienScript[/TD][/TR]
 [TR][TD]Premium-Account erforderlich:[/TD][TD]Nein.[/TD][/TR]
-[TR][TD]Aktuelle Version / Einreichdatum:[/TD][TD]1.0.5 / 2026-10-17[/TD][/TR]
+[TR][TD]Aktuelle Version / Einreichdatum:[/TD][TD]1.0.6 / 2026-10-17[/TD][/TR]
 [TR][TD]Auf welchen Ansichten wird das Script ausgeführt:[/TD][TD]Reliquien → Inventar (screen=relic_system), deutsche Spielwelten. Der Userscript-Match ist auf screen=relic_* unter *.die-staemme.de begrenzt.[/TD][/TR]
 [TR][TD]Funktion des Scripts:[/TD][TD]
 [LIST]
@@ -21,8 +21,8 @@ ich möchte mein Script „reliquienUI“ für den deutschen Markt zur Prüfung 
 [*]Lokale Suche nach Namen, Typen und Boni sowie Filter nach Qualität, Typ, Substats und Shiny.
 [*]Sortierung nach Qualität, Typ, Bereich, perfekten Substats oder einzelnen Substat-Stärken.
 [*]Konfigurierbare Highlight-Presets mit Hauptbonus/Typ und gewünschten Substats; sechs Kampf-Vorgaben und eine Rohstoff-Gruppenregel sind enthalten.
-[*]Kombinierte Angriffs-/Verteidigungsboni erfüllen die passende Einzelbonus-Bedingung. Bei Rohstoff-Gruppenregeln werden zwei oder drei Boni aus der festgelegten Auswahl markiert.
-[*]Volltreffer erhalten einen durchgehenden Rahmen (standardmäßig gedecktes Neon-Gelb), zwei von drei passenden Boni einen ebenfalls kräftigen, durchgehenden Rahmen (standardmäßig Orange). Beide Farben sind einstellbar. Shiny erscheint als Regenbogen-Schattierung des Reliquienbildes ohne eigenen Rahmen, kombinierbar mit beiden Trefferstufen. Presets können auf Shiny-Reliquien beschränkt werden.
+[*]Kombinierte Angriffs-/Verteidigungsboni erfüllen die passende Einzelbonus-Bedingung. Bei Rohstoff-Gruppenregeln muss der Hauptbonus aus der festgelegten Auswahl stammen; mit einem passenden Substat entsteht ein 2/3-Treffer, mit beiden ein Volltreffer.
+[*]Volltreffer erhalten einen durchgehenden Rahmen (standardmäßig gedecktes Neon-Gelb), passender Hauptbonus plus ein gewünschter Substat einen ebenfalls kräftigen, durchgehenden Rahmen (standardmäßig Orange). Beide Farben sind einstellbar. Shiny erscheint als Regenbogen-Schattierung des Reliquienbildes ohne eigenen Rahmen, kombinierbar mit beiden Trefferstufen. Presets können auf Shiny-Reliquien beschränkt werden.
 [*]Randfenster lassen sich verschieben und wechseln bei Platzmangel automatisch die Seite. Einstellungen und Presets bleiben lokal im Browser gespeichert.
 [*]Kurze Einführung beim ersten Start; über „?“ neben der Suche jederzeit erneut aufrufbar.
 [/LIST]
@@ -42,7 +42,7 @@ Die Nutzung durch Spieler soll nach Freigabe über den vom Stämme-Team vorgeseh
 // ==UserScript==
 // @name         reliquienUI
 // @namespace    https://github.com/TheHebel97/reliquienScript
-// @version      1.0.5
+// @version      1.0.6
 // @author       TheHebel97
 // @license      MIT
 // @description  Reliquien-Inventar mit Suche, Filtern und Highlight-Presets.

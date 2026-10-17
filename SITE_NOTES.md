@@ -2,6 +2,17 @@
 
 Stand: 13.10.2026. Vor Browserzugriff diese bekannten Strukturen verwenden.
 
+## Update 17.10.2026: Hauptbonus als Pflichtbedingung (1.0.6)
+
+- Nutzerkorrektur ersetzt die fruehere 2/3-Regel: bei gewaehltem Typ muss der
+  Hauptbonus immer passen. Hauptbonus + ein Substat = 2/3; Hauptbonus + beide
+  Substats = Volltreffer. Zwei Substats bei fremdem Hauptbonus: keine Markierung.
+- Auch bei Rohstoff-/Poolregeln muss der Hauptbonus zur erlaubten Auswahl gehoeren.
+  Fehlende/unbekannte Zuordnung nicht durch zwei passende Substats kompensieren.
+- Regeln mit ausdruecklich beliebigem Typ bleiben unabhaengig vom Typ. Gates
+  stehen gemeinsam in presetScore, gelten somit fuer Voll-/Teiltreffer, Shiny-
+  Bedingungen und nach nativen Raster-Neuaufbauten. Speicherformat unveraendert.
+
 ## Update 17.10.2026: kraeftige Rahmen und Regenbogen-Shiny (1.0.5)
 
 - Ersetzt das vorherige Glanzoverlay und die gestrichelte Trefferstufe:

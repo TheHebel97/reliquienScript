@@ -81,7 +81,8 @@ nur bei Bedarf fuer Setup bzw. historische Hintergruende lesen.
   in `relic-preset-model.ts`. Schalter neben Filter oeffnet `#relic-preset-window`
   im Dock-System. Name, optionaler Typ/Hauptbonus und beliebig viele Substat-IDs;
   Volltreffer: alle Bedingungen UND, mehrere aktive Presets ODER. Dreierregeln
-  markieren zusaetzlich zwei passende Boni (Hauptbonus + Substat oder beide Substats).
+  markieren zusaetzlich Hauptbonus + einen Substat (2/3). Gewaehlter Hauptbonus
+  ist Pflicht; beide Substats bei falschem Hauptbonus ergeben keinen Treffer.
   Keine Treffer ueber verschiedene Regeln zusammenzaehlen. Keine Filterung/Sortierung.
   Speichern, Bearbeiten, Aktivieren/Deaktivieren, Loeschen; LocalStorage unter
   `reliquiensrtipz:relic-presets` mit Formatversion 2 (liest auch Version 1).
@@ -89,7 +90,8 @@ nur bei Bedarf fuer Setup bzw. historische Hintergruende lesen.
   speichern, damit Aenderungen/Deaktivierung/Loeschung nicht zurueckgesetzt werden.
   Kombinierte Einheitenboni erfuellen passende Angriff-/Verteidigungsbedingungen;
   jede Bedingung braucht einen eigenen Substat. Optional `shinyOnly`.
-  `allBonuses` zaehlt Hauptbonus und genau zwei Substats aus dem erlaubten Pool (2/3 oder 3/3).
+  `allBonuses` verlangt immer Hauptbonus aus dem erlaubten Pool, dazu einen (2/3)
+  oder beide (3/3) der genau zwei Substats. Fremder/unbekannter Hauptbonus: kein Treffer.
   Konfigurierbare globale Rahmenfarbe ueber `#relic-preset-color`, im gleichen
   Speicherformat als `color` gespeichert. Default gedecktes Neon-Gelb #d2d51b;
   CSS-Variable `--relic-preset-color`, dunkle Innenkontur fuer Kontrast.

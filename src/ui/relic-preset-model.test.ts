@@ -59,10 +59,11 @@ test('shiny-only is optional and persists without losing group conditions', () =
   expect(readPresets(writePresets([{ ...preset, type: 'axe', allBonuses: true }]))).toEqual([]);
 });
 
-test('grades two distinct matching bonuses, with or without matching main type', () => {
+test('grades two distinct matching bonuses only when the required main type matches', () => {
   expect(presetMatchLevel(relic, preset)).toBe(3);
   expect(presetMatchLevel({ type: 'greataxe', sub_stats: [{ id: 5 }, { id: 9 }] }, preset)).toBe(2);
-  expect(presetMatchLevel({ ...relic, type: 'horseshoe' }, preset)).toBe(2);
+  expect(presetMatchLevel({ ...relic, type: 'horseshoe' }, preset)).toBe(0);
+  expect(presetMatchLevel({ type: 'horseshoe', sub_stats: [{ id: 5, perfect: true }, { id: 24 }] }, { ...preset, shinyOnly: true })).toBe(0);
   expect(presetMatchLevel({ type: 'greataxe', sub_stats: [{ id: 9 }, { id: 10 }] }, preset)).toBe(0);
   expect(presetMatchLevel({ type: 'greataxe', sub_stats: [{ id: 3 }, { id: 9 }] }, { ...preset, substats: ['24', '33'] })).toBe(2);
   expect(presetMatchLevel(relic, { ...preset, enabled: false })).toBe(0);
@@ -75,7 +76,8 @@ test('grades two distinct matching bonuses, with or without matching main type',
 test('grades economy using all three actual bonus slots rather than the pool size', () => {
   const economy = { ...preset, type: '', substats: ['14', '15', '16', '13', 'barracks-cost'], allBonuses: true };
   expect(presetMatchLevel({ type: 'axe', sub_stats: [{ id: 14 }, { id: 16 }] }, economy)).toBe(3);
-  expect(presetMatchLevel({ type: 'greataxe', sub_stats: [{ id: 14 }, { id: 15 }] }, economy)).toBe(2);
+  expect(presetMatchLevel({ type: 'greataxe', sub_stats: [{ id: 14 }, { id: 15 }] }, economy)).toBe(0);
+  expect(presetMatchLevel({ type: 'unknown', sub_stats: [{ id: 14 }, { id: 15 }] }, economy)).toBe(0);
   expect(presetMatchLevel({ type: 'axe', sub_stats: [{ id: 14 }, { id: 24 }] }, economy)).toBe(2);
   expect(presetMatchLevel({ type: 'axe', sub_stats: [{ id: 24 }, { id: 26 }] }, economy)).toBe(0);
   expect(presetMatchLevel({ type: 'axe', sub_stats: [{ id: 14 }] }, economy)).toBe(0);

@@ -70,8 +70,11 @@ function presetScore(relic: PresetRelic, preset: RelicPreset, labels?: BonusLabe
     const main = MAIN_BONUSES[relic.type];
     if (stats.length !== 2) return none;
     const mainHit = !!main && preset.substats.some(wanted => accepts({ id: main }, wanted, labels));
-    return { hits: Number(mainHit) + stats.filter(stat => preset.substats.some(wanted => accepts(stat, wanted, labels))).length, required: 3 };
+    if (!mainHit) return none;
+    return { hits: 1 + stats.filter(stat => preset.substats.some(wanted => accepts(stat, wanted, labels))).length, required: 3 };
   }
+  // A partial match can relax a substat condition, never the selected main type.
+  if (preset.type && relic.type !== preset.type) return none;
   // Each condition needs its own stat; a combined bonus must not fill two slots.
   const match = (index: number, used: Set<number>): number => {
     if (index === preset.substats.length) return 0;

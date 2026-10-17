@@ -144,7 +144,7 @@ export function installRelicPresets(): void {
   const colorLabel = document.createElement('label'); colorLabel.className = 'preset-color-label';
   colorLabel.append(document.createTextNode('3/3'), colorPicker);
   const partialPicker = document.createElement('input'); partialPicker.type = 'color'; partialPicker.id = 'relic-preset-partial-color'; partialPicker.value = partialColor;
-  partialPicker.setAttribute('aria-label', 'Preset-Rahmenfarbe: zwei Boni'); partialPicker.title = 'Zwei passende Boni: durchgehender Rahmen (2/3)';
+  partialPicker.setAttribute('aria-label', 'Preset-Rahmenfarbe: zwei Boni'); partialPicker.title = 'Passender Hauptbonus + ein Substat: durchgehender Rahmen (2/3)';
   const partialLabel = document.createElement('label'); partialLabel.className = 'preset-color-label';
   partialLabel.append(document.createTextNode('2/3'), partialPicker); toolbar.append(count, colorLabel, partialLabel);
   colorPicker.addEventListener('input', () => { color = colorPicker.value; applyColor(); });
@@ -283,7 +283,7 @@ export function installRelicPresets(): void {
       card.append(selection);
       const summary = document.createElement('div'); summary.className = 'preset-summary';
       const typeName = preset.type ? types.find(t => t.value === preset.type)?.label || `Nicht verfügbar: ${preset.type}` : 'Beliebiger Typ';
-      if (preset.allBonuses) { summary.textContent = preset.name; summary.title = `2/3 oder 3/3: ${preset.substats.map(statLabel).join(' / ')}`; }
+      if (preset.allBonuses) { summary.textContent = preset.name; summary.title = `Hauptbonus muss aus der Auswahl stammen (2/3 oder 3/3): ${preset.substats.map(statLabel).join(' / ')}`; }
       else {
         summary.append(bonusBadge(typeName, true, true), document.createTextNode('›'));
         preset.substats.forEach(id => summary.append(bonusBadge(statLabel(id), false, true)));
