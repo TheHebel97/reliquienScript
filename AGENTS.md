@@ -31,6 +31,10 @@ nur bei Bedarf fuer Setup bzw. historische Hintergruende lesen.
   offizielle Zwei-Zeilen-Registrierung vor jeder UI-Aenderung, ohne eigene Wrapper/
   Verfuegbarkeits-/Rueckgabewertpruefung. Reine TS-Typen in `src/types/script-api.d.ts`.
   Native API-Fehler nicht abfangen oder umgehen.
+  Ab 1.0.9: @sandbox raw und Grants unsafeWindow/GM_getValue/GM_setValue fuer
+  Tampermonkey-Speicher bei direktem Zugriff auf native globale Spiel-Bindungen.
+  Dev-Loader 0.2.0 muss als bestehendes Userscript aktualisiert werden; direkter
+  eval nur im Dev-Loader erhaelt GM-Bindungen. Standalone bleibt ohne eval.
   Forenentwurf: `docs/forum-einreichung.txt`, nur Deutsch. GitHub liefert den
   Pruefstand statt Pastebin; freigegebene Auslieferung erfolgt laut Regeln durch
   das Staemme-Team. Changelog und Versionen bei Einreichungsupdates pflegen.
@@ -57,12 +61,17 @@ nur bei Bedarf fuer Setup bzw. historische Hintergruende lesen.
   Randfenster zeigen keine Scrollbalken; bei extremem Platzmangel bleiben Inhalte
   per Rad/Touch/Tastatur erreichbar. Keine dauerhaften Erklaerungsbloecke.
 - Seite und Hoehe beider Panels werden unter `reliquiensrtipz:docked-panels`
-  in LocalStorage gespeichert. Die fruehere freie Position wird nicht mehr verwendet.
+  im Tampermonkey-Speicher pro Host/Spielwelt gespeichert. `src/ui/relic-storage.ts`
+  migriert die vier bekannten LocalStorage-Keys einmalig und liest die alte Kopie
+  danach nicht erneut ein. Keine neuen LocalStorage-Schreibzugriffe. Fehlende GM-
+  Grants: Sitzungsspeicher mit Hinweis statt UI-Abbruch; niemals heimlich LS nutzen.
+  Foren-getScript-Loader benoetigt die begrenzte reliquienUIStorage-Bruecke, da der
+  global geladene Hauptcode die lexikalischen GM-Funktionen des Loaders nicht sieht.
 - Der Nutzer erlaubt Tests direkt im Spiel mit seinem Testaccount.
 - Erststart-Hilfe: `src/ui/relic-onboarding.ts` am Ende der UI-Installation.
   Ein natives Dialogfenster erklaert Linksklick/Aufwertungsslots, Rechtsklick/
   Ausruestfenster, Hover, Suche, Filter/Sortierung und Presets. `Verstanden`,
-  Kreuz oder Escape speichern `reliquiensrtipz:onboarding-seen=1`.
+  Kreuz oder Escape speichern `reliquiensrtipz:onboarding-seen=1` in Tampermonkey.
   Danach kein automatisches Oeffnen; `?` neben Suche oeffnet die Hilfe jederzeit.
   Nur bei vorhandener Inventar-/Such-UI installieren; Fokus nach Schliessen
   zur vorherigen Steuerung bzw. Suche zurueckgeben. Speicherfehler blockieren nicht.
@@ -89,7 +98,7 @@ nur bei Bedarf fuer Setup bzw. historische Hintergruende lesen.
   markieren zusaetzlich Hauptbonus + einen Substat (2/3). Gewaehlter Hauptbonus
   ist Pflicht; beide Substats bei falschem Hauptbonus ergeben keinen Treffer.
   Keine Treffer ueber verschiedene Regeln zusammenzaehlen. Keine Filterung/Sortierung.
-  Speichern, Bearbeiten, Aktivieren/Deaktivieren, Loeschen; LocalStorage unter
+  Speichern, Bearbeiten, Aktivieren/Deaktivieren, Loeschen; Tampermonkey-Speicher unter
   `reliquiensrtipz:relic-presets` mit Formatversion 2 (liest auch Version 1).
   Defaults in `relic-preset-defaults.ts` einmalig installieren, installierte IDs
   speichern, damit Aenderungen/Deaktivierung/Loeschung nicht zurueckgesetzt werden.
@@ -131,6 +140,13 @@ nur bei Bedarf fuer Setup bzw. historische Hintergruende lesen.
   Filterreset, Daten-/Slotupdates und kombinierte Suche/Raster-Resizes ab.
   Offline-Bundlepruefung startet auch den Cooldown-DOM aus scripts/fixtures und
   kontrolliert erhaltenen Timer, verdeckten Entfernen-Link und gestartete Such-UI.
+  `src/ui/relic-page-scope.ts` erkennt Austausch von #page_inventory bei partialReload
+  ueber Root-Identitaet, entsorgt UI-Ressourcen und baut danach alle Installer neu auf.
+  Jede neue globale Registrierung/Observer/injizierte UI-Node im Page-Scope freigeben.
+  Inventar-Hooks beim Entsorgen restaurieren; keine Referenzen auf altes Grid behalten.
+  Raster-Callback auf getrenntem Element sofort beenden, nur endliche Messwerte
+  akzeptieren. Vollstaendige Bundlepruefung simuliert zwei Teil-Neuladungen ohne
+  DOMContentLoaded und kontrolliert alle Fenster, GM-Daten und sichtbares Inventar.
 - Visuelle Filter stehen im `#relic-filter-window`, registriert ueber
   `addDockedPanel` im bestehenden Dock-System. Inventar: Suche, Filter-Schalter,
   Zuruecksetzen und Trefferzahl. Filterzustand nur in SearchState; Query-Parsing

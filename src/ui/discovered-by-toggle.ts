@@ -1,3 +1,6 @@
+import { relicStorage } from './relic-storage';
+import { onRelicPageDispose, ownRelicNode } from './relic-page-scope';
+
 const STYLE_ID = 'reliquiensrtipz-discovered-by-toggle-style';
 const TOGGLE_ID = 'reliquiensrtipz-discovered-by-toggle';
 const STORAGE_KEY = 'reliquiensrtipz:show-discovered-by';
@@ -10,7 +13,7 @@ export function installDiscoveredByToggle(): void {
   const row = nav?.querySelector('tr');
   if (!nav || !row) return;
 
-  const style = document.createElement('style');
+  const style = ownRelicNode(document.createElement('style'));
   style.id = STYLE_ID;
   style.textContent = `
     html.${HIDDEN_CLASS} .discovered_by { display: none !important; }
@@ -34,8 +37,9 @@ export function installDiscoveredByToggle(): void {
   nav.classList.add('reliquiensrtipz-relic-nav');
 
   let visible = true;
-  try { visible = localStorage.getItem(STORAGE_KEY) !== 'false'; } catch { /* Default is visible. */ }
-  const cell = document.createElement('td');
+  try { visible = relicStorage.getItem(STORAGE_KEY) !== 'false'; } catch { /* Default is visible. */ }
+  const cell = ownRelicNode(document.createElement('td'));
+  onRelicPageDispose(() => document.documentElement.classList.remove(HIDDEN_CLASS));
   cell.className = 'center reliquiensrtipz-discovered-by-cell';
   const toggle = document.createElement('span');
   toggle.id = TOGGLE_ID;
@@ -51,7 +55,7 @@ export function installDiscoveredByToggle(): void {
   };
   const change = (): void => {
     visible = !visible;
-    try { localStorage.setItem(STORAGE_KEY, String(visible)); } catch { /* UI remains usable without storage. */ }
+    try { relicStorage.setItem(STORAGE_KEY, String(visible)); } catch { /* UI remains usable without storage. */ }
     render();
   };
   toggle.addEventListener('click', change);

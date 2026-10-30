@@ -1,10 +1,13 @@
+import { relicStorage } from './relic-storage';
+import { ownRelicNode } from './relic-page-scope';
+
 const DIALOG_ID = 'relic-onboarding';
 const STORAGE_KEY = 'reliquiensrtipz:onboarding-seen';
 
 export function installRelicOnboarding(): void {
   const line = document.querySelector('#relic-search .search-line');
   if (!line || !document.getElementById('relics') || document.getElementById(DIALOG_ID)) return;
-  const style = document.createElement('style');
+  const style = ownRelicNode(document.createElement('style'));
   style.textContent = `
     #${DIALOG_ID} { position: fixed; width: min(560px, calc(100vw - 32px)); max-height: calc(100vh - 80px); box-sizing: border-box; overflow: auto; padding: 22px; border: 1px solid #a78c61; border-radius: 9px; background: #f1e3c3; color: #412b13; font: 12px/1.5 Verdana, sans-serif; box-shadow: 0 4px 24px #0004; }
     #${DIALOG_ID}::backdrop { background: #0006; }
@@ -25,7 +28,7 @@ export function installRelicOnboarding(): void {
     @media (max-width: 480px) { #${DIALOG_ID} { padding: 16px; } #${DIALOG_ID} .tips { grid-template-columns: minmax(0, 1fr); gap: 8px; } }
   `;
   document.head.append(style);
-  const dialog = document.createElement('dialog'); dialog.id = DIALOG_ID;
+  const dialog = ownRelicNode(document.createElement('dialog')); dialog.id = DIALOG_ID;
   dialog.setAttribute('aria-labelledby', 'relic-onboarding-title');
   dialog.setAttribute('aria-describedby', 'relic-onboarding-intro');
   dialog.innerHTML = `
@@ -42,7 +45,7 @@ export function installRelicOnboarding(): void {
     <p class="footer-note">Die Randfenster kannst du an den Kopfzeilen verschieben. Diese Hilfe findest du später über „?“ neben der Suche.</p>
   `;
   document.body.append(dialog);
-  const help = document.createElement('button'); help.type = 'button'; help.id = 'relic-onboarding-help'; help.textContent = '?';
+  const help = ownRelicNode(document.createElement('button')); help.type = 'button'; help.id = 'relic-onboarding-help'; help.textContent = '?';
   help.title = 'Bedienung des Scripts'; help.setAttribute('aria-label', 'Script-Hilfe öffnen'); help.setAttribute('aria-controls', DIALOG_ID);
   line.append(help);
   let previousFocus: HTMLElement | null = null;
@@ -52,7 +55,7 @@ export function installRelicOnboarding(): void {
     dialog.showModal(); dialog.querySelector<HTMLElement>('h2')!.focus();
   };
   const dismiss = (): void => {
-    try { localStorage.setItem(STORAGE_KEY, '1'); } catch { /* Dismiss remains available without storage. */ }
+    try { relicStorage.setItem(STORAGE_KEY, '1'); } catch { /* Dismiss remains available without storage. */ }
     dialog.close();
     const target = previousFocus && previousFocus !== document.body && previousFocus.isConnected
       ? previousFocus : document.getElementById('relic-search-input') || help;
@@ -67,6 +70,6 @@ export function installRelicOnboarding(): void {
   dialog.addEventListener('cancel', event => { event.preventDefault(); dismiss(); });
   help.addEventListener('click', open);
   let seen = false;
-  try { seen = localStorage.getItem(STORAGE_KEY) === '1'; } catch { /* Still show the introduction if storage is unavailable. */ }
+  try { seen = relicStorage.getItem(STORAGE_KEY) === '1'; } catch { /* Still show the introduction if storage is unavailable. */ }
   if (!seen) open();
 }

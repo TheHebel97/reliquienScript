@@ -1,3 +1,5 @@
+import { onRelicPageDispose, ownRelicNode } from './relic-page-scope';
+
 const STYLE_ID = 'reliquiensrtipz-shiny-highlight';
 const FILTER_ID = 'reliquien-shiny-rainbow';
 
@@ -24,7 +26,7 @@ export function installRelicShinyHighlight(): void {
     </defs>
     <rect width="184" height="184" fill="url(#rainbow)" mask="url(#item)"/>
   </svg>`;
-  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  const svg = ownRelicNode(document.createElementNS('http://www.w3.org/2000/svg', 'svg'));
   svg.id = `${FILTER_ID}-defs`; svg.setAttribute('aria-hidden', 'true');
   svg.setAttribute('width', '0'); svg.setAttribute('height', '0');
   svg.style.position = 'absolute'; svg.style.pointerEvents = 'none';
@@ -33,7 +35,7 @@ export function installRelicShinyHighlight(): void {
     <feBlend in="rainbow" in2="SourceGraphic" mode="color"/>
   </filter></defs>`;
   document.body.append(svg);
-  const style = document.createElement('style');
+  const style = ownRelicNode(document.createElement('style'));
   style.id = STYLE_ID;
   style.textContent = `
     #relics > div.relic-shiny > img {
@@ -52,6 +54,8 @@ export function installRelicShinyHighlight(): void {
   };
   // The game replaces tiles on filtering, paging, resizing and slot selection.
   // Observe children only so our own class changes cannot retrigger the observer.
-  new MutationObserver(highlight).observe(grid, { childList: true, subtree: true });
+  const observer = new MutationObserver(highlight);
+  observer.observe(grid, { childList: true, subtree: true });
+  onRelicPageDispose(() => observer.disconnect());
   highlight();
 }

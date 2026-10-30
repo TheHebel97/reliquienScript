@@ -2,6 +2,45 @@
 
 Stand: 13.10.2026. Vor Browserzugriff diese bekannten Strukturen verwenden.
 
+## Update 30.10.2026: echter Sperrfall mit partialReload und GM-Speicher
+
+- Im vorbereiteten Opera-Testfall wurde ein Banner ausgeruestet (vom Nutzer).
+  Ein freies Inventarobjekt blieb vorhanden, aber Such-UI fehlte, village_relic
+  war nicht mehr gedockt und grid.page/per_page waren NaN (JSON zeigt null).
+- Nach Reload wurde ein nativer XHR `game.php?...&_partial` beobachtet.
+  `partialReload()` ruft TribalWars.fetch auf; handleResponse ersetzt synchron
+  `#content_value` und startet native Inventar-Initialisierung mit einem neuen Grid.
+  Ein weiteres DOMContentLoaded wird nicht ausgeloest. Vorhandene UI-Styles und
+  body-Randfenster ueberleben den Austausch, Referenzen auf alte Nodes sind veraltet.
+- Lifecycle nach Root-Identitaet (#page_inventory, sonst Content-Anker) beobachten;
+  normale Kachel-/Timer-Mutationen nicht als neue Seite behandeln. Alte UI-Nodes,
+  Styles, Observer und globale Listener entsorgen, native Hooks restaurieren,
+  anschliessend ganze UI inkl. Dock-Registrierung neu aufbauen. Kein Eingriff in
+  Timer/Entfernen- oder Premiumaktionen. Vorheriger statischer Cooldown-Test allein
+  deckte diesen Austausch nicht ab; Bundlepruefung erweitert um zwei echte Rootwechsel.
+- Alte Raster-Resize-Observer liefen auf getrenntem Element weiter: leere Padding-
+  Werte ergaben NaN, das ins neue Grid geschrieben wurde. isConnected und endliche
+  Messwerte pruefen, geplante RAFs abbrechen; Kapazitaetsmodell nie NaN liefern lassen.
+- Neuer Speicher `src/ui/relic-storage.ts`: GM-Werte als Strings, Schluessel
+  `${location.hostname}:reliquiensrtipz:...`. Vier bekannte Einstellungen; pro Key
+  Migrationsmarker `:migrated`. Vorhandene GM-Werte gewinnen, alte LocalStorage-Kopie
+  bleibt fuer Rueckweg erhalten. Keine neuen LS-Schreibzugriffe. Fehlende Grants
+  erlauben nur Sitzungsspeicher mit Hinweis, nicht heimlichen LS-Fallback.
+- @sandbox raw fuer native lexikalische RelicSystem-Bindung; GM_getValue/GM_setValue
+  und unsafeWindow explizit freigeben. Dev-Loader 0.2.0 braucht direkten eval, um
+  GM-Bindungen zu behalten. Der Team-getScript-Loader exportiert stattdessen eine
+  auf die vier weltbezogenen Keys plus Migrationsmarker begrenzte Speicherbruecke.
+  Quellen: https://www.tampermonkey.net/documentation.php?q=sandbox und ?q=GM_values.
+- Im echten gesperrten Opera-Inventar nach Fix: freie ID 323537 wieder sichtbar,
+  nativer Countdown weiter aktiv, Seite 0 und per_page 60. Zwei native partialReload-
+  Aufrufe (davon einer bei offenem Preseteditor) wiederholen den kompletten Aufbau
+  ohne doppelte Fenster/Modals oder NaN. Suche, Presets, Ausruestfenster und Hilfe
+  funktionieren; Editor nach Seitenwechsel geschlossen, Aufwertungsslots unveraendert.
+- GM-Backend offline direkt sowie mit echtem Initialisierungscode aus dem Foren-
+  entwurf getestet. Letzterer laedt den Hauptcode ohne GM-Globals; nur die begrenzte
+  Bruecke ist verfuegbar. Weltfremde/unbekannte Keys erreichen GM nicht. Beide
+  Varianten bestehen zwei Rootwechsel samt unveraenderten Einstellungen.
+
 ## Update 30.10.2026: neues natives Grid und gemeinsamer Filter-Katalog
 
 - Opera-Erweiterung erreichbar, auch wenn das Chat-/Accessibility-Overlay nicht

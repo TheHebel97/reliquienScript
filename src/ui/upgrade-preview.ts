@@ -1,16 +1,17 @@
 import { parseRelicImage, upgradePreviewMode } from './upgrade-preview-model';
+import { onRelicPageDispose, ownRelicNode, relicPageSignal } from './relic-page-scope';
 
 export function installUpgradePreview(): void {
   const panel = document.getElementById('upgrade_panel');
   const slots = document.getElementById('relics_to_upgrade');
   if (!panel || !slots || document.getElementById('relic-upgrade-preview')) return;
 
-  const preview = document.createElement('section');
+  const preview = ownRelicNode(document.createElement('section'));
   preview.id = 'relic-upgrade-preview';
   preview.setAttribute('aria-label', 'Aufwertungsvorschau');
   preview.setAttribute('aria-live', 'polite');
   panel.appendChild(preview);
-  const style = document.createElement('style');
+  const style = ownRelicNode(document.createElement('style'));
   style.textContent = `
     #relic-upgrade-preview { border-top: 1px solid #c8b58e; padding-top: 8px; min-width: 0; font-size: 11px; }
     #relic-upgrade-preview > strong { display: block; color: #6e593b; margin-bottom: 5px; }
@@ -51,7 +52,7 @@ export function installUpgradePreview(): void {
       Array.from(node.attributes).filter(attribute => attribute.name.startsWith('on'))
         .forEach(attribute => node.removeAttribute(attribute.name));
     });
-  }, true);
+  }, { capture: true, signal: relicPageSignal() });
 
   const render = (): void => {
     const images = [0, 1, 2].map(index => (document.getElementById(`relics_to_upgrade_${index}`) as HTMLImageElement | null)?.src || '');
@@ -84,5 +85,6 @@ export function installUpgradePreview(): void {
   // Observe only game-owned slots, so rendering the preview cannot trigger itself.
   const observer = new MutationObserver(render);
   observer.observe(slots, { subtree: true, childList: true, attributes: true, attributeFilter: ['src'] });
+  onRelicPageDispose(() => observer.disconnect());
   render();
 }

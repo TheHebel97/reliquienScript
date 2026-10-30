@@ -3,6 +3,8 @@ import { installRelicGridLayout } from './relic-grid';
 import { installRelicSearch } from './relic-search';
 import { installRelicPresets } from './relic-presets';
 import { RelicRecord } from './relic-search-model';
+import { disposeRelicPage } from './relic-page-scope';
+import { mockUserscriptStorage } from './test-helpers/userscript-storage';
 
 jest.mock('./docked-panels', () => ({ addDockedPanel: (panel: HTMLElement) => ({
   setVisible: (visible: boolean) => { panel.hidden = !visible; }, setTitle: () => {}
@@ -68,6 +70,7 @@ const status = (): string => document.querySelector('.search-status')!.textConte
 
 beforeEach(() => {
   windowEvents = jest.spyOn(window, 'addEventListener');
+  mockUserscriptStorage();
   document.head.replaceChildren(); localStorage.clear();
   document.body.innerHTML = `<div id="page_inventory"><div id="relics_container">
     <div class="ui-dropdown"><select id="inventory_filter_sort"><option value="quality_desc">Qualität</option></select></div>
@@ -101,6 +104,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  disposeRelicPage();
   windowEvents.mock.calls.forEach(([type, listener]) => { if (type === 'resize') window.removeEventListener(type, listener); });
   jest.restoreAllMocks();
 });
@@ -158,7 +162,7 @@ test('resizes the new grid page capacity and retains the previous first item in 
   Object.defineProperty(window, 'innerHeight', { configurable: true, value: 1000 });
   const frames: FrameRequestCallback[] = [];
   jest.spyOn(window, 'requestAnimationFrame').mockImplementation(callback => { frames.push(callback); return frames.length; });
-  Object.defineProperty(globalThis, 'ResizeObserver', { configurable: true, value: class { observe() {} } });
+  Object.defineProperty(globalThis, 'ResizeObserver', { configurable: true, value: class { observe() {} disconnect() {} } });
   installRelicGridLayout();
   frames.splice(0).forEach(callback => callback(0));
   expect(inventory.grid.per_page).toBe(80);
@@ -172,6 +176,18 @@ test('resizes the new grid page capacity and retains the previous first item in 
   expect(inventory.grid.per_page).toBe(10);
   expect(inventory.grid.page).toBe(8);
   expect(grid.querySelectorAll('img')).toHaveLength(10);
+  inventory.grid.page = NaN; inventory.grid.per_page = NaN;
+  window.dispatchEvent(new Event('resize'));
+  frames.splice(0).forEach(callback => callback(0));
+  expect(inventory.grid.page).toBe(0);
+  expect(inventory.grid.per_page).toBe(10);
+  grid.remove();
+  const fresh = new NativeGridFixture(inventory.all_relics, () => true);
+  inventory.grid = fresh;
+  window.dispatchEvent(new Event('resize'));
+  frames.splice(0).forEach(callback => callback(0));
+  expect(fresh.page).toBe(0);
+  expect(fresh.per_page).toBe(1);
 });
 
 test('search and responsive sizing share native pagination across pages, empty results and slot changes', () => {
@@ -183,7 +199,7 @@ test('search and responsive sizing share native pagination across pages, empty r
   Object.defineProperty(window, 'innerHeight', { configurable: true, value: 1000 });
   const frames: FrameRequestCallback[] = [];
   jest.spyOn(window, 'requestAnimationFrame').mockImplementation(callback => { frames.push(callback); return frames.length; });
-  Object.defineProperty(globalThis, 'ResizeObserver', { configurable: true, value: class { observe() {} } });
+  Object.defineProperty(globalThis, 'ResizeObserver', { configurable: true, value: class { observe() {} disconnect() {} } });
   installRelicGridLayout(); installRelicSearch();
   frames.splice(0).forEach(callback => callback(0));
   expect(inventory.grid.per_page).toBe(80);

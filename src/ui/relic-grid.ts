@@ -1,5 +1,6 @@
 import { relicGridCapacity } from './relic-grid-layout';
 import { RelicInventory } from './relic-inventory';
+import { onRelicPageDispose, ownRelicNode, relicPageSignal } from './relic-page-scope';
 
 const STYLE_ID = 'reliquiensrtipz-relic-grid';
 
@@ -10,7 +11,7 @@ declare const RelicSystem: { Inventory: RelicInventory } | undefined;
 export function installRelicGridLayout(): void {
   if (document.getElementById(STYLE_ID)) return;
 
-  const style = document.createElement('style');
+  const style = ownRelicNode(document.createElement('style'));
   style.id = STYLE_ID;
   style.textContent = `
     #page_inventory { min-width: 0; }
@@ -56,21 +57,26 @@ export function installRelicGridLayout(): void {
   const grid = document.getElementById('relics');
   if (!grid) return;
   let pending = false;
+  let frame: number | null = null;
   const resize = (): void => {
     pending = false;
+    frame = null;
+    if (!grid.isConnected) return;
     const inventory = typeof RelicSystem === 'undefined' ? undefined : RelicSystem.Inventory;
     const pagination = inventory?.grid;
     if (!inventory || !pagination) return;
     const css = getComputedStyle(grid);
-    const width = grid.clientWidth - parseFloat(css.paddingLeft) - parseFloat(css.paddingRight);
-    if (width <= 0) return;
+    const width = grid.clientWidth - (parseFloat(css.paddingLeft) || 0) - (parseFloat(css.paddingRight) || 0);
+    if (!Number.isFinite(width) || width <= 0) return;
     // Reserve room below the grid for the page footer; keep at least one row.
     const availableHeight = window.innerHeight - Math.max(57, grid.getBoundingClientRect().top) - 40;
+    if (!Number.isFinite(availableHeight)) return;
     const { columns, rows, pageSize } = relicGridCapacity(width, availableHeight);
     grid.style.setProperty('--relic-grid-columns', String(columns));
     grid.dataset.rows = String(rows);
-    if (pagination.per_page === pageSize) return;
-    const firstItem = pagination.page * pagination.per_page;
+    if (pagination.per_page === pageSize && Number.isFinite(pagination.page)) return;
+    const previousOffset = pagination.page * pagination.per_page;
+    const firstItem = Number.isFinite(previousOffset) ? previousOffset : 0;
     pagination.per_page = pageSize;
     pagination.setPage(Math.floor(firstItem / pageSize));
     inventory.RelicsGridPanel.deselectRelic();
@@ -80,9 +86,11 @@ export function installRelicGridLayout(): void {
   const scheduleResize = (): void => {
     if (pending) return;
     pending = true;
-    requestAnimationFrame(resize);
+    frame = requestAnimationFrame(resize);
   };
-  new ResizeObserver(scheduleResize).observe(grid);
-  window.addEventListener('resize', scheduleResize);
+  const observer = new ResizeObserver(scheduleResize);
+  observer.observe(grid);
+  window.addEventListener('resize', scheduleResize, { signal: relicPageSignal() });
+  onRelicPageDispose(() => { observer.disconnect(); if (frame !== null) cancelAnimationFrame(frame); });
   scheduleResize();
 }

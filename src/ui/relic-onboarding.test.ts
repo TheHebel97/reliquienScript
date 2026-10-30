@@ -1,5 +1,7 @@
 /** @jest-environment jsdom */
 import { installRelicOnboarding } from './relic-onboarding';
+import { relicStorage } from './relic-storage';
+import { mockUserscriptStorage } from './test-helpers/userscript-storage';
 
 const key = 'reliquiensrtipz:onboarding-seen';
 const dialog = (): HTMLDialogElement => document.getElementById('relic-onboarding') as HTMLDialogElement;
@@ -8,7 +10,7 @@ const setup = (): void => {
   document.body.innerHTML = '<div id="relics"></div><div id="relic-search"><div class="search-line"><input id="relic-search-input"><button>Zurücksetzen</button></div></div>';
 };
 beforeEach(() => {
-  localStorage.clear(); setup();
+  localStorage.clear(); mockUserscriptStorage(); setup();
   Object.defineProperty(HTMLDialogElement.prototype, 'showModal', { configurable: true, value: function () { this.setAttribute('open', ''); } });
   Object.defineProperty(HTMLDialogElement.prototype, 'close', { configurable: true, value: function () { this.removeAttribute('open'); } });
 });
@@ -17,13 +19,13 @@ afterEach(() => jest.restoreAllMocks());
 test.each(['Verstanden', '×', 'Escape'])('%s dismisses first-run onboarding permanently while help can reopen it', action => {
   installRelicOnboarding();
   expect(dialog().open).toBe(true);
-  expect(localStorage.getItem(key)).toBeNull();
+  expect(relicStorage.getItem(key)).toBeNull();
   expect(dialog().textContent).toContain('Linksklick → Aufwertung');
   expect(dialog().textContent).toContain('Rechtsklick → Ausrüsten');
   expect(dialog().querySelectorAll('.actions button')).toHaveLength(1);
   if (action === 'Escape') dialog().dispatchEvent(new Event('cancel', { cancelable: true }));
   else Array.from(dialog().querySelectorAll('button')).find(b => b.textContent === action)!.click();
-  expect(dialog().open).toBe(false); expect(localStorage.getItem(key)).toBe('1');
+  expect(dialog().open).toBe(false); expect(relicStorage.getItem(key)).toBe('1');
   expect(document.activeElement?.id).toBe('relic-search-input');
   setup(); installRelicOnboarding();
   expect(dialog().open).toBe(false);
@@ -35,15 +37,15 @@ test.each(['Verstanden', '×', 'Escape'])('%s dismisses first-run onboarding per
 
 test('does not install twice or record onboarding on a page without inventory controls', () => {
   document.getElementById('relics')!.remove(); installRelicOnboarding();
-  expect(dialog()).toBeNull(); expect(localStorage.getItem(key)).toBeNull();
+  expect(dialog()).toBeNull(); expect(relicStorage.getItem(key)).toBeNull();
   setup(); installRelicOnboarding(); installRelicOnboarding();
   expect(document.querySelectorAll('#relic-onboarding')).toHaveLength(1);
   expect(document.querySelectorAll('#relic-onboarding-help')).toHaveLength(1);
 });
 
 test('storage failures never prevent dismissing or reopening the introduction', () => {
-  jest.spyOn(Storage.prototype, 'getItem').mockImplementation(() => { throw new Error('blocked'); });
-  jest.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new Error('blocked'); });
+  (GM_getValue as jest.Mock).mockImplementation(() => { throw new Error('blocked'); });
+  (GM_setValue as jest.Mock).mockImplementation(() => { throw new Error('blocked'); });
   expect(installRelicOnboarding).not.toThrow(); expect(dialog().open).toBe(true);
   const close = dialog().querySelector<HTMLButtonElement>('.close')!;
   expect(() => close.click()).not.toThrow(); expect(dialog().open).toBe(false);

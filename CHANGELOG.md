@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.0.9 – 2026-10-30
+
+- Nach nativer Teil-Neuladung die gesamte Reliquien-UI neu an die neuen Elemente
+  und das neue Inventar binden. Alte Observer, globale Listener, Styles, Dialoge
+  und Inventar-Hooks vorher freigeben; keine doppelten Randfenster.
+- Resize-Callbacks auf entfernten Elementen und ungueltige Messwerte abfangen,
+  damit Seitengroesse und Seite nicht zu NaN werden und freie Reliquien sichtbar bleiben.
+- Einstellungen in Tampermonkey GM_getValue/GM_setValue statt LocalStorage speichern,
+  getrennt pro Spielwelt. Bestehende Werte einmalig uebernehmen, alte Kopie erhalten.
+- Development-Loader 0.2.0 mit noetigen Grants und erhaltenem GM-Kontext; Forenloader
+  bekommt eine auf die vier weltbezogenen Einstellungen begrenzte Speicherbruecke.
+- Vollstaendigen Start und zwei aufeinanderfolgende Teil-Neuladungen mit gesperrter
+  Dorf-Reliquie, Timer, freiem Inventar und erhaltener Konfiguration pruefen.
+
 ## 1.0.8 – 2026-10-30
 
 - Raster und Seitenauswahl an die neue native `Inventory.grid`-Schnittstelle

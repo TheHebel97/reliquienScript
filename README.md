@@ -1,6 +1,6 @@
 # reliquienUI
 
-Veröffentlichungsname: **reliquienUI** (Version 1.0.8, MIT).
+Veröffentlichungsname: **reliquienUI** (Version 1.0.9, MIT).
 Die Einreichung zur Freigabe steht noch aus. Das Repository stellt den Prüfstand
 bereit; die freigegebene Veröffentlichung soll über das Stämme-Team erfolgen.
 
@@ -41,7 +41,7 @@ oder Tastatur erreichbar.
 Die Detailansicht einer Raster-Reliquie wird nicht mehr im Seitenfluss gezeigt.
 Beim ersten Start erscheint eine kurze Einfuehrung mit den wichtigsten Funktionen.
 Sie laesst sich ueber `Verstanden`, das Kreuz oder Escape schliessen.
-Die Entscheidung bleibt fuer diese Spielwelt im Browser gespeichert; `?` neben
+Die Entscheidung bleibt fuer diese Spielwelt in Tampermonkey gespeichert; `?` neben
 der Suche oeffnet die Hilfe jederzeit erneut.
 
 Beim Ueberfahren einer Kachel waehlt das Userscript sie aus und zeigt ihre
@@ -70,7 +70,7 @@ Volltreffer erhalten einen kräftigen, durchgehenden Rahmen (Standard: gedecktes
 Die beiden Farbfelder im Presetfenster gelten fuer alle Presets und bleiben
 gespeichert. Volltreffer haben Vorrang. Shiny zeigt sich als Regenbogen-Schattierung des Originalbildes
 ohne eigenen Rahmen und ist mit beiden Trefferstufen kombinierbar. Die Suche und Sortierung
-werden dadurch nicht geaendert. Presets bleiben im Browser fuer diese Spielwelt
+werden dadurch nicht geaendert. Presets bleiben im Tampermonkey-Speicher fuer diese Spielwelt
 gespeichert, auch nach Neuladen oder Zuruecksetzen der Suche.
 Das Presetfenster ist 220px breit mit 340px Mindesthoehe. Zehn kompakte
 Schalterzeilen passen gemeinsam ohne Blaettern; native Einheitensymbole zeigen
@@ -118,6 +118,19 @@ verwendet direkt die offizielle Zwei-Zeilen-Vorlage; native Fehler werden nicht 
 Browser-Tests erfolgen ausschliesslich in Opera; die Chrome-ChatGPT-Erweiterung
 wird nicht verbunden. Den Login uebernimmt der Nutzer.
 
+Einstellungen liegen im Tampermonkey-Speicher, mit getrennten Schluesseln pro
+Spielwelt. Die vier bisherigen LocalStorage-Einstellungen (Fensterpositionen,
+Entdeckeranzeige, Presets/Farben und Erststart-Hilfe) werden einmalig uebernommen;
+die alte Kopie bleibt erhalten. Danach schreibt das Script nicht mehr in LocalStorage.
+Es verwendet die synchronen [GM-Speicherfunktionen](https://www.tampermonkey.net/documentation.php?q=GM_values)
+und fordert [Seitenkontext via @sandbox raw](https://www.tampermonkey.net/documentation.php?q=sandbox)
+an, um auf die nativen globalen Spiel-Bindungen zuzugreifen. Dem Team-getScript-Loader
+im Forenentwurf liegt eine auf diese vier weltbezogenen Keys begrenzte Speicherbruecke bei.
+
+Native Teil-Neuladungen werden erkannt. Die alte UI wird samt Listenern und
+Observern freigegeben und auf der neuen Inventarseite vollstaendig neu aufgebaut.
+Das gilt auch bei laufender Entfernungssperre; Countdown und freie Reliquien bleiben erhalten.
+
 Fuer die lokale Entwicklung:
 
 ```sh
@@ -130,6 +143,9 @@ Der Webpack-Dev-Server liefert `http://127.0.0.1:9001/bundle.js`.
 `https://*.die-staemme.de/game.php?village=*&screen=relic_*` neu laden. Der Loader fuehrt das lokale
 Bundle aus. Nach Quellcode-Aenderungen kompiliert Webpack automatisch;
 zum Ausfuehren der neuen Version die Spielseite neu laden.
+Einen vorhandenen Loader auf Version 0.2.0 aktualisieren, inklusive Header mit
+GM_getValue/GM_setValue- und unsafeWindow-Grants. Der direkte eval im reinen
+Development-Loader erhaelt diese GM-Bindungen; die Standalone-Datei enthaelt keinen eval.
 Je nach Browser muss der Zugriff auf das lokale Netzwerk erlaubt werden.
 
 Dies ist ein Userscript-Projekt; es gibt keine eigenstaendige HTML-Startseite.

@@ -1,4 +1,6 @@
+import { relicStorage } from './relic-storage';
 import { arrangeDock, balanceDockSides, dockHeightLimits, DOCK_GAP, DOCK_MARGIN } from './dock-layout';
+import { onRelicPageDispose, ownRelicNode, relicPageSignal } from './relic-page-scope';
 
 const STYLE_ID = 'reliquiensrtipz-docked-panels-style';
 const STORAGE_KEY = 'reliquiensrtipz:docked-panels';
@@ -15,7 +17,7 @@ export function addDockedPanel(element: HTMLElement, label: string, top = 57, mi
 
 export function installDockedPanels(): void {
   if (document.getElementById(STYLE_ID)) return;
-  const style = document.createElement('style');
+  const style = ownRelicNode(document.createElement('style'));
   style.id = STYLE_ID;
   style.textContent = `
     .inventory-description { display: none !important; }
@@ -92,13 +94,14 @@ export function installDockedPanels(): void {
   document.head.appendChild(style);
 
   let saved: Record<string, { side: Side; top: number }> = {};
-  try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') || {}; } catch { /* Optional storage. */ }
+  try { saved = JSON.parse(relicStorage.getItem(STORAGE_KEY) || '{}') || {}; } catch { /* Optional storage. */ }
   const panels: Panel[] = [];
   const observer = new ResizeObserver(() => layout());
   const contentObserver = new MutationObserver(records => {
     const changed = panels.filter(panel => records.some(record => panel.element.contains(record.target)));
     layout(changed.length === 1 ? changed[0].element : undefined);
   });
+  onRelicPageDispose(() => { observer.disconnect(); contentObserver.disconnect(); registerPanel = undefined; });
   registerPanel = (element, label, top, minHeight = 0) => {
     const id = element.id;
     const state = saved[id];
@@ -164,7 +167,7 @@ export function installDockedPanels(): void {
   function save(): void {
     const positions: Record<string, { side: Side; top: number }> = {};
     panels.forEach(panel => { positions[panel.element.id] = { side: panel.side, top: panel.top }; });
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(positions)); } catch { /* Optional storage. */ }
+    try { relicStorage.setItem(STORAGE_KEY, JSON.stringify(positions)); } catch { /* Optional storage. */ }
   }
 
   function layout(preferred?: HTMLElement): void {
@@ -215,6 +218,6 @@ export function installDockedPanels(): void {
     if (element) registerPanel(element, label, top);
   }
   layout();
-  window.addEventListener('resize', () => { layout(); save(); });
+  window.addEventListener('resize', () => { layout(); save(); }, { signal: relicPageSignal() });
   // Equipping/selecting relics can change panel height without a page reload.
 }

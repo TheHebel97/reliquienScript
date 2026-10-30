@@ -24,7 +24,10 @@ module.exports = {
 // @description  Reliquien-Inventar mit Filtern, Sortierung, eigenen Highlight-Presets, Shiny-Markierung und verschiebbaren Randfenstern.
 // @match        https://*.die-staemme.de/game.php?village=*&screen=relic_*
 // @run-at       document-idle
-// @grant        none
+// @sandbox      raw
+// @grant        unsafeWindow
+// @grant        GM_getValue
+// @grant        GM_setValue
 // @noframes
 // ==/UserScript==
 

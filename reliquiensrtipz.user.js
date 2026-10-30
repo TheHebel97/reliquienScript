@@ -1,14 +1,17 @@
 // ==UserScript==
 // @name         reliquienUI
 // @namespace    https://github.com/TheHebel97/reliquienScript
-// @version      1.0.8
+// @version      1.0.9
 // @author       TheHebel97
 // @license      MIT
 // @homepageURL  https://github.com/TheHebel97/reliquienScript
 // @description  Reliquien-Inventar mit Filtern, Sortierung, eigenen Highlight-Presets, Shiny-Markierung und verschiebbaren Randfenstern.
 // @match        https://*.die-staemme.de/game.php?village=*&screen=relic_*
 // @run-at       document-idle
-// @grant        none
+// @sandbox      raw
+// @grant        unsafeWindow
+// @grant        GM_getValue
+// @grant        GM_setValue
 // @noframes
 // ==/UserScript==
 
@@ -40,11 +43,13 @@ SOFTWARE.
 /******/ 	var __webpack_modules__ = ({
 
 /***/ 868:
-/***/ ((__unused_webpack_module, exports) => {
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.installDiscoveredByToggle = void 0;
+var relic_storage_1 = __webpack_require__(480);
+var relic_page_scope_1 = __webpack_require__(871);
 var STYLE_ID = 'reliquiensrtipz-discovered-by-toggle-style';
 var TOGGLE_ID = 'reliquiensrtipz-discovered-by-toggle';
 var STORAGE_KEY = 'reliquiensrtipz:show-discovered-by';
@@ -57,17 +62,18 @@ function installDiscoveredByToggle() {
     var row = nav === null || nav === void 0 ? void 0 : nav.querySelector('tr');
     if (!nav || !row)
         return;
-    var style = document.createElement('style');
+    var style = (0, relic_page_scope_1.ownRelicNode)(document.createElement('style'));
     style.id = STYLE_ID;
     style.textContent = "\n    html.".concat(HIDDEN_CLASS, " .discovered_by { display: none !important; }\n    table.reliquiensrtipz-relic-nav { width: 100%; }\n    td.reliquiensrtipz-discovered-by-cell { width: 100%; text-align: right; white-space: nowrap; }\n    #").concat(TOGGLE_ID, " {\n      display: inline-block;\n      padding: 2px 6px;\n      border: 1px solid #a78c61;\n      border-radius: 8px;\n      background: #f1e3c3;\n      color: #6e593b;\n      font: 11px Verdana, sans-serif;\n      cursor: pointer;\n      user-select: none;\n    }\n    #").concat(TOGGLE_ID, "[aria-pressed=\"false\"] { opacity: .65; }\n    #").concat(TOGGLE_ID, ":focus-visible { outline: 2px solid #79552d; outline-offset: 1px; }\n  ");
     document.head.appendChild(style);
     nav.classList.add('reliquiensrtipz-relic-nav');
     var visible = true;
     try {
-        visible = localStorage.getItem(STORAGE_KEY) !== 'false';
+        visible = relic_storage_1.relicStorage.getItem(STORAGE_KEY) !== 'false';
     }
     catch ( /* Default is visible. */_a) { /* Default is visible. */ }
-    var cell = document.createElement('td');
+    var cell = (0, relic_page_scope_1.ownRelicNode)(document.createElement('td'));
+    (0, relic_page_scope_1.onRelicPageDispose)(function () { return document.documentElement.classList.remove(HIDDEN_CLASS); });
     cell.className = 'center reliquiensrtipz-discovered-by-cell';
     var toggle = document.createElement('span');
     toggle.id = TOGGLE_ID;
@@ -83,7 +89,7 @@ function installDiscoveredByToggle() {
     var change = function () {
         visible = !visible;
         try {
-            localStorage.setItem(STORAGE_KEY, String(visible));
+            relic_storage_1.relicStorage.setItem(STORAGE_KEY, String(visible));
         }
         catch ( /* UI remains usable without storage. */_a) { /* UI remains usable without storage. */ }
         render();
@@ -243,7 +249,9 @@ var __values = (this && this.__values) || function(o) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.installDockedPanels = exports.addDockedPanel = void 0;
+var relic_storage_1 = __webpack_require__(480);
 var dock_layout_1 = __webpack_require__(595);
+var relic_page_scope_1 = __webpack_require__(871);
 var STYLE_ID = 'reliquiensrtipz-docked-panels-style';
 var STORAGE_KEY = 'reliquiensrtipz:docked-panels';
 var PANEL_WIDTH = 220;
@@ -260,13 +268,13 @@ function installDockedPanels() {
     var e_1, _a;
     if (document.getElementById(STYLE_ID))
         return;
-    var style = document.createElement('style');
+    var style = (0, relic_page_scope_1.ownRelicNode)(document.createElement('style'));
     style.id = STYLE_ID;
     style.textContent = "\n    .inventory-description { display: none !important; }\n    :is(#village_relic, #upgrade_panel, #relic-filter-window, #relic-preset-window, #relic-equip-window).relic-dock {\n      position: fixed;\n      z-index: 1000;\n      display: flex;\n      flex-direction: column;\n      align-items: stretch;\n      gap: 6px;\n      width: var(--relic-dock-width, ".concat(PANEL_WIDTH, "px);\n      max-width: 100vw;\n      height: auto;\n      min-width: 0;\n      min-height: 0;\n      margin: 0;\n      padding: 7px;\n      box-sizing: border-box;\n      overflow: auto;\n      scrollbar-width: none;\n      background: #f1e3c3;\n      border: 1px solid #a78c61;\n      border-radius: 9px;\n      box-shadow: 0 2px 5px #0002;\n    }\n    .relic-dock[hidden] { display: none !important; }\n    .relic-dock::-webkit-scrollbar, .relic-dock .choices::-webkit-scrollbar { display: none; }\n    .relic-dock .choices { scrollbar-width: none; }\n    .relic-dock .relic-dock-close { position: absolute; top: 7px; right: 7px; z-index: 2; }\n    :is(#relic-filter-window, #relic-preset-window, #relic-equip-window) .relic-dock-handle { padding-right: 76px; }\n    :is(#village_relic, #upgrade_panel, #relic-filter-window, #relic-preset-window, #relic-equip-window).relic-dock-left { border-radius: 0 9px 9px 0; }\n    :is(#village_relic, #upgrade_panel, #relic-filter-window, #relic-preset-window, #relic-equip-window).relic-dock-right { border-radius: 9px 0 0 9px; }\n    .relic-dock > * { flex-shrink: 0; }\n    #village_relic.relic-dock > div { width: 100%; min-width: 0; margin: 0; }\n    #village_relic.relic-dock > div:first-of-type { text-align: center; }\n    #village_relic.relic-dock #village_relic_image { width: 64px; height: 64px; object-fit: contain; }\n    #village_relic.relic-dock .village-details-container,\n    #village_relic.relic-dock .relic-details { width: 100%; min-width: 0; margin: 0; box-sizing: border-box; overflow-wrap: anywhere; }\n    #upgrade_panel.relic-dock #relics_to_upgrade {\n      display: flex;\n      align-items: center;\n      justify-content: center;\n      gap: 5px;\n      width: 100%;\n      margin: 0;\n    }\n    #upgrade_panel.relic-dock #relics_to_upgrade > div {\n      position: relative;\n      width: 58px;\n      height: 58px;\n      margin: 0;\n      flex: 0 0 58px;\n    }\n    #upgrade_panel.relic-dock #relics_to_upgrade img { width: 100%; height: 100%; object-fit: contain; }\n    #upgrade_panel.relic-dock #upgrade_relic_button { align-self: center; }\n    :is(#village_relic, #upgrade_panel, #relic-filter-window, #relic-preset-window, #relic-equip-window).relic-dock .relic-dock-handle {\n      position: sticky;\n      top: 0;\n      z-index: 1;\n      width: 100%;\n      padding: 4px 2px 6px;\n      border: 0;\n      border-bottom: 1px solid #c8b58e;\n      border-radius: 0;\n      background: #f1e3c3;\n      color: #6e593b;\n      font: 11px Verdana, sans-serif;\n      text-align: left;\n      cursor: ns-resize;\n      touch-action: none;\n      user-select: none;\n    }\n  ");
     document.head.appendChild(style);
     var saved = {};
     try {
-        saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') || {};
+        saved = JSON.parse(relic_storage_1.relicStorage.getItem(STORAGE_KEY) || '{}') || {};
     }
     catch ( /* Optional storage. */_b) { /* Optional storage. */ }
     var panels = [];
@@ -275,6 +283,7 @@ function installDockedPanels() {
         var changed = panels.filter(function (panel) { return records.some(function (record) { return panel.element.contains(record.target); }); });
         layout(changed.length === 1 ? changed[0].element : undefined);
     });
+    (0, relic_page_scope_1.onRelicPageDispose)(function () { observer.disconnect(); contentObserver.disconnect(); registerPanel = undefined; });
     registerPanel = function (element, label, top, minHeight) {
         if (minHeight === void 0) { minHeight = 0; }
         var id = element.id;
@@ -348,7 +357,7 @@ function installDockedPanels() {
         var positions = {};
         panels.forEach(function (panel) { positions[panel.element.id] = { side: panel.side, top: panel.top }; });
         try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(positions));
+            relic_storage_1.relicStorage.setItem(STORAGE_KEY, JSON.stringify(positions));
         }
         catch ( /* Optional storage. */_a) { /* Optional storage. */ }
     }
@@ -414,7 +423,7 @@ function installDockedPanels() {
         finally { if (e_1) throw e_1.error; }
     }
     layout();
-    window.addEventListener('resize', function () { layout(); save(); });
+    window.addEventListener('resize', function () { layout(); save(); }, { signal: (0, relic_page_scope_1.relicPageSignal)() });
     // Equipping/selecting relics can change panel height without a page reload.
 }
 exports.installDockedPanels = installDockedPanels;
@@ -488,13 +497,14 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.createRelicEquipPanel = void 0;
 var docked_panels_1 = __webpack_require__(597);
 var relic_details_dom_1 = __webpack_require__(30);
+var relic_page_scope_1 = __webpack_require__(871);
 function createRelicEquipPanel(grid, selectedDetails, selectNative, closeHover) {
-    var panel = document.createElement('aside');
+    var panel = (0, relic_page_scope_1.ownRelicNode)(document.createElement('aside'));
     panel.id = 'relic-equip-window';
     panel.hidden = true;
     panel.setAttribute('aria-label', 'Reliquie ausrüsten');
     document.body.append(panel);
-    var style = document.createElement('style');
+    var style = (0, relic_page_scope_1.ownRelicNode)(document.createElement('style'));
     style.textContent = "\n    #relic-equip-window { color: #412b13; font: 12px/1.4 Verdana, sans-serif; }\n    #relic-equip-window .relic-details { width: 100%; min-width: 0; margin: 0; padding: 0; border: 0; background: transparent; box-sizing: border-box; overflow-wrap: anywhere; }\n    #relic-equip-window .relic-details .header { display: grid; grid-template-columns: minmax(0, 1fr) 44px; gap: 6px; height: auto; min-height: 0; padding: 0; margin: 0; border: 0; background: transparent; }\n    #relic-equip-window .description { display: contents; }\n    #relic-equip-window .description strong { grid-column: 1; grid-row: 1; align-self: center; font-size: 12px; line-height: 1.3; }\n    #relic-equip-window .description p { grid-column: 1 / -1; grid-row: 2; margin: 0; font-size: 12px; line-height: 1.4; }\n    #relic-equip-window .image { grid-column: 2; grid-row: 1; width: 44px; height: 44px; margin: 0; padding: 0; }\n    #relic-equip-window .image img { display: block; width: 44px; height: 44px; object-fit: contain; }\n    #relic-equip-window .relic-details .body { height: auto; min-height: 0; margin: 7px 0 0; padding: 7px 0 0; border: 0; border-top: 1px solid #c8b58e; background: transparent; font-size: 11px; line-height: 1.4; }\n    #relic-equip-window .sub_stats { display: grid; gap: 5px; margin: 0 0 7px; padding: 0; }\n    #relic-equip-window .sub_stat { padding: 0; margin: 0; }\n    #relic-equip-window :is(.range,.discovered_by) { margin: 0; padding: 0; color: #6e593b; font-size: 10px; line-height: 1.4; }\n    #relic-equip-window .discovered_by a { color: inherit; font-weight: normal; }\n    #relic-equip-window .buttons { display: flex; justify-content: center; margin: 2px 0 0; }\n    #relic-equip-window .buttons button { font: inherit; font-weight: bold; padding: 4px 10px; border: 1px solid #563716; border-radius: 6px; background: #76502d; color: #fff4d9; text-shadow: none; box-shadow: none; cursor: pointer; }\n    #relic-equip-window .buttons button:is(:disabled,.btn-disabled) { opacity: .55; cursor: default; }\n    #relic-equip-window .relic-dock-close { cursor: pointer; font: 11px Verdana, sans-serif; padding: 3px 7px; border: 1px solid #b39a6b; border-radius: 6px; background: #f4e4c2; color: inherit; }\n    #relics > div.relic-equip-selected > img { box-shadow: inset 0 0 0 1px #24190d; }\n  ";
     document.head.append(style);
     var dock = (0, docked_panels_1.addDockedPanel)(panel, 'Ausrüsten');
@@ -568,15 +578,16 @@ function createRelicEquipPanel(grid, selectedDetails, selectNative, closeHover) 
         close();
         native.click(); // Keep the game's confirmation, cooldown and requests.
     });
-    new MutationObserver(function () {
+    var detailObserver = new MutationObserver(function () {
         if (!pinnedId)
             return;
         if (!findTile())
             close();
         else
             render();
-    }).observe(selectedDetails, { childList: true, subtree: true, attributes: true, characterData: true });
-    new MutationObserver(function () {
+    });
+    detailObserver.observe(selectedDetails, { childList: true, subtree: true, attributes: true, characterData: true });
+    var gridObserver = new MutationObserver(function () {
         if (!pinnedId)
             return;
         if (!findTile())
@@ -585,7 +596,9 @@ function createRelicEquipPanel(grid, selectedDetails, selectNative, closeHover) 
             markSelection();
             render();
         }
-    }).observe(grid, { childList: true, subtree: true });
+    });
+    gridObserver.observe(grid, { childList: true, subtree: true });
+    (0, relic_page_scope_1.onRelicPageDispose)(function () { detailObserver.disconnect(); gridObserver.disconnect(); });
     return { select: function (tile) {
             var _a;
             var id = (_a = tile.querySelector('img[data-id]')) === null || _a === void 0 ? void 0 : _a.dataset.id;
@@ -616,6 +629,8 @@ exports.createRelicEquipPanel = createRelicEquipPanel;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.relicGridCapacity = void 0;
 function relicGridCapacity(width, availableHeight) {
+    if (!Number.isFinite(width) || !Number.isFinite(availableHeight))
+        return { columns: 1, rows: 1, pageSize: 1 };
     var gap = 2;
     var columns = Math.max(1, Math.min(10, Math.floor((width + gap) / (55.25 + gap))));
     var tileSize = Math.max(1, (width - gap * (columns - 1)) / columns);
@@ -634,12 +649,13 @@ exports.relicGridCapacity = relicGridCapacity;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.installRelicGridLayout = void 0;
 var relic_grid_layout_1 = __webpack_require__(756);
+var relic_page_scope_1 = __webpack_require__(871);
 var STYLE_ID = 'reliquiensrtipz-relic-grid';
 // CSS also applies when the game replaces relic tiles after filtering/paging.
 function installRelicGridLayout() {
     if (document.getElementById(STYLE_ID))
         return;
-    var style = document.createElement('style');
+    var style = (0, relic_page_scope_1.ownRelicNode)(document.createElement('style'));
     style.id = STYLE_ID;
     style.textContent = "\n    #page_inventory { min-width: 0; }\n    #page_inventory > #relics_container {\n      width: 100%;\n      max-width: none;\n      min-width: 0;\n      flex: 1 1 100%;\n      box-sizing: border-box;\n    }\n    #relics_container .relics-grid-row { width: 100%; min-width: 0; }\n    .relics-grid-row > #relics {\n      display: grid;\n      grid-template-columns: repeat(var(--relic-grid-columns, 10), minmax(0, 1fr));\n      flex: 1 1 0;\n      width: 0;\n      align-content: start;\n      gap: 2px;\n      min-width: 0;\n      height: auto;\n      padding: 2px;\n      box-sizing: border-box;\n    }\n\n    .relics-grid-row > #relics > div {\n      width: auto;\n      min-width: 0;\n      height: auto;\n      aspect-ratio: 1;\n      margin: 0;\n      box-sizing: border-box;\n    }\n\n    .relics-grid-row > #relics > div > img {\n      display: block;\n      width: 100%;\n      height: 100%;\n      object-fit: contain;\n    }\n  ";
     document.head.appendChild(style);
@@ -647,25 +663,32 @@ function installRelicGridLayout() {
     if (!grid)
         return;
     var pending = false;
+    var frame = null;
     var resize = function () {
         var _a;
         pending = false;
+        frame = null;
+        if (!grid.isConnected)
+            return;
         var inventory = typeof RelicSystem === 'undefined' ? undefined : RelicSystem.Inventory;
         var pagination = inventory === null || inventory === void 0 ? void 0 : inventory.grid;
         if (!inventory || !pagination)
             return;
         var css = getComputedStyle(grid);
-        var width = grid.clientWidth - parseFloat(css.paddingLeft) - parseFloat(css.paddingRight);
-        if (width <= 0)
+        var width = grid.clientWidth - (parseFloat(css.paddingLeft) || 0) - (parseFloat(css.paddingRight) || 0);
+        if (!Number.isFinite(width) || width <= 0)
             return;
         // Reserve room below the grid for the page footer; keep at least one row.
         var availableHeight = window.innerHeight - Math.max(57, grid.getBoundingClientRect().top) - 40;
+        if (!Number.isFinite(availableHeight))
+            return;
         var _b = (0, relic_grid_layout_1.relicGridCapacity)(width, availableHeight), columns = _b.columns, rows = _b.rows, pageSize = _b.pageSize;
         grid.style.setProperty('--relic-grid-columns', String(columns));
         grid.dataset.rows = String(rows);
-        if (pagination.per_page === pageSize)
+        if (pagination.per_page === pageSize && Number.isFinite(pagination.page))
             return;
-        var firstItem = pagination.page * pagination.per_page;
+        var previousOffset = pagination.page * pagination.per_page;
+        var firstItem = Number.isFinite(previousOffset) ? previousOffset : 0;
         pagination.per_page = pageSize;
         pagination.setPage(Math.floor(firstItem / pageSize));
         inventory.RelicsGridPanel.deselectRelic();
@@ -676,10 +699,13 @@ function installRelicGridLayout() {
         if (pending)
             return;
         pending = true;
-        requestAnimationFrame(resize);
+        frame = requestAnimationFrame(resize);
     };
-    new ResizeObserver(scheduleResize).observe(grid);
-    window.addEventListener('resize', scheduleResize);
+    var observer = new ResizeObserver(scheduleResize);
+    observer.observe(grid);
+    window.addEventListener('resize', scheduleResize, { signal: (0, relic_page_scope_1.relicPageSignal)() });
+    (0, relic_page_scope_1.onRelicPageDispose)(function () { observer.disconnect(); if (frame !== null)
+        cancelAnimationFrame(frame); });
     scheduleResize();
 }
 exports.installRelicGridLayout = installRelicGridLayout;
@@ -695,6 +721,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.installRelicHoverDetails = void 0;
 var relic_details_dom_1 = __webpack_require__(30);
 var relic_equip_panel_1 = __webpack_require__(154);
+var relic_page_scope_1 = __webpack_require__(871);
 var STYLE_ID = 'reliquiensrtipz-relic-hover-details-style';
 var TOOLTIP_ID = 'relic-hover-details';
 function installRelicHoverDetails() {
@@ -702,11 +729,11 @@ function installRelicHoverDetails() {
     var selectedDetails = document.getElementById('selected_relic_details');
     if (!grid || !selectedDetails || document.getElementById(TOOLTIP_ID))
         return;
-    var style = document.createElement('style');
+    var style = (0, relic_page_scope_1.ownRelicNode)(document.createElement('style'));
     style.id = STYLE_ID;
     style.textContent = "\n    #selected_relic_details { display: none !important; }\n    #".concat(TOOLTIP_ID, " {\n      position: fixed;\n      z-index: 1001;\n      width: 245px;\n      max-width: calc(100vw - 16px);\n      max-height: calc(100vh - 73px);\n      padding: 8px;\n      box-sizing: border-box;\n      overflow: auto;\n      pointer-events: none;\n      background: #f1e3c3;\n      border: 1px solid #a78c61;\n      border-radius: 7px;\n      box-shadow: 0 3px 10px #0004;\n      color: #24190d;\n      font-size: 12px;\n    }\n    #").concat(TOOLTIP_ID, "[hidden] { display: none; }\n    #").concat(TOOLTIP_ID, " .relic-details { width: 100%; min-width: 0; margin: 0; box-sizing: border-box; overflow-wrap: anywhere; }\n    #").concat(TOOLTIP_ID, " .header { display: flex; align-items: flex-start; gap: 6px; }\n    #").concat(TOOLTIP_ID, " .description { flex: 1; min-width: 0; }\n    #").concat(TOOLTIP_ID, " .image { flex: 0 0 56px; }\n    #").concat(TOOLTIP_ID, " .image img { display: block; width: 56px; height: 56px; object-fit: contain; }\n  ");
     document.head.appendChild(style);
-    var tooltip = document.createElement('aside');
+    var tooltip = (0, relic_page_scope_1.ownRelicNode)(document.createElement('aside'));
     tooltip.id = TOOLTIP_ID;
     tooltip.hidden = true;
     tooltip.setAttribute('aria-live', 'polite');
@@ -801,27 +828,30 @@ function installRelicHoverDetails() {
             return;
         close();
     });
-    window.addEventListener('blur', close);
-    window.addEventListener('resize', close);
+    var signal = (0, relic_page_scope_1.relicPageSignal)();
+    window.addEventListener('blur', close, { signal: signal });
+    window.addEventListener('resize', close, { signal: signal });
     document.addEventListener('visibilitychange', function () { if (document.hidden)
-        close(); });
+        close(); }, { signal: signal });
     document.addEventListener('keydown', function (event) { if (event.key === 'Escape')
-        close(); });
+        close(); }, { signal: signal });
     document.addEventListener('scroll', function (event) {
         if (!contains(tooltip, event.target))
             close();
-    }, true);
+    }, { capture: true, signal: signal });
     // Follow native detail/eligibility changes without retaining stale relic snapshots.
     var detailObserver = new MutationObserver(function () {
         if (activeTile)
             captureDetails(activeTile);
     });
     detailObserver.observe(selectedDetails, { childList: true, subtree: true, characterData: true, attributes: true });
-    new MutationObserver(function () {
+    var gridObserver = new MutationObserver(function () {
         var _a;
         if (activeTile && (!grid.contains(activeTile) || ((_a = activeTile.querySelector('img[data-id]')) === null || _a === void 0 ? void 0 : _a.dataset.id) !== hoveredId))
             close();
-    }).observe(grid, { childList: true, subtree: true });
+    });
+    gridObserver.observe(grid, { childList: true, subtree: true });
+    (0, relic_page_scope_1.onRelicPageDispose)(function () { detailObserver.disconnect(); gridObserver.disconnect(); });
     grid.addEventListener('click', function (event) {
         var tile = event.target.closest('#relics > div');
         if (!tile || event.button !== 0)
@@ -885,27 +915,29 @@ exports.readRelicCatalog = readRelicCatalog;
 /***/ }),
 
 /***/ 288:
-/***/ ((__unused_webpack_module, exports) => {
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.installRelicOnboarding = void 0;
+var relic_storage_1 = __webpack_require__(480);
+var relic_page_scope_1 = __webpack_require__(871);
 var DIALOG_ID = 'relic-onboarding';
 var STORAGE_KEY = 'reliquiensrtipz:onboarding-seen';
 function installRelicOnboarding() {
     var line = document.querySelector('#relic-search .search-line');
     if (!line || !document.getElementById('relics') || document.getElementById(DIALOG_ID))
         return;
-    var style = document.createElement('style');
+    var style = (0, relic_page_scope_1.ownRelicNode)(document.createElement('style'));
     style.textContent = "\n    #".concat(DIALOG_ID, " { position: fixed; width: min(560px, calc(100vw - 32px)); max-height: calc(100vh - 80px); box-sizing: border-box; overflow: auto; padding: 22px; border: 1px solid #a78c61; border-radius: 9px; background: #f1e3c3; color: #412b13; font: 12px/1.5 Verdana, sans-serif; box-shadow: 0 4px 24px #0004; }\n    #").concat(DIALOG_ID, "::backdrop { background: #0006; }\n    #").concat(DIALOG_ID, " h2 { margin: 0 28px 4px 0; font-size: 18px; }\n    #").concat(DIALOG_ID, " .intro { margin: 0 0 14px; }\n    #").concat(DIALOG_ID, " .tips { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 0; }\n    #").concat(DIALOG_ID, " .tips > div { padding: 10px; background: #fff4d9; border: 1px solid #c8b58e; border-radius: 6px; }\n    #").concat(DIALOG_ID, " .tips > .click-tip { border-top: 3px solid #76502d; }\n    #").concat(DIALOG_ID, " dt { font-weight: bold; margin-bottom: 4px; }\n    #").concat(DIALOG_ID, " dd { margin: 0; }\n    #").concat(DIALOG_ID, " .footer-note { margin: 12px 0; font-size: 11px; }\n    #").concat(DIALOG_ID, " .actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 8px; }\n    #").concat(DIALOG_ID, " button { cursor: pointer; font: inherit; padding: 5px 10px; border: 1px solid #b39a6b; border-radius: 6px; background: #f4e4c2; color: inherit; }\n    #").concat(DIALOG_ID, " button.primary { background: #76502d; color: #fff4d9; border-color: #563716; }\n    #").concat(DIALOG_ID, " .close { position: absolute; top: 10px; right: 10px; padding: 2px 8px; font-size: 18px; }\n    #").concat(DIALOG_ID, " button:focus-visible { outline: 2px solid #915dac; outline-offset: 2px; }\n    #relic-onboarding-help { flex-shrink: 0; }\n    @media (max-width: 480px) { #").concat(DIALOG_ID, " { padding: 16px; } #").concat(DIALOG_ID, " .tips { grid-template-columns: minmax(0, 1fr); gap: 8px; } }\n  ");
     document.head.append(style);
-    var dialog = document.createElement('dialog');
+    var dialog = (0, relic_page_scope_1.ownRelicNode)(document.createElement('dialog'));
     dialog.id = DIALOG_ID;
     dialog.setAttribute('aria-labelledby', 'relic-onboarding-title');
     dialog.setAttribute('aria-describedby', 'relic-onboarding-intro');
     dialog.innerHTML = "\n    <h2 id=\"relic-onboarding-title\" tabindex=\"-1\">Reliquien \u2013 kurz erkl\u00E4rt</h2>\n    <p id=\"relic-onboarding-intro\" class=\"intro\">Die wichtigsten Handgriffe f\u00FCr dein Inventar.</p>\n    <dl class=\"tips\">\n      <div class=\"click-tip\"><dt>Linksklick \u2192 Aufwertung</dt><dd>Legt die Reliquie in den n\u00E4chsten freien Aufwertungsslot. Die eigentliche Aufwertung startest du danach \u00FCber den Aufwertungsbutton.</dd></div>\n      <div class=\"click-tip\"><dt>Rechtsklick \u2192 Ausr\u00FCsten</dt><dd>W\u00E4hlt die Reliquie im Ausr\u00FCstfenster am Rand aus. Dort kannst du auf \u201EAusr\u00FCsten\u201C klicken und die Spielbest\u00E4tigung pr\u00FCfen.</dd></div>\n      <div><dt>Hover-Vorschau</dt><dd>Fahre \u00FCber eine Kachel, um ihre Stats zu sehen. Du kannst direkt weiter \u00FCber andere Kacheln fahren; die Vorschau ist f\u00FCr die Maus durchl\u00E4ssig.</dd></div>\n      <div><dt>Suche</dt><dd>Durchsuche Namen, Typen und Boni, zum Beispiel mit \u201Eshiny kata def\u201C. Die Treffer passen sich sofort an.</dd></div>\n      <div><dt>Filter & Sortierung</dt><dd>Grenze nach Qualit\u00E4t, Typ, Substats oder Shiny ein und \u00E4ndere die Reihenfolge. \u201EZur\u00FCcksetzen\u201C leert Suche und Filter und stellt die Standardsortierung her.</dd></div>\n      <div><dt>Presets</dt><dd>Der Hauptbonus muss zum Preset passen. Die Vorgaben Offensiv, Defensiv und Rohstoffe erlauben beliebige Mischungen aus ihrem Bonus-Pool, auch Wiederholungen. Hauptbonus plus ein passender Substat ergibt 2/3, plus beide einen Volltreffer. Beide bekommen kr\u00E4ftige Rahmen in einstellbaren Farben. Der Stift \u00F6ffnet den Editor; dort sind auch eigene feste Kombinationen m\u00F6glich. Shiny erkennst du an der Regenbogen-Schattierung, auch zusammen mit einem Preset-Rahmen.</dd></div>\n    </dl>\n    <p class=\"footer-note\">Die Randfenster kannst du an den Kopfzeilen verschieben. Diese Hilfe findest du sp\u00E4ter \u00FCber \u201E?\u201C neben der Suche.</p>\n  ";
     document.body.append(dialog);
-    var help = document.createElement('button');
+    var help = (0, relic_page_scope_1.ownRelicNode)(document.createElement('button'));
     help.type = 'button';
     help.id = 'relic-onboarding-help';
     help.textContent = '?';
@@ -923,7 +955,7 @@ function installRelicOnboarding() {
     };
     var dismiss = function () {
         try {
-            localStorage.setItem(STORAGE_KEY, '1');
+            relic_storage_1.relicStorage.setItem(STORAGE_KEY, '1');
         }
         catch ( /* Dismiss remains available without storage. */_a) { /* Dismiss remains available without storage. */ }
         dialog.close();
@@ -950,13 +982,67 @@ function installRelicOnboarding() {
     help.addEventListener('click', open);
     var seen = false;
     try {
-        seen = localStorage.getItem(STORAGE_KEY) === '1';
+        seen = relic_storage_1.relicStorage.getItem(STORAGE_KEY) === '1';
     }
     catch ( /* Still show the introduction if storage is unavailable. */_a) { /* Still show the introduction if storage is unavailable. */ }
     if (!seen)
         open();
 }
 exports.installRelicOnboarding = installRelicOnboarding;
+
+
+/***/ }),
+
+/***/ 871:
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.watchRelicPage = exports.disposeRelicPage = exports.relicPageSignal = exports.ownRelicNode = exports.onRelicPageDispose = void 0;
+var cleanups = [];
+function onRelicPageDispose(cleanup) {
+    cleanups.push(cleanup);
+}
+exports.onRelicPageDispose = onRelicPageDispose;
+function ownRelicNode(node) {
+    onRelicPageDispose(function () { var _a; return (_a = node.parentNode) === null || _a === void 0 ? void 0 : _a.removeChild(node); });
+    return node;
+}
+exports.ownRelicNode = ownRelicNode;
+function relicPageSignal() {
+    var controller = new AbortController();
+    onRelicPageDispose(function () { return controller.abort(); });
+    return controller.signal;
+}
+exports.relicPageSignal = relicPageSignal;
+function disposeRelicPage() {
+    var previous = cleanups.splice(0);
+    previous.reverse().forEach(function (cleanup) { return cleanup(); });
+}
+exports.disposeRelicPage = disposeRelicPage;
+// partialReload replaces #content_value and reinitializes Inventory.grid. Watch
+// root identity, not individual tiles or countdown ticks, and mount after the
+// native synchronous initialization has finished.
+function watchRelicPage(install) {
+    var root;
+    var refresh = function () {
+        var _a;
+        if (typeof document === 'undefined' || !document.body)
+            return;
+        var current = document.getElementById('page_inventory') ||
+            ((_a = document.getElementById('content_value')) === null || _a === void 0 ? void 0 : _a.firstElementChild) || document.body;
+        if (current === root)
+            return;
+        disposeRelicPage();
+        root = current;
+        install();
+    };
+    var observer = new MutationObserver(refresh);
+    observer.observe(document.body, { childList: true, subtree: true });
+    refresh();
+    return function () { observer.disconnect(); disposeRelicPage(); };
+}
+exports.watchRelicPage = watchRelicPage;
 
 
 /***/ }),
@@ -1272,10 +1358,12 @@ var __read = (this && this.__read) || function (o, n) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.installRelicPresets = void 0;
+var relic_storage_1 = __webpack_require__(480);
 var docked_panels_1 = __webpack_require__(597);
 var relic_inventory_1 = __webpack_require__(173);
 var relic_preset_model_1 = __webpack_require__(362);
 var relic_preset_defaults_1 = __webpack_require__(326);
+var relic_page_scope_1 = __webpack_require__(871);
 var WINDOW_ID = 'relic-preset-window';
 var STORAGE_KEY = 'reliquiensrtipz:relic-presets';
 var EDITOR_ID = 'relic-preset-editor';
@@ -1346,23 +1434,23 @@ function installRelicPresets() {
     var partialColor = relic_preset_model_1.DEFAULT_PARTIAL_COLOR;
     var storageMessage = '';
     try {
-        var raw = localStorage.getItem(STORAGE_KEY);
+        var raw = relic_storage_1.relicStorage.getItem(STORAGE_KEY);
         color = (0, relic_preset_model_1.presetColor)(raw);
         partialColor = (0, relic_preset_model_1.presetColor)(raw, true);
         var seeded = (0, relic_preset_defaults_1.seedDefaultPresets)((0, relic_preset_model_1.readPresets)(raw), (0, relic_preset_model_1.installedDefaultIds)(raw));
         presets = seeded.presets;
         installed = seeded.installed;
-        localStorage.setItem(STORAGE_KEY, (0, relic_preset_model_1.writePresets)(presets, installed, color, partialColor));
+        relic_storage_1.relicStorage.setItem(STORAGE_KEY, (0, relic_preset_model_1.writePresets)(presets, installed, color, partialColor));
     }
     catch (_b) {
         var seeded = (0, relic_preset_defaults_1.seedDefaultPresets)(presets, installed);
         presets = seeded.presets;
         installed = seeded.installed;
-        storageMessage = 'Nur für diese Sitzung: Browser-Speicher nicht verfügbar.';
+        storageMessage = 'Nur für diese Sitzung: Tampermonkey-Speicher nicht verfügbar.';
     }
     var editingId = null;
     var selectedStats = new Set();
-    var style = document.createElement('style');
+    var style = (0, relic_page_scope_1.ownRelicNode)(document.createElement('style'));
     style.textContent = "\n    #relics > div.relic-preset { position: relative; }\n    #relics > div.relic-preset::after {\n      content: ''; position: absolute; inset: 0; border: 4px solid var(--relic-preset-color, ".concat(relic_preset_model_1.DEFAULT_PRESET_COLOR, ");\n      box-sizing: border-box; pointer-events: none; z-index: 2;\n      box-shadow: 0 0 0 1px #211a10 inset, 0 0 0 1px #211a10;\n    }\n    #relics > div.relic-preset-partial::after {\n      border-color: var(--relic-preset-partial-color, ").concat(relic_preset_model_1.DEFAULT_PARTIAL_COLOR, ");\n    }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") { color: #412b13; font-size: 12px; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ").relic-dock { gap: 4px; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") [hidden] { display: none !important; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") button:not(.relic-dock-handle) { cursor: pointer; font: inherit; padding: 3px 7px; border: 1px solid #b39a6b; border-radius: 8px; color: inherit; background: #f4e4c2; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") :is(button,input,select):focus-visible { outline: 2px solid #3687ff; outline-offset: 1px; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-list { display: grid; gap: 0; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-card { display: flex; align-items: center; gap: 3px; height: 20px; border-left: 2px solid var(--relic-preset-color, ").concat(relic_preset_model_1.DEFAULT_PRESET_COLOR, "); padding-left: 3px; }\n    #").concat(WINDOW_ID, " .preset-toolbar { display: flex; align-items: center; justify-content: space-between; min-height: 18px; }\n    #").concat(WINDOW_ID, " .preset-color-label { display: flex; align-items: center; gap: 4px; font-size: 11px; }\n    #").concat(WINDOW_ID, " input[type=\"color\"] { width: 24px; height: 18px; padding: 0; border: 1px solid #ab8955; cursor: pointer; background: transparent; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-card > label { display: flex; align-items: center; gap: 4px; flex: 1; min-width: 0; cursor: pointer; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-card .preset-name { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-card .preset-summary { display: flex; align-items: center; gap: 2px; margin: 0; min-width: 0; overflow: hidden; white-space: nowrap; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-card .preset-bonus { padding: 0; gap: 0; background: transparent; flex-shrink: 0; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-card sup { font-size: 8px; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-card .preset-edit { padding: 1px 4px; margin-left: auto; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-group { font-size: 10px; line-height: 12px; margin: 2px 0 0; }\n    #").concat(EDITOR_ID, " { width: min(420px,calc(100vw - 48px)); max-height: calc(100vh - 80px); box-sizing: border-box; padding: 18px; border: 1px solid #ab8955; border-radius: 8px; background: #fff0cf; }\n    #").concat(EDITOR_ID, "::backdrop { background: #0006; }\n    #").concat(EDITOR_ID, " .preset-summary { margin-top: 8px; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-summary { display: grid; gap: 4px; font-size: 11px; margin: 5px 0; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-bonuses { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-bonus { display: inline-flex; align-items: center; gap: 3px; min-height: 18px; padding: 2px 4px; background: #f4e4c2; border-radius: 4px; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-bonus img { width: 18px; height: 18px; flex-shrink: 0; object-fit: contain; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-actions { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") form { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") form > :is(strong,.preset-stat-editor,.preset-actions) { grid-column: 1 / -1; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") form > label { display: grid; gap: 3px; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") :is(input[type=\"text\"],select) { width: 100%; box-sizing: border-box; min-width: 0; padding: 4px; color: inherit; background: #fff6df; border: 1px solid #ab8955; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-stat-editor { display: grid; gap: 4px; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-stat-picker { display: flex; gap: 5px; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-stat-picker select { flex: 1; width: 0; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-selected-stats { display: flex; flex-wrap: wrap; gap: 4px; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-selected-stats button { font-size: 11px; text-align: left; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") input[type=\"checkbox\"] { flex-shrink: 0; margin: 1px 0; }\n    :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") .preset-empty, :is(#").concat(WINDOW_ID, ",#").concat(EDITOR_ID, ") output { font-size: 11px; margin: 0; overflow-wrap: anywhere; }\n  ");
     document.head.append(style);
     var button = function (label, action) {
@@ -1372,13 +1460,14 @@ function installRelicPresets() {
         b.addEventListener('click', action);
         return b;
     };
-    var panel = document.createElement('aside');
+    var panel = (0, relic_page_scope_1.ownRelicNode)(document.createElement('aside'));
     panel.id = WINDOW_ID;
     panel.hidden = true;
     panel.setAttribute('aria-label', 'Reliquien-Presets');
     document.body.append(panel);
     var dock = (0, docked_panels_1.addDockedPanel)(panel, 'Presets', 57, 340);
     var trigger = button('Presets', function () { return setOpen(panel.hidden); });
+    (0, relic_page_scope_1.ownRelicNode)(trigger);
     trigger.id = 'relic-preset-trigger';
     trigger.setAttribute('aria-controls', WINDOW_ID);
     trigger.setAttribute('aria-expanded', 'false');
@@ -1425,7 +1514,7 @@ function installRelicPresets() {
     var heading = document.createElement('strong');
     heading.textContent = 'Neues Preset';
     heading.id = 'relic-preset-editor-title';
-    var modal = document.createElement('dialog');
+    var modal = (0, relic_page_scope_1.ownRelicNode)(document.createElement('dialog'));
     modal.id = EDITOR_ID;
     modal.setAttribute('aria-labelledby', heading.id);
     document.body.append(modal);
@@ -1583,11 +1672,11 @@ function installRelicPresets() {
     };
     function persist() {
         try {
-            localStorage.setItem(STORAGE_KEY, (0, relic_preset_model_1.writePresets)(presets, installed, color, partialColor));
+            relic_storage_1.relicStorage.setItem(STORAGE_KEY, (0, relic_preset_model_1.writePresets)(presets, installed, color, partialColor));
             message.textContent = '';
         }
         catch (_a) {
-            message.textContent = 'Nur für diese Sitzung übernommen: Browser-Speicher ist nicht verfügbar.';
+            message.textContent = 'Nur für diese Sitzung übernommen: Tampermonkey-Speicher ist nicht verfügbar.';
         }
         renderList();
         highlight();
@@ -1710,7 +1799,9 @@ function installRelicPresets() {
         persist();
         newButton.focus();
     });
-    new MutationObserver(highlight).observe(grid, { childList: true, subtree: true });
+    var observer = new MutationObserver(highlight);
+    observer.observe(grid, { childList: true, subtree: true });
+    (0, relic_page_scope_1.onRelicPageDispose)(function () { return observer.disconnect(); });
     resetEditor();
     renderList();
     highlight();
@@ -1881,6 +1972,7 @@ var docked_panels_1 = __webpack_require__(597);
 var relic_sort_1 = __webpack_require__(973);
 var relic_search_model_1 = __webpack_require__(945);
 var relic_inventory_1 = __webpack_require__(173);
+var relic_page_scope_1 = __webpack_require__(871);
 function installRelicSearch() {
     var container = document.getElementById('relics_container');
     if (!container || document.getElementById('relic-search') || typeof RelicSystem === 'undefined')
@@ -1898,10 +1990,10 @@ function installRelicSearch() {
     var sortFields = (0, relic_sort_1.relicSortFields)(catalog.types, substats);
     var query = (0, relic_search_model_1.parseSearch)(state.query, catalog);
     var parsedQuery = function () { return query; };
-    var style = document.createElement('style');
+    var style = (0, relic_page_scope_1.ownRelicNode)(document.createElement('style'));
     style.textContent = "\n    #relics_container .ui-dropdown { display: none !important; }\n    #relics_container :is(.relic-controls,.relic-filters) { display: none !important; }\n    #inventory_filter_count { display: none !important; }\n    #relic-search { margin: 0 0 10px; color: #412b13; }\n    #relic-search .search-line { display: flex; gap: 6px; }\n    #relic-search .sort-line { display: flex; align-items: center; gap: 5px; margin-top: 4px; font-size: 11px; white-space: nowrap; }\n    #relic-search .sort-line select { width: auto; max-width: 160px; height: 22px; padding: 0 3px; color: #412b13; background: #f4e4c2; border: 1px solid #b39a6b; font: inherit; }\n    #relic-search .sort-line button { height: 22px; min-width: 24px; padding: 0 5px; border-radius: 3px; }\n    #relic-search .sort-line button:disabled { opacity: .45; cursor: default; }\n    #relic-search input { flex: 1; min-width: 0; padding: 8px 10px; border: 1px solid #ab8955; border-radius: 6px; background: #fff6df; }\n    :is(#relic-search, #relic-filter-window) button:not(.relic-dock-handle) { cursor: pointer; font: inherit; color: inherit; border: 1px solid #b39a6b; border-radius: 12px; padding: 3px 9px; background: #f4e4c2; }\n    :is(#relic-search, #relic-filter-window) button:not(.relic-dock-handle)[aria-pressed=\"true\"] { background: #76502d; color: #fff4d9; border-color: #563716; }\n    :is(#relic-search, #relic-filter-window) button:not(.relic-dock-handle):focus-visible, #relic-search input:focus-visible { outline: 2px solid #915dac; outline-offset: 2px; }\n    #relic-filter-window .filter-groups { display: block; margin: 0; }\n    #relic-filter-window details { width: 100%; border-bottom: 1px solid #c8b58e; }\n    #relic-filter-window summary { cursor: pointer; font-weight: bold; padding: 3px 0; }\n    #relic-filter-window .choices { display: flex; flex-wrap: wrap; gap: 4px; max-height: 150px; overflow: auto; padding: 4px 2px; }\n    #relic-filter-window .active-filters { display: flex; flex-wrap: wrap; gap: 4px; margin: 5px 0; }\n    #relic-search .search-status { display: block; font-size: 12px; margin-top: 5px; }\n  ";
     document.head.appendChild(style);
-    var root = document.createElement('section');
+    var root = (0, relic_page_scope_1.ownRelicNode)(document.createElement('section'));
     root.id = 'relic-search';
     root.setAttribute('aria-label', 'Reliquien suchen und filtern');
     var line = document.createElement('div');
@@ -1918,7 +2010,7 @@ function installRelicSearch() {
         b.addEventListener('click', action);
         return b;
     };
-    var filterWindow = document.createElement('aside');
+    var filterWindow = (0, relic_page_scope_1.ownRelicNode)(document.createElement('aside'));
     filterWindow.id = 'relic-filter-window';
     filterWindow.setAttribute('aria-label', 'Inventarfilter');
     document.body.append(filterWindow);
@@ -2053,6 +2145,8 @@ function installRelicSearch() {
     // Replace only the UI predicate. Native inclusion, server data updates and
     // stack construction remain intact, including changes to upgrade slots.
     Object.keys(grid.filters).forEach(function (key) { grid.filters[key] = null; });
+    var originalMatches = grid.matchesFilters;
+    var originalHasFilters = grid.hasFilters;
     grid.matchesFilters = function (relic) { return (0, relic_search_model_1.matchesRelic)(relic, state, parsedQuery()); };
     grid.hasFilters = function () { return Boolean(state.query.trim() || state.shiny !== 'all' ||
         state.qualities.length || state.types.length || state.substats.length || state.effects.length || state.targets.length); };
@@ -2069,14 +2163,29 @@ function installRelicSearch() {
         return (0, relic_sort_1.sortRelics)(stacks.map(function (stack) { return stack.representative; }), sorting, sortFields).map(function (relic) { return byRelic.get(relic); });
     };
     var originalUI = inventory.updateUI;
-    inventory.updateUI = function () {
-        grid.setPage(grid.page);
+    var pageActive = true;
+    var updateUI = function () {
+        if (!pageActive) {
+            originalUI.call(this);
+            return;
+        }
+        grid.setPage(Number.isFinite(grid.page) ? grid.page : 0);
         originalUI.call(this);
         var total = grid.getIncludedRelics().length;
         var count = grid.getFilteredRelics().length;
         var stacks = grid.getStacks().length;
         status.textContent = count ? "".concat(count, " von ").concat(total, " Reliquien \u00B7 ").concat(stacks, " Kacheln \u00B7 Seite ").concat(grid.page + 1, "/").concat(grid.getMaxPage() + 1) : 'Keine Treffer – ändere die Suche oder setze die Filter zurück.';
     };
+    inventory.updateUI = updateUI;
+    (0, relic_page_scope_1.onRelicPageDispose)(function () {
+        pageActive = false;
+        if (inventory.updateUI === updateUI)
+            inventory.updateUI = originalUI;
+        grid.matchesFilters = originalMatches;
+        grid.hasFilters = originalHasFilters;
+        grid.getFilteredRelics = originalFiltered;
+        grid.getStacks = originalStacks;
+    });
     function apply() {
         var _a;
         query = (0, relic_search_model_1.parseSearch)(state.query, catalog);
@@ -2096,11 +2205,12 @@ exports.installRelicSearch = installRelicSearch;
 /***/ }),
 
 /***/ 639:
-/***/ ((__unused_webpack_module, exports) => {
+/***/ ((__unused_webpack_module, exports, __webpack_require__) => {
 
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.installRelicShinyHighlight = void 0;
+var relic_page_scope_1 = __webpack_require__(871);
 var STYLE_ID = 'reliquiensrtipz-shiny-highlight';
 var FILTER_ID = 'reliquien-shiny-rainbow';
 function installRelicShinyHighlight() {
@@ -2111,7 +2221,7 @@ function installRelicShinyHighlight() {
     // The blend keeps its lighting and details; the soft mask preserves the edges
     // of the native quality background (the game images are opaque WebP files).
     var rainbow = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"184\" height=\"184\" viewBox=\"0 0 184 184\">\n    <defs>\n      <linearGradient id=\"rainbow\" x1=\".2\" y1=\".2\" x2=\".8\" y2=\".8\" gradientUnits=\"objectBoundingBox\">\n        <stop stop-color=\"#ff466e\"/><stop offset=\".2\" stop-color=\"#ffb43b\"/>\n        <stop offset=\".38\" stop-color=\"#d8f34b\"/><stop offset=\".55\" stop-color=\"#42e6ae\"/>\n        <stop offset=\".73\" stop-color=\"#459aff\"/><stop offset=\"1\" stop-color=\"#e769ff\"/>\n      </linearGradient>\n      <radialGradient id=\"focus\"><stop offset=\".75\" stop-color=\"white\"/><stop offset=\"1\" stop-color=\"black\"/></radialGradient>\n      <mask id=\"item\"><rect width=\"184\" height=\"184\" fill=\"url(#focus)\"/></mask>\n    </defs>\n    <rect width=\"184\" height=\"184\" fill=\"url(#rainbow)\" mask=\"url(#item)\"/>\n  </svg>";
-    var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    var svg = (0, relic_page_scope_1.ownRelicNode)(document.createElementNS('http://www.w3.org/2000/svg', 'svg'));
     svg.id = "".concat(FILTER_ID, "-defs");
     svg.setAttribute('aria-hidden', 'true');
     svg.setAttribute('width', '0');
@@ -2120,7 +2230,7 @@ function installRelicShinyHighlight() {
     svg.style.pointerEvents = 'none';
     svg.innerHTML = "<defs><filter id=\"".concat(FILTER_ID, "\" color-interpolation-filters=\"sRGB\" primitiveUnits=\"objectBoundingBox\" x=\"0\" y=\"0\" width=\"100%\" height=\"100%\">\n    <feImage href=\"data:image/svg+xml,").concat(encodeURIComponent(rainbow), "\" x=\"0\" y=\"0\" width=\"1\" height=\"1\" preserveAspectRatio=\"none\" result=\"rainbow\"/>\n    <feBlend in=\"rainbow\" in2=\"SourceGraphic\" mode=\"color\"/>\n  </filter></defs>");
     document.body.append(svg);
-    var style = document.createElement('style');
+    var style = (0, relic_page_scope_1.ownRelicNode)(document.createElement('style'));
     style.id = STYLE_ID;
     style.textContent = "\n    #relics > div.relic-shiny > img {\n      filter: url(#".concat(FILTER_ID, ") brightness(1.35) saturate(1.35);\n    }\n  ");
     document.head.appendChild(style);
@@ -2135,7 +2245,9 @@ function installRelicShinyHighlight() {
     };
     // The game replaces tiles on filtering, paging, resizing and slot selection.
     // Observe children only so our own class changes cannot retrigger the observer.
-    new MutationObserver(highlight).observe(grid, { childList: true, subtree: true });
+    var observer = new MutationObserver(highlight);
+    observer.observe(grid, { childList: true, subtree: true });
+    (0, relic_page_scope_1.onRelicPageDispose)(function () { return observer.disconnect(); });
     highlight();
 }
 exports.installRelicShinyHighlight = installRelicShinyHighlight;
@@ -2229,6 +2341,74 @@ exports.sortRelics = sortRelics;
 
 /***/ }),
 
+/***/ 480:
+/***/ ((__unused_webpack_module, exports) => {
+
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.relicStorage = exports.RELIC_SETTING_KEYS = void 0;
+exports.RELIC_SETTING_KEYS = [
+    'reliquiensrtipz:docked-panels', 'reliquiensrtipz:show-discovered-by',
+    'reliquiensrtipz:relic-presets', 'reliquiensrtipz:onboarding-seen'
+];
+var sessionValues = new Map();
+function backend() {
+    if (typeof GM_getValue === 'function' && typeof GM_setValue === 'function') {
+        return { getValue: GM_getValue, setValue: GM_setValue };
+    }
+    // A team-hosted getScript loader runs its payload outside the GM closure.
+    // Its restricted bridge exposes only this script's four world-scoped keys.
+    var page = typeof unsafeWindow !== 'undefined' ? unsafeWindow : window;
+    return page.reliquienUIStorage;
+}
+exports.relicStorage = {
+    getItem: function (key) {
+        if (!exports.RELIC_SETTING_KEYS.includes(key))
+            throw new Error('Unbekannte Reliquien-Einstellung');
+        var store = backend();
+        if (!store) {
+            if (sessionValues.has(key))
+                return sessionValues.get(key);
+            try {
+                return localStorage.getItem(key);
+            }
+            catch (_a) {
+                return null;
+            }
+        }
+        var scoped = "".concat(location.hostname, ":").concat(key);
+        var stored = store.getValue(scoped, null);
+        if (stored !== null && stored !== undefined)
+            return typeof stored === 'string' ? stored : null;
+        if (store.getValue("".concat(scoped, ":migrated"), false))
+            return null;
+        var legacy;
+        try {
+            legacy = localStorage.getItem(key);
+        }
+        catch (_b) {
+            return null;
+        }
+        if (legacy !== null)
+            store.setValue(scoped, legacy);
+        store.setValue("".concat(scoped, ":migrated"), true);
+        return legacy;
+    },
+    setItem: function (key, value) {
+        if (!exports.RELIC_SETTING_KEYS.includes(key))
+            throw new Error('Unbekannte Reliquien-Einstellung');
+        var store = backend();
+        if (!store) {
+            sessionValues.set(key, value);
+            throw new Error('Tampermonkey-Speicher fehlt; Development-Loader/Grants aktualisieren');
+        }
+        store.setValue("".concat(location.hostname, ":").concat(key), value);
+    }
+};
+
+
+/***/ }),
+
 /***/ 358:
 /***/ ((__unused_webpack_module, exports) => {
 
@@ -2287,17 +2467,18 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.installUpgradePreview = void 0;
 var upgrade_preview_model_1 = __webpack_require__(358);
+var relic_page_scope_1 = __webpack_require__(871);
 function installUpgradePreview() {
     var panel = document.getElementById('upgrade_panel');
     var slots = document.getElementById('relics_to_upgrade');
     if (!panel || !slots || document.getElementById('relic-upgrade-preview'))
         return;
-    var preview = document.createElement('section');
+    var preview = (0, relic_page_scope_1.ownRelicNode)(document.createElement('section'));
     preview.id = 'relic-upgrade-preview';
     preview.setAttribute('aria-label', 'Aufwertungsvorschau');
     preview.setAttribute('aria-live', 'polite');
     panel.appendChild(preview);
-    var style = document.createElement('style');
+    var style = (0, relic_page_scope_1.ownRelicNode)(document.createElement('style'));
     style.textContent = "\n    #relic-upgrade-preview { border-top: 1px solid #c8b58e; padding-top: 8px; min-width: 0; font-size: 11px; }\n    #relic-upgrade-preview > strong { display: block; color: #6e593b; margin-bottom: 5px; }\n    #relic-upgrade-preview > p { margin: 4px 0 7px; }\n    #relic-upgrade-preview .relic-details { margin: 0; width: 100%; min-width: 0; box-sizing: border-box; overflow-wrap: anywhere; }\n    #relic-upgrade-preview .header { display: flex; align-items: flex-start; gap: 4px; }\n    #relic-upgrade-preview .description { flex: 1; min-width: 0; }\n    #relic-upgrade-preview .image { flex: 0 0 40px; }\n    #relic-upgrade-preview .image img { width: 40px; height: 40px; }\n  ";
     document.head.appendChild(style);
     var firstSlotImage = function () { var _a; return ((_a = document.getElementById('relics_to_upgrade_0')) === null || _a === void 0 ? void 0 : _a.src) || ''; };
@@ -2331,7 +2512,7 @@ function installUpgradePreview() {
             Array.from(node.attributes).filter(function (attribute) { return attribute.name.startsWith('on'); })
                 .forEach(function (attribute) { return node.removeAttribute(attribute.name); });
         });
-    }, true);
+    }, { capture: true, signal: (0, relic_page_scope_1.relicPageSignal)() });
     var render = function () {
         var images = [0, 1, 2].map(function (index) { var _a; return ((_a = document.getElementById("relics_to_upgrade_".concat(index))) === null || _a === void 0 ? void 0 : _a.src) || ''; });
         var relics = images.map(upgrade_preview_model_1.parseRelicImage);
@@ -2371,6 +2552,7 @@ function installUpgradePreview() {
     // Observe only game-owned slots, so rendering the preview cannot trigger itself.
     var observer = new MutationObserver(render);
     observer.observe(slots, { subtree: true, childList: true, attributes: true, attributeFilter: ['src'] });
+    (0, relic_page_scope_1.onRelicPageDispose)(function () { return observer.disconnect(); });
     render();
 }
 exports.installUpgradePreview = installUpgradePreview;
@@ -2421,9 +2603,13 @@ var relic_shiny_highlight_1 = __webpack_require__(639);
 var relic_search_1 = __webpack_require__(421);
 var relic_presets_1 = __webpack_require__(877);
 var relic_onboarding_1 = __webpack_require__(288);
+var relic_page_scope_1 = __webpack_require__(871);
 function main() {
     var api = typeof unsafeWindow != 'undefined' ? unsafeWindow.ScriptAPI : window.ScriptAPI;
     api.register('reliquienUI', true, 'TheHebel97', 'support-nur-im-forum@die-staemme.de');
+    (0, relic_page_scope_1.watchRelicPage)(installUi);
+}
+function installUi() {
     (0, relic_grid_1.installRelicGridLayout)();
     (0, docked_panels_1.installDockedPanels)();
     (0, upgrade_preview_1.installUpgradePreview)();

@@ -2,6 +2,7 @@ import { addDockedPanel } from './docked-panels';
 import { defaultSort, relicSortFields, sortRelics } from './relic-sort';
 import { Choice, emptySearch, matchesRelic, parseSearch, SearchState } from './relic-search-model';
 import { readRelicCatalog, RelicInventory } from './relic-inventory';
+import { onRelicPageDispose, ownRelicNode } from './relic-page-scope';
 
 declare const RelicSystem: { Inventory: RelicInventory } | undefined;
 
@@ -19,7 +20,7 @@ export function installRelicSearch(): void {
   const sortFields = relicSortFields(catalog.types, substats);
   let query = parseSearch(state.query, catalog);
   const parsedQuery = () => query;
-  const style = document.createElement('style');
+  const style = ownRelicNode(document.createElement('style'));
   style.textContent = `
     #relics_container .ui-dropdown { display: none !important; }
     #relics_container :is(.relic-controls,.relic-filters) { display: none !important; }
@@ -42,7 +43,7 @@ export function installRelicSearch(): void {
     #relic-search .search-status { display: block; font-size: 12px; margin-top: 5px; }
   `;
   document.head.appendChild(style);
-  const root = document.createElement('section');
+  const root = ownRelicNode(document.createElement('section'));
   root.id = 'relic-search';
   root.setAttribute('aria-label', 'Reliquien suchen und filtern');
   const line = document.createElement('div'); line.className = 'search-line';
@@ -51,7 +52,7 @@ export function installRelicSearch(): void {
   const button = (label: string, action: () => void): HTMLButtonElement => {
     const b = document.createElement('button'); b.type = 'button'; b.textContent = label; b.addEventListener('click', action); return b;
   };
-  const filterWindow = document.createElement('aside');
+  const filterWindow = ownRelicNode(document.createElement('aside'));
   filterWindow.id = 'relic-filter-window';
   filterWindow.setAttribute('aria-label', 'Inventarfilter');
   document.body.append(filterWindow);
@@ -153,6 +154,8 @@ export function installRelicSearch(): void {
   // Replace only the UI predicate. Native inclusion, server data updates and
   // stack construction remain intact, including changes to upgrade slots.
   Object.keys(grid.filters).forEach(key => { grid.filters[key] = null; });
+  const originalMatches = grid.matchesFilters;
+  const originalHasFilters = grid.hasFilters;
   grid.matchesFilters = relic => matchesRelic(relic, state, parsedQuery());
   grid.hasFilters = () => Boolean(state.query.trim() || state.shiny !== 'all' ||
     state.qualities.length || state.types.length || state.substats.length || state.effects.length || state.targets.length);
@@ -169,14 +172,25 @@ export function installRelicSearch(): void {
     return sortRelics(stacks.map(stack => stack.representative), sorting, sortFields).map(relic => byRelic.get(relic)!);
   };
   const originalUI = inventory.updateUI;
-  inventory.updateUI = function () {
-    grid.setPage(grid.page);
+  let pageActive = true;
+  const updateUI = function (this: RelicInventory): void {
+    if (!pageActive) { originalUI.call(this); return; }
+    grid.setPage(Number.isFinite(grid.page) ? grid.page : 0);
     originalUI.call(this);
     const total = grid.getIncludedRelics().length;
     const count = grid.getFilteredRelics().length;
     const stacks = grid.getStacks().length;
     status.textContent = count ? `${count} von ${total} Reliquien · ${stacks} Kacheln · Seite ${grid.page + 1}/${grid.getMaxPage() + 1}` : 'Keine Treffer – ändere die Suche oder setze die Filter zurück.';
   };
+  inventory.updateUI = updateUI;
+  onRelicPageDispose(() => {
+    pageActive = false;
+    if (inventory.updateUI === updateUI) inventory.updateUI = originalUI;
+    grid.matchesFilters = originalMatches;
+    grid.hasFilters = originalHasFilters;
+    grid.getFilteredRelics = originalFiltered;
+    grid.getStacks = originalStacks;
+  });
   function apply(): void {
     query = parseSearch(state.query, catalog);
     grid.setPage(0);

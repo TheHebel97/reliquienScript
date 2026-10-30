@@ -15,3 +15,8 @@ test('uses fewer columns on narrow containers', () => {
 test('keeps a usable page in very small viewports', () => {
   expect(relicGridCapacity(40, -100)).toEqual({ columns: 1, rows: 1, pageSize: 1 });
 });
+
+test('never produces NaN page sizes from transient invalid layout measurements', () => {
+  expect(relicGridCapacity(NaN, 500)).toEqual({ columns: 1, rows: 1, pageSize: 1 });
+  expect(relicGridCapacity(800, Infinity)).toEqual({ columns: 1, rows: 1, pageSize: 1 });
+});
