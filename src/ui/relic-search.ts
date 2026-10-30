@@ -1,32 +1,29 @@
 import { addDockedPanel } from './docked-panels';
 import { defaultSort, relicSortFields, sortRelics } from './relic-sort';
-import { Choice, emptySearch, matchesRelic, parseSearch, RelicRecord, SearchState } from './relic-search-model';
+import { Choice, emptySearch, matchesRelic, parseSearch, SearchState } from './relic-search-model';
+import { readRelicCatalog, RelicInventory } from './relic-inventory';
 
-interface Inventory {
-  filters: Record<string, unknown>; page: number; inventory_relics: RelicRecord[];
-  updateData(...args: unknown[]): void; updateUI(): void; getMaxPage(): number;
-  getGroupedInventoryRelics(): unknown[];
-  RelicsGridPanel: { deselectRelic(): void };
-}
-declare const RelicSystem: { Inventory: Inventory } | undefined;
+declare const RelicSystem: { Inventory: RelicInventory } | undefined;
 
 export function installRelicSearch(): void {
   const container = document.getElementById('relics_container');
   if (!container || document.getElementById('relic-search') || typeof RelicSystem === 'undefined') return;
   const inventory = RelicSystem.Inventory;
-  const options = (id: string): Choice[] => Array.from(document.querySelectorAll<HTMLOptionElement>(`#${id} option`))
-    .filter(o => o.value).map(o => ({ value: o.value, label: o.textContent || o.value }));
-  const catalog = { qualities: options('inventory_filter_quality'), types: options('inventory_filter_type') };
-  const substats = options('inventory_filter_sub1');
+  const grid = inventory.grid;
+  if (!grid) return;
+  const catalog = readRelicCatalog();
+  const substats = catalog.substats;
   if (!catalog.types.length) return;
   let state = emptySearch();
   let sorting = defaultSort();
   const sortFields = relicSortFields(catalog.types, substats);
-  const parsedQuery = () => parseSearch(state.query, catalog);
-  let total = 0;
+  let query = parseSearch(state.query, catalog);
+  const parsedQuery = () => query;
   const style = document.createElement('style');
   style.textContent = `
     #relics_container .ui-dropdown { display: none !important; }
+    #relics_container :is(.relic-controls,.relic-filters) { display: none !important; }
+    #inventory_filter_count { display: none !important; }
     #relic-search { margin: 0 0 10px; color: #412b13; }
     #relic-search .search-line { display: flex; gap: 6px; }
     #relic-search .sort-line { display: flex; align-items: center; gap: 5px; margin-top: 4px; font-size: 11px; white-space: nowrap; }
@@ -153,29 +150,39 @@ export function installRelicSearch(): void {
       state.query = state.query.replace(term, '').trim(); input.value = state.query; apply();
     })));
   };
-  // Keep the game's eligibility rules (equipped, offered and slotted relics).
-  // Our predicate replaces only the four native UI filters, before native grouping.
-  const originalData = inventory.updateData;
-  inventory.updateData = function (...args: unknown[]) {
-    Object.keys(inventory.filters).forEach(key => { inventory.filters[key] = null; });
-    originalData.apply(this, args);
-    total = inventory.inventory_relics.length;
-    const parsed = parsedQuery();
-    inventory.inventory_relics = sortRelics(inventory.inventory_relics.filter(r => matchesRelic(r, state, parsed)), sorting, sortFields);
+  // Replace only the UI predicate. Native inclusion, server data updates and
+  // stack construction remain intact, including changes to upgrade slots.
+  Object.keys(grid.filters).forEach(key => { grid.filters[key] = null; });
+  grid.matchesFilters = relic => matchesRelic(relic, state, parsedQuery());
+  grid.hasFilters = () => Boolean(state.query.trim() || state.shiny !== 'all' ||
+    state.qualities.length || state.types.length || state.substats.length || state.effects.length || state.targets.length);
+  const originalFiltered = grid.getFilteredRelics;
+  grid.getFilteredRelics = function () {
+    // Native grouping uses the first relic as representative. Choose it using
+    // our sort (e.g. strongest substat) without changing the source records.
+    return sortRelics(originalFiltered.call(this), sorting, sortFields);
+  };
+  const originalStacks = grid.getStacks;
+  grid.getStacks = function () {
+    const stacks = originalStacks.call(this);
+    const byRelic = new Map(stacks.map(stack => [stack.representative, stack]));
+    return sortRelics(stacks.map(stack => stack.representative), sorting, sortFields).map(relic => byRelic.get(relic)!);
   };
   const originalUI = inventory.updateUI;
   inventory.updateUI = function () {
-    inventory.page = Math.max(0, Math.min(inventory.page, inventory.getMaxPage()));
+    grid.setPage(grid.page);
     originalUI.call(this);
-    const count = inventory.inventory_relics.length;
-    const stacks = inventory.getGroupedInventoryRelics().length;
-    status.textContent = count ? `${count} von ${total} Reliquien · ${stacks} Kacheln · Seite ${inventory.page + 1}/${inventory.getMaxPage() + 1}` : 'Keine Treffer – ändere die Suche oder setze die Filter zurück.';
+    const total = grid.getIncludedRelics().length;
+    const count = grid.getFilteredRelics().length;
+    const stacks = grid.getStacks().length;
+    status.textContent = count ? `${count} von ${total} Reliquien · ${stacks} Kacheln · Seite ${grid.page + 1}/${grid.getMaxPage() + 1}` : 'Keine Treffer – ändere die Suche oder setze die Filter zurück.';
   };
   function apply(): void {
-    inventory.page = 0;
+    query = parseSearch(state.query, catalog);
+    grid.setPage(0);
     inventory.RelicsGridPanel.deselectRelic();
     document.getElementById('relic-hover-details')?.setAttribute('hidden', '');
-    inventory.updateData(); renderControls(); inventory.updateUI();
+    renderControls(); inventory.updateUI();
     window.dispatchEvent(new Event('resize'));
   }
   input.addEventListener('input', () => { state.query = input.value; apply(); });

@@ -1,5 +1,5 @@
 import { addDockedPanel } from './docked-panels';
-import { Choice } from './relic-search-model';
+import { readRelicCatalog } from './relic-inventory';
 import { DEFAULT_PARTIAL_COLOR, DEFAULT_PRESET_COLOR, installedDefaultIds, MAIN_BONUSES, presetMatchLevel, presetColor, PresetRelic, readPresets, RelicPreset, writePresets } from './relic-preset-model';
 import { seedDefaultPresets } from './relic-preset-defaults';
 
@@ -12,10 +12,7 @@ export function installRelicPresets(): void {
   const grid = document.getElementById('relics');
   const line = document.querySelector('#relic-search .search-line');
   if (!grid || !line || document.getElementById(WINDOW_ID) || typeof RelicSystem === 'undefined') return;
-  const options = (id: string): Choice[] => Array.from(document.querySelectorAll<HTMLOptionElement>(`#${id} option`))
-    .filter(o => o.value && o.value !== 'null').map(o => ({ value: o.value, label: o.textContent || o.value }));
-  const types = options('inventory_filter_type');
-  const stats = options('inventory_filter_sub1');
+  const { types, substats: stats } = readRelicCatalog();
   if (!types.length || !stats.length) return;
   stats.push({ value: 'barracks-cost', label: 'Kaserne: Rekrutierungskosten reduzieren' });
   stats.push({ value: 'light-attack', label: 'Leichte Kavallerie: +x% Angriffsstärke' });

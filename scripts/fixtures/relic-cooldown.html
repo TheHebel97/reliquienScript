@@ -1,0 +1,37 @@
+<!doctype html>
+<html><head><style>.display-none { display: none; }</style></head><body>
+<!-- Minimal, anonymized reproduction of the supplied 30 October inventory DOM. -->
+<div id="page_inventory">
+  <div id="village_relic">
+    <div>
+      <img id="village_relic_image" alt="" src="https://example.test/graphic/relic_system/relics_184/halberd_superior.webp">
+      <div id="remove_relic_container" style="display: block;">
+        <a href="" id="remove_relic_button" class="display-none">Reliquie entfernen</a>
+        <div id="countdown_container"><span>Die Reliquie kann wieder entfernt werden in:</span><span id="timer" class="cooldown">11:54:00</span></div>
+        <div id="loyalty_locked" class="display-none warn"></div>
+        <div id="inactive_container" class="display-none"><span id="inactive_timer" class="cooldown"></span></div>
+      </div>
+    </div>
+    <div class="village-details-container"><div id="village_relic_details">
+      <div class="relic-details"><div class="header"><div class="description"><strong>Erstklassige Hellebarde</strong><p>Speerträger: +8% Angriffs- und Verteidigungsstärke</p></div></div>
+        <div class="body"><div class="sub_stats"><div class="sub_stat">Schwertkämpfer: +4% Angriffs- und Verteidigungsstärke</div><div class="sub_stat">Adelshof: +4% Rekrutierungs-Geschwindigkeit</div></div><div class="range">Bereich: 3</div></div>
+      </div>
+    </div><div id="village_equip_status" class="display-none"></div></div>
+  </div>
+  <div id="relics_container">
+    <div class="relic-controls"><label for="inventory_filter_sort">Sortieren</label><select id="inventory_filter_sort"><option value="quality_desc">Qualität (hoch zu niedrig)</option></select><span id="inventory_filter_count">2 Reliquien</span></div>
+    <div class="relic-filters"><label>Filter</label><select id="inventory_filter_slot1">
+      <option value="">Filter 1</option><optgroup label="Qualität"><option value="q:shoddy">Schäbig</option><option value="q:superior">Erstklassig</option></optgroup>
+      <optgroup label="Typ"><option value="t:greataxe">Großaxt</option><option value="t:halberd">Hellebarde</option></optgroup>
+      <optgroup label="Sub-Stat"><option value="s:3">Axtkämpfer: +x% Angriffs- und Verteidigungsstärke</option><option value="s:5">Leichte Kavallerie: +x% Angriffs- und Verteidigungsstärke</option><option value="s:9">Rammbock: +x% Gebäudeschaden</option><option value="s:24">Axtkämpfer: +x% Angriffsstärke</option><option value="s:31">Speerträger: +x% Verteidigungsstärke</option></optgroup>
+    </select><select id="inventory_filter_slot2"><option value="">Filter 2</option></select></div>
+    <div class="relics-grid-row"><div id="prev_page"></div><div id="relics"></div><div id="next_page"></div></div>
+  </div>
+  <div id="upgrade_panel"><div id="relics_to_upgrade">
+    <div><img id="relics_to_upgrade_0" alt=""><span id="relics_to_upgrade_remove_0"></span></div>
+    <div><img id="relics_to_upgrade_1" alt=""><span id="relics_to_upgrade_remove_1"></span></div>
+    <div><img id="relics_to_upgrade_2" alt=""><span id="relics_to_upgrade_remove_2"></span></div>
+  </div><button id="upgrade_relic_button" disabled>Aufwerten</button></div>
+  <div id="selected_relic_details"></div>
+</div>
+</body></html>

@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.0.8 – 2026-10-30
+
+- Raster und Seitenauswahl an die neue native `Inventory.grid`-Schnittstelle
+  angepasst: Seitengroesse, Seitenwechsel und Begrenzung laufen wieder zusammen.
+- Suche, Filter und Presets lesen den neuen gemeinsamen Filter-Katalog mit
+  `q:`-/`t:`-/`s:`-Werten. Alte einzelne Dropdown-Kataloge werden weiterhin gelesen.
+- Suche greift vor nativer Stapelbildung; Sortierung waehlt passende Repraesentanten
+  und behaelt Stapelinhalte, serverseitige Updates und native Inventar-Zulaessigkeit.
+- Vollstaendigen Start mit gesperrter Dorf-Reliquie/Entfernungs-Countdown abgesichert.
+  Suche und Randfenster starten; Timer und native Entfernungssperre bleiben erhalten.
+
 ## 1.0.7 – 2026-10-17
 
 - Kampf-Defaults als zwei Bonus-Pools statt sechs fester Kombinationen:

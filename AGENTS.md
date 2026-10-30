@@ -40,6 +40,10 @@ nur bei Bedarf fuer Setup bzw. historische Hintergruende lesen.
   Der Nutzer uebernimmt den Login selbst.
 - Den aktuellen, auf `screen=relic_*` begrenzten Userscript-Match beachten.
 - `src/ui/relic-grid.ts` installiert das CSS fuer `.relics-grid-row > #relics`.
+  Seit 30.10.2026 steuert `RelicSystem.Inventory.grid` die Seiten: page, per_page,
+  setPage, getMaxPage. Alte Inventory.page/relics_per_page-Methoden nicht verwenden.
+  Gemeinsame native Typen/Katalog-Leser in `src/ui/relic-inventory.ts`; moderne
+  Filter-Slots slot1/slot2 enthalten q:/t:/s:-Werte. Praefixe entfernen, IDs erhalten.
 - Raster nutzt volle Containerbreite, maximal 10 Spalten und 8 Reihen.
   55,25px Kachel-Mindestziel, 2px Abstand; Kacheln fuellen die Breite aus.
   Reihen nach verfuegbarer Fensterhoehe; native Seitengroesse = Spalten x Reihen.
@@ -120,6 +124,13 @@ nur bei Bedarf fuer Setup bzw. historische Hintergruende lesen.
 - Suche/Togglefilter: `src/ui/relic-search.ts`, reine Suchlogik und Tests in
   `relic-search-model.ts`. Ersetzt native Dropdownfilter lokal; native
   Verfuegbarkeit, Gruppierung, Paginierung und Slotaktionen bleiben bestehen.
+  Hookt grid.matchesFilters/getFilteredRelics/getStacks, behaelt native include-
+  Regeln und Inventory.updateData. Vor Stapelbildung sortieren (Repraesentant),
+  danach Stapel nachsortieren (native Standardsortierung nicht vorziehen lassen).
+  Integrationstests `relic-inventory.test.ts` decken neue API, Stacks/Seitenwechsel,
+  Filterreset, Daten-/Slotupdates und kombinierte Suche/Raster-Resizes ab.
+  Offline-Bundlepruefung startet auch den Cooldown-DOM aus scripts/fixtures und
+  kontrolliert erhaltenen Timer, verdeckten Entfernen-Link und gestartete Such-UI.
 - Visuelle Filter stehen im `#relic-filter-window`, registriert ueber
   `addDockedPanel` im bestehenden Dock-System. Inventar: Suche, Filter-Schalter,
   Zuruecksetzen und Trefferzahl. Filterzustand nur in SearchState; Query-Parsing

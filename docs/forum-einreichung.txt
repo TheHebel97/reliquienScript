@@ -10,7 +10,7 @@ ich möchte mein Script „reliquienUI“ für den deutschen Markt zur Prüfung 
 [TR][TD]Autor:[/TD][TD]TheHebel97 – Kontakt über das Forum[/TD][/TR]
 [TR][TD]Repository:[/TD][TD]https://github.com/TheHebel97/reliquienScript[/TD][/TR]
 [TR][TD]Premium-Account erforderlich:[/TD][TD]Nein.[/TD][/TR]
-[TR][TD]Aktuelle Version / Einreichdatum:[/TD][TD]1.0.7 / 2026-10-17[/TD][/TR]
+[TR][TD]Aktuelle Version / Einreichdatum:[/TD][TD]1.0.8 / 2026-10-30[/TD][/TR]
 [TR][TD]Auf welchen Ansichten wird das Script ausgeführt:[/TD][TD]Reliquien → Inventar (screen=relic_system), deutsche Spielwelten. Der Userscript-Match ist auf screen=relic_* unter *.die-staemme.de begrenzt.[/TD][/TR]
 [TR][TD]Funktion des Scripts:[/TD][TD]
 [LIST]
@@ -42,7 +42,7 @@ Die Nutzung durch Spieler soll nach Freigabe über den vom Stämme-Team vorgeseh
 // ==UserScript==
 // @name         reliquienUI
 // @namespace    https://github.com/TheHebel97/reliquienScript
-// @version      1.0.7
+// @version      1.0.8
 // @author       TheHebel97
 // @license      MIT
 // @description  Reliquien-Inventar mit Suche, Filtern und Highlight-Presets.

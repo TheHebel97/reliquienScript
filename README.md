@@ -1,6 +1,6 @@
 # reliquienUI
 
-Veröffentlichungsname: **reliquienUI** (Version 1.0.7, MIT).
+Veröffentlichungsname: **reliquienUI** (Version 1.0.8, MIT).
 Die Einreichung zur Freigabe steht noch aus. Das Repository stellt den Prüfstand
 bereit; die freigegebene Veröffentlichung soll über das Stämme-Team erfolgen.
 

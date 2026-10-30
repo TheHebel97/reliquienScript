@@ -2,6 +2,40 @@
 
 Stand: 13.10.2026. Vor Browserzugriff diese bekannten Strukturen verwenden.
 
+## Update 30.10.2026: neues natives Grid und gemeinsamer Filter-Katalog
+
+- Opera-Erweiterung erreichbar, auch wenn das Chat-/Accessibility-Overlay nicht
+  erscheint. Welt 259 lieferte reproduzierbar `inventory.getMaxPage is not a function`.
+- Seitenauswahl liegt jetzt auf `RelicSystem.Inventory.grid`: `page`, `per_page`,
+  `getMaxPage()`, `setPage(n)`, `getPageStacks()`. `Inventory.relics_per_page` und
+  `Inventory.page` sind keine Steuerung mehr; `getGroupedInventoryRelics()` entfaellt.
+- `grid.getIncludedRelics()` wendet native include-Regel an: keine ausgeruesteten/
+  angebotenen Reliquien oder IDs in `relics_to_upgrade`. Danach `matchesFilters`,
+  `getFilteredRelics()`, `getStacks()` und Seitenschnitt. `updateData` ersetzt Daten
+  via `grid.setRelics()`; Methode und volle Quelldaten nicht fuer Suche umschreiben.
+- `RelicSelect.groupRelics` behaelt alle Records und nimmt den ersten als
+  `representative`. Daher eigene Sortierung vor Gruppierung (staerkster Substat/
+  Shiny-Repraesentant) und nach nativer Stapelsortierung (sonst quality_desc-Vorrang).
+- Native Selects heissen `inventory_filter_slot1/slot2`, optgroups mit `q:quality`,
+  `t:type`, `s:substat`. Sortierung in `inventory_filter_sort`, Anzahl in
+  `inventory_filter_count`. Alte quality/type/sub1-Selects fehlen. Gemeinsamer Leser
+  `src/ui/relic-inventory.ts` entfernt Praefixe und dedupliziert beide Slots;
+  Suche und Presets verwenden denselben Katalog, gespeicherte IDs bleiben gleich.
+- Native Controls liegen in `.relic-controls` und `.relic-filters`; bei eigener
+  Suche mitsamt Beschriftungen ausblenden, nicht nur Dropdown-Widgets.
+- Gemeldeter Welt-258-Cooldown-DOM: remove_relic_button existiert mit display-none,
+  countdown_container/timer bleiben vorhanden; restliche Inventar-/Upgrade-IDs gleich.
+  URL village=5485&screen=relic_system passt zum Match. Anonymisierte Minimalfassung
+  in `scripts/fixtures/relic-cooldown.html`; verify-userscript prueft komplettes Bundle
+  samt Suche/Presets/Docks, erhaelt Timer und Sperre und fuehrt keine Spielaktion aus.
+  Welt-258-Link in Opera fuehrte auf abgelaufene Sitzung; dort keine Live-Pruefung.
+- Endkontrolle Welt 259: 10 Spalten x 6 Reihen, native grid.per_page=60 statt 20;
+  Suche Grossaxt 1/2, leere Treffer, Typfilter Banner, Sortierung Typ absteigend und
+  Reset erfolgreich. Eine Reliquie per Linksklick testweise in Aufwertungsslot 0,
+  danach wieder entfernt. Keine Aufwertung/Ausruestung ausgefuehrt. Slots danach
+  alle null, native Gesamt-/Trefferzahl wieder 2/2, keine neuen Scriptfehler.
+  80 Jest-Tests plus Typecheck, lesbarer Build und kompilierter Cooldown-Start bestanden.
+
 ## Update 17.10.2026: Kampf-Pools statt fester Kombinationen (1.0.7)
 
 - Nutzerpraezisierung: Offensiv aus Axt-Angriff, LK-Angriff und ausschliesslich

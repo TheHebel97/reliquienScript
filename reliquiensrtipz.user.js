@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         reliquienUI
 // @namespace    https://github.com/TheHebel97/reliquienScript
-// @version      1.0.7
+// @version      1.0.8
 // @author       TheHebel97
 // @license      MIT
 // @homepageURL  https://github.com/TheHebel97/reliquienScript
@@ -651,7 +651,8 @@ function installRelicGridLayout() {
         var _a;
         pending = false;
         var inventory = typeof RelicSystem === 'undefined' ? undefined : RelicSystem.Inventory;
-        if (!inventory)
+        var pagination = inventory === null || inventory === void 0 ? void 0 : inventory.grid;
+        if (!inventory || !pagination)
             return;
         var css = getComputedStyle(grid);
         var width = grid.clientWidth - parseFloat(css.paddingLeft) - parseFloat(css.paddingRight);
@@ -662,11 +663,11 @@ function installRelicGridLayout() {
         var _b = (0, relic_grid_layout_1.relicGridCapacity)(width, availableHeight), columns = _b.columns, rows = _b.rows, pageSize = _b.pageSize;
         grid.style.setProperty('--relic-grid-columns', String(columns));
         grid.dataset.rows = String(rows);
-        if (inventory.relics_per_page === pageSize)
+        if (pagination.per_page === pageSize)
             return;
-        var firstItem = inventory.page * inventory.relics_per_page;
-        inventory.relics_per_page = pageSize;
-        inventory.page = Math.min(inventory.getMaxPage(), Math.floor(firstItem / pageSize));
+        var firstItem = pagination.page * pagination.per_page;
+        pagination.per_page = pageSize;
+        pagination.setPage(Math.floor(firstItem / pageSize));
         inventory.RelicsGridPanel.deselectRelic();
         (_a = document.getElementById('relic-hover-details')) === null || _a === void 0 ? void 0 : _a.setAttribute('hidden', '');
         inventory.updateUI();
@@ -840,6 +841,45 @@ function installRelicHoverDetails() {
     }, true);
 }
 exports.installRelicHoverDetails = installRelicHoverDetails;
+
+
+/***/ }),
+
+/***/ 173:
+/***/ (function(__unused_webpack_module, exports) {
+
+
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.readRelicCatalog = void 0;
+function readRelicCatalog() {
+    var options = function (selector) { return Array.from(document.querySelectorAll(selector))
+        .filter(function (option) { return option.value && option.value !== 'null'; })
+        .map(function (option) { return ({ value: option.value, label: option.textContent || option.value }); }); };
+    var slots = options('#inventory_filter_slot1 option, #inventory_filter_slot2 option');
+    var choices = function (legacyId, prefix) {
+        var legacy = options("#".concat(legacyId, " option"));
+        var values = legacy.length ? legacy : slots.filter(function (option) { return option.value.startsWith(prefix); })
+            .map(function (option) { return (__assign(__assign({}, option), { value: option.value.slice(prefix.length) })); });
+        return Array.from(new Map(values.filter(function (option) { return option.value; }).map(function (option) { return [option.value, option]; })).values());
+    };
+    return {
+        qualities: choices('inventory_filter_quality', 'q:'),
+        types: choices('inventory_filter_type', 't:'),
+        substats: choices('inventory_filter_sub1', 's:')
+    };
+}
+exports.readRelicCatalog = readRelicCatalog;
 
 
 /***/ }),
@@ -1233,6 +1273,7 @@ var __read = (this && this.__read) || function (o, n) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.installRelicPresets = void 0;
 var docked_panels_1 = __webpack_require__(597);
+var relic_inventory_1 = __webpack_require__(173);
 var relic_preset_model_1 = __webpack_require__(362);
 var relic_preset_defaults_1 = __webpack_require__(326);
 var WINDOW_ID = 'relic-preset-window';
@@ -1243,10 +1284,7 @@ function installRelicPresets() {
     var line = document.querySelector('#relic-search .search-line');
     if (!grid || !line || document.getElementById(WINDOW_ID) || typeof RelicSystem === 'undefined')
         return;
-    var options = function (id) { return Array.from(document.querySelectorAll("#".concat(id, " option")))
-        .filter(function (o) { return o.value && o.value !== 'null'; }).map(function (o) { return ({ value: o.value, label: o.textContent || o.value }); }); };
-    var types = options('inventory_filter_type');
-    var stats = options('inventory_filter_sub1');
+    var _a = (0, relic_inventory_1.readRelicCatalog)(), types = _a.types, stats = _a.substats;
     if (!types.length || !stats.length)
         return;
     stats.push({ value: 'barracks-cost', label: 'Kaserne: Rekrutierungskosten reduzieren' });
@@ -1316,7 +1354,7 @@ function installRelicPresets() {
         installed = seeded.installed;
         localStorage.setItem(STORAGE_KEY, (0, relic_preset_model_1.writePresets)(presets, installed, color, partialColor));
     }
-    catch (_a) {
+    catch (_b) {
         var seeded = (0, relic_preset_defaults_1.seedDefaultPresets)(presets, installed);
         presets = seeded.presets;
         installed = seeded.installed;
@@ -1842,24 +1880,26 @@ exports.installRelicSearch = void 0;
 var docked_panels_1 = __webpack_require__(597);
 var relic_sort_1 = __webpack_require__(973);
 var relic_search_model_1 = __webpack_require__(945);
+var relic_inventory_1 = __webpack_require__(173);
 function installRelicSearch() {
     var container = document.getElementById('relics_container');
     if (!container || document.getElementById('relic-search') || typeof RelicSystem === 'undefined')
         return;
     var inventory = RelicSystem.Inventory;
-    var options = function (id) { return Array.from(document.querySelectorAll("#".concat(id, " option")))
-        .filter(function (o) { return o.value; }).map(function (o) { return ({ value: o.value, label: o.textContent || o.value }); }); };
-    var catalog = { qualities: options('inventory_filter_quality'), types: options('inventory_filter_type') };
-    var substats = options('inventory_filter_sub1');
+    var grid = inventory.grid;
+    if (!grid)
+        return;
+    var catalog = (0, relic_inventory_1.readRelicCatalog)();
+    var substats = catalog.substats;
     if (!catalog.types.length)
         return;
     var state = (0, relic_search_model_1.emptySearch)();
     var sorting = (0, relic_sort_1.defaultSort)();
     var sortFields = (0, relic_sort_1.relicSortFields)(catalog.types, substats);
-    var parsedQuery = function () { return (0, relic_search_model_1.parseSearch)(state.query, catalog); };
-    var total = 0;
+    var query = (0, relic_search_model_1.parseSearch)(state.query, catalog);
+    var parsedQuery = function () { return query; };
     var style = document.createElement('style');
-    style.textContent = "\n    #relics_container .ui-dropdown { display: none !important; }\n    #relic-search { margin: 0 0 10px; color: #412b13; }\n    #relic-search .search-line { display: flex; gap: 6px; }\n    #relic-search .sort-line { display: flex; align-items: center; gap: 5px; margin-top: 4px; font-size: 11px; white-space: nowrap; }\n    #relic-search .sort-line select { width: auto; max-width: 160px; height: 22px; padding: 0 3px; color: #412b13; background: #f4e4c2; border: 1px solid #b39a6b; font: inherit; }\n    #relic-search .sort-line button { height: 22px; min-width: 24px; padding: 0 5px; border-radius: 3px; }\n    #relic-search .sort-line button:disabled { opacity: .45; cursor: default; }\n    #relic-search input { flex: 1; min-width: 0; padding: 8px 10px; border: 1px solid #ab8955; border-radius: 6px; background: #fff6df; }\n    :is(#relic-search, #relic-filter-window) button:not(.relic-dock-handle) { cursor: pointer; font: inherit; color: inherit; border: 1px solid #b39a6b; border-radius: 12px; padding: 3px 9px; background: #f4e4c2; }\n    :is(#relic-search, #relic-filter-window) button:not(.relic-dock-handle)[aria-pressed=\"true\"] { background: #76502d; color: #fff4d9; border-color: #563716; }\n    :is(#relic-search, #relic-filter-window) button:not(.relic-dock-handle):focus-visible, #relic-search input:focus-visible { outline: 2px solid #915dac; outline-offset: 2px; }\n    #relic-filter-window .filter-groups { display: block; margin: 0; }\n    #relic-filter-window details { width: 100%; border-bottom: 1px solid #c8b58e; }\n    #relic-filter-window summary { cursor: pointer; font-weight: bold; padding: 3px 0; }\n    #relic-filter-window .choices { display: flex; flex-wrap: wrap; gap: 4px; max-height: 150px; overflow: auto; padding: 4px 2px; }\n    #relic-filter-window .active-filters { display: flex; flex-wrap: wrap; gap: 4px; margin: 5px 0; }\n    #relic-search .search-status { display: block; font-size: 12px; margin-top: 5px; }\n  ";
+    style.textContent = "\n    #relics_container .ui-dropdown { display: none !important; }\n    #relics_container :is(.relic-controls,.relic-filters) { display: none !important; }\n    #inventory_filter_count { display: none !important; }\n    #relic-search { margin: 0 0 10px; color: #412b13; }\n    #relic-search .search-line { display: flex; gap: 6px; }\n    #relic-search .sort-line { display: flex; align-items: center; gap: 5px; margin-top: 4px; font-size: 11px; white-space: nowrap; }\n    #relic-search .sort-line select { width: auto; max-width: 160px; height: 22px; padding: 0 3px; color: #412b13; background: #f4e4c2; border: 1px solid #b39a6b; font: inherit; }\n    #relic-search .sort-line button { height: 22px; min-width: 24px; padding: 0 5px; border-radius: 3px; }\n    #relic-search .sort-line button:disabled { opacity: .45; cursor: default; }\n    #relic-search input { flex: 1; min-width: 0; padding: 8px 10px; border: 1px solid #ab8955; border-radius: 6px; background: #fff6df; }\n    :is(#relic-search, #relic-filter-window) button:not(.relic-dock-handle) { cursor: pointer; font: inherit; color: inherit; border: 1px solid #b39a6b; border-radius: 12px; padding: 3px 9px; background: #f4e4c2; }\n    :is(#relic-search, #relic-filter-window) button:not(.relic-dock-handle)[aria-pressed=\"true\"] { background: #76502d; color: #fff4d9; border-color: #563716; }\n    :is(#relic-search, #relic-filter-window) button:not(.relic-dock-handle):focus-visible, #relic-search input:focus-visible { outline: 2px solid #915dac; outline-offset: 2px; }\n    #relic-filter-window .filter-groups { display: block; margin: 0; }\n    #relic-filter-window details { width: 100%; border-bottom: 1px solid #c8b58e; }\n    #relic-filter-window summary { cursor: pointer; font-weight: bold; padding: 3px 0; }\n    #relic-filter-window .choices { display: flex; flex-wrap: wrap; gap: 4px; max-height: 150px; overflow: auto; padding: 4px 2px; }\n    #relic-filter-window .active-filters { display: flex; flex-wrap: wrap; gap: 4px; margin: 5px 0; }\n    #relic-search .search-status { display: block; font-size: 12px; margin-top: 5px; }\n  ";
     document.head.appendChild(style);
     var root = document.createElement('section');
     root.id = 'relic-search';
@@ -2010,34 +2050,39 @@ function installRelicSearch() {
             apply();
         })); });
     };
-    // Keep the game's eligibility rules (equipped, offered and slotted relics).
-    // Our predicate replaces only the four native UI filters, before native grouping.
-    var originalData = inventory.updateData;
-    inventory.updateData = function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i] = arguments[_i];
-        }
-        Object.keys(inventory.filters).forEach(function (key) { inventory.filters[key] = null; });
-        originalData.apply(this, args);
-        total = inventory.inventory_relics.length;
-        var parsed = parsedQuery();
-        inventory.inventory_relics = (0, relic_sort_1.sortRelics)(inventory.inventory_relics.filter(function (r) { return (0, relic_search_model_1.matchesRelic)(r, state, parsed); }), sorting, sortFields);
+    // Replace only the UI predicate. Native inclusion, server data updates and
+    // stack construction remain intact, including changes to upgrade slots.
+    Object.keys(grid.filters).forEach(function (key) { grid.filters[key] = null; });
+    grid.matchesFilters = function (relic) { return (0, relic_search_model_1.matchesRelic)(relic, state, parsedQuery()); };
+    grid.hasFilters = function () { return Boolean(state.query.trim() || state.shiny !== 'all' ||
+        state.qualities.length || state.types.length || state.substats.length || state.effects.length || state.targets.length); };
+    var originalFiltered = grid.getFilteredRelics;
+    grid.getFilteredRelics = function () {
+        // Native grouping uses the first relic as representative. Choose it using
+        // our sort (e.g. strongest substat) without changing the source records.
+        return (0, relic_sort_1.sortRelics)(originalFiltered.call(this), sorting, sortFields);
+    };
+    var originalStacks = grid.getStacks;
+    grid.getStacks = function () {
+        var stacks = originalStacks.call(this);
+        var byRelic = new Map(stacks.map(function (stack) { return [stack.representative, stack]; }));
+        return (0, relic_sort_1.sortRelics)(stacks.map(function (stack) { return stack.representative; }), sorting, sortFields).map(function (relic) { return byRelic.get(relic); });
     };
     var originalUI = inventory.updateUI;
     inventory.updateUI = function () {
-        inventory.page = Math.max(0, Math.min(inventory.page, inventory.getMaxPage()));
+        grid.setPage(grid.page);
         originalUI.call(this);
-        var count = inventory.inventory_relics.length;
-        var stacks = inventory.getGroupedInventoryRelics().length;
-        status.textContent = count ? "".concat(count, " von ").concat(total, " Reliquien \u00B7 ").concat(stacks, " Kacheln \u00B7 Seite ").concat(inventory.page + 1, "/").concat(inventory.getMaxPage() + 1) : 'Keine Treffer – ändere die Suche oder setze die Filter zurück.';
+        var total = grid.getIncludedRelics().length;
+        var count = grid.getFilteredRelics().length;
+        var stacks = grid.getStacks().length;
+        status.textContent = count ? "".concat(count, " von ").concat(total, " Reliquien \u00B7 ").concat(stacks, " Kacheln \u00B7 Seite ").concat(grid.page + 1, "/").concat(grid.getMaxPage() + 1) : 'Keine Treffer – ändere die Suche oder setze die Filter zurück.';
     };
     function apply() {
         var _a;
-        inventory.page = 0;
+        query = (0, relic_search_model_1.parseSearch)(state.query, catalog);
+        grid.setPage(0);
         inventory.RelicsGridPanel.deselectRelic();
         (_a = document.getElementById('relic-hover-details')) === null || _a === void 0 ? void 0 : _a.setAttribute('hidden', '');
-        inventory.updateData();
         renderControls();
         inventory.updateUI();
         window.dispatchEvent(new Event('resize'));
