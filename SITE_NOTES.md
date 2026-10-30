@@ -40,6 +40,13 @@ Stand: 13.10.2026. Vor Browserzugriff diese bekannten Strukturen verwenden.
   entwurf getestet. Letzterer laedt den Hauptcode ohne GM-Globals; nur die begrenzte
   Bruecke ist verfuegbar. Weltfremde/unbekannte Keys erreichen GM nicht. Beide
   Varianten bestehen zwei Rootwechsel samt unveraenderten Einstellungen.
+- Live-Abschluss mit installiertem Dev-Loader 0.2.0 in Opera: GM-Verfuegbarkeit
+  bestaetigt, kein Sitzungsspeicher-Hinweis. Testfarbe #47b8c9 ueber Preset-UI
+  gespeichert; nach vollstaendigem Reload und nativem partialReload erhalten.
+  Alle vier alten LocalStorage-Werte dabei unveraendert. Ursprungsfarbe #d2d51b
+  wiederhergestellt und nach weiterem Reload bestaetigt. Freie Reliquie weiter
+  sichtbar, pro Panel genau eine Instanz, grid.page=0/per_page=60; Countdown und
+  versteckter Entfernen-Link erhalten, Aufwertungsslots alle null.
 
 ## Update 30.10.2026: neues natives Grid und gemeinsamer Filter-Katalog
 
