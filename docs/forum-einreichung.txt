@@ -10,7 +10,7 @@ ich möchte mein Script „reliquienUI“ für den deutschen Markt zur Prüfung 
 [TR][TD]Autor:[/TD][TD]TheHebel97 – Kontakt über das Forum[/TD][/TR]
 [TR][TD]Repository:[/TD][TD]https://github.com/TheHebel97/reliquienScript[/TD][/TR]
 [TR][TD]Premium-Account erforderlich:[/TD][TD]Nein.[/TD][/TR]
-[TR][TD]Aktuelle Version / Einreichdatum:[/TD][TD]1.0.7 / 2026-10-17[/TD][/TR]
+[TR][TD]Aktuelle Version / Einreichdatum:[/TD][TD]1.0.9 / 2026-10-30[/TD][/TR]
 [TR][TD]Auf welchen Ansichten wird das Script ausgeführt:[/TD][TD]Reliquien → Inventar (screen=relic_system), deutsche Spielwelten. Der Userscript-Match ist auf screen=relic_* unter *.die-staemme.de begrenzt.[/TD][/TR]
 [TR][TD]Funktion des Scripts:[/TD][TD]
 [LIST]
@@ -23,7 +23,7 @@ ich möchte mein Script „reliquienUI“ für den deutschen Markt zur Prüfung 
 [*]Konfigurierbare Highlight-Presets mit Hauptbonus/Typ und gewünschten Substats; die Bonus-Pools Offensiv, Defensiv und Rohstoffe sind enthalten.
 [*]Offensiv: Axt-/LK-Angriff und Rammbock-Gebäudeschaden. Defensiv: Speer-/Schwert-/SK-Verteidigung. Beliebige Mischungen und Wiederholungen sind erlaubt; der Hauptbonus muss zum Pool gehören. Rammbock-Angriffs-/Verteidigungsstärke zählt nicht als Gebäudeschaden. Kombinierte Angriffs-/Verteidigungsboni erfüllen die passende Einzelbonus-Bedingung. Bei Rohstoff-Gruppenregeln muss der Hauptbonus aus der festgelegten Auswahl stammen; mit einem passenden Substat entsteht ein 2/3-Treffer, mit beiden ein Volltreffer.
 [*]Volltreffer erhalten einen durchgehenden Rahmen (standardmäßig gedecktes Neon-Gelb), passender Hauptbonus plus ein gewünschter Substat einen ebenfalls kräftigen, durchgehenden Rahmen (standardmäßig Orange). Beide Farben sind einstellbar. Shiny erscheint als Regenbogen-Schattierung des Reliquienbildes ohne eigenen Rahmen, kombinierbar mit beiden Trefferstufen. Presets können auf Shiny-Reliquien beschränkt werden.
-[*]Randfenster lassen sich verschieben und wechseln bei Platzmangel automatisch die Seite. Einstellungen und Presets bleiben lokal im Browser gespeichert.
+[*]Randfenster lassen sich verschieben und wechseln bei Platzmangel automatisch die Seite. Einstellungen und Presets bleiben im Tampermonkey-Speicher pro Spielwelt gespeichert; vorhandene LocalStorage-Einstellungen werden einmalig übernommen.
 [*]Kurze Einführung beim ersten Start; über „?“ neben der Suche jederzeit erneut aufrufbar.
 [/LIST]
 [/TD][/TR]
@@ -42,18 +42,32 @@ Die Nutzung durch Spieler soll nach Freigabe über den vom Stämme-Team vorgeseh
 // ==UserScript==
 // @name         reliquienUI
 // @namespace    https://github.com/TheHebel97/reliquienScript
-// @version      1.0.7
+// @version      1.0.9
 // @author       TheHebel97
 // @license      MIT
 // @description  Reliquien-Inventar mit Suche, Filtern und Highlight-Presets.
 // @match        https://*.die-staemme.de/game.php?village=*&screen=relic_*
 // @run-at       document-idle
-// @grant        none
+// @sandbox      raw
+// @grant        unsafeWindow
+// @grant        GM_getValue
+// @grant        GM_setValue
 // @noframes
 // ==/UserScript==
 
 var api = typeof unsafeWindow != 'undefined' ? unsafeWindow.ScriptAPI : window.ScriptAPI;
 api.register('reliquienUI', true, 'TheHebel97', 'support-nur-im-forum@die-staemme.de');
+
+// Nur diese weltbezogenen Script-Einstellungen an den geladenen Code weiterreichen.
+unsafeWindow.reliquienUIStorage = (() => {
+    const keys = ['docked-panels', 'show-discovered-by', 'relic-presets', 'onboarding-seen']
+        .map(key => location.hostname + ':reliquiensrtipz:' + key)
+        .flatMap(key => [key, key + ':migrated']);
+    return Object.freeze({
+        getValue: (key, fallback) => keys.includes(key) ? GM_getValue(key, fallback) : fallback,
+        setValue: (key, value) => { if (keys.includes(key)) GM_setValue(key, value); }
+    });
+})();
 
 $.getScript('HIER_DIE_SERVER_URL_DES_STAEMME_TEAMS_EINTRAGEN');
 [/CODE]

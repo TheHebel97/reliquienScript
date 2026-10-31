@@ -1,12 +1,13 @@
 import { addDockedPanel } from './docked-panels';
 import { cloneRelicDetails, isRelicActionDisabled } from './relic-details-dom';
+import { onRelicPageDispose, ownRelicNode } from './relic-page-scope';
 
 export function createRelicEquipPanel(
   grid: HTMLElement, selectedDetails: HTMLElement, selectNative: (tile: HTMLElement) => boolean, closeHover: () => void
 ): { select(tile: HTMLElement): void } {
-  const panel = document.createElement('aside'); panel.id = 'relic-equip-window'; panel.hidden = true;
+  const panel = ownRelicNode(document.createElement('aside')); panel.id = 'relic-equip-window'; panel.hidden = true;
   panel.setAttribute('aria-label', 'Reliquie ausrüsten'); document.body.append(panel);
-  const style = document.createElement('style');
+  const style = ownRelicNode(document.createElement('style'));
   style.textContent = `
     #relic-equip-window { color: #412b13; font: 12px/1.4 Verdana, sans-serif; }
     #relic-equip-window .relic-details { width: 100%; min-width: 0; margin: 0; padding: 0; border: 0; background: transparent; box-sizing: border-box; overflow-wrap: anywhere; }
@@ -71,14 +72,17 @@ export function createRelicEquipPanel(
     if (!native || isRelicActionDisabled(native)) return;
     close(); native.click(); // Keep the game's confirmation, cooldown and requests.
   });
-  new MutationObserver(() => {
+  const detailObserver = new MutationObserver(() => {
     if (!pinnedId) return;
     if (!findTile()) close(); else render();
-  }).observe(selectedDetails, { childList: true, subtree: true, attributes: true, characterData: true });
-  new MutationObserver(() => {
+  });
+  detailObserver.observe(selectedDetails, { childList: true, subtree: true, attributes: true, characterData: true });
+  const gridObserver = new MutationObserver(() => {
     if (!pinnedId) return;
     if (!findTile()) close(); else { markSelection(); render(); }
-  }).observe(grid, { childList: true, subtree: true });
+  });
+  gridObserver.observe(grid, { childList: true, subtree: true });
+  onRelicPageDispose(() => { detailObserver.disconnect(); gridObserver.disconnect(); });
   return { select(tile) {
     const id = tile.querySelector<HTMLImageElement>('img[data-id]')?.dataset.id;
     if (!id || !grid.contains(tile)) return;

@@ -1,5 +1,6 @@
 import { cloneRelicDetails, isRelicActionDisabled } from './relic-details-dom';
 import { createRelicEquipPanel } from './relic-equip-panel';
+import { onRelicPageDispose, ownRelicNode, relicPageSignal } from './relic-page-scope';
 
 const STYLE_ID = 'reliquiensrtipz-relic-hover-details-style';
 const TOOLTIP_ID = 'relic-hover-details';
@@ -9,7 +10,7 @@ export function installRelicHoverDetails(): void {
   const selectedDetails = document.getElementById('selected_relic_details');
   if (!grid || !selectedDetails || document.getElementById(TOOLTIP_ID)) return;
 
-  const style = document.createElement('style');
+  const style = ownRelicNode(document.createElement('style'));
   style.id = STYLE_ID;
   style.textContent = `
     #selected_relic_details { display: none !important; }
@@ -39,7 +40,7 @@ export function installRelicHoverDetails(): void {
   `;
   document.head.appendChild(style);
 
-  const tooltip = document.createElement('aside');
+  const tooltip = ownRelicNode(document.createElement('aside'));
   tooltip.id = TOOLTIP_ID;
   tooltip.hidden = true;
   tooltip.setAttribute('aria-live', 'polite');
@@ -123,22 +124,25 @@ export function installRelicHoverDetails(): void {
     if (!tile || contains(tile, event.relatedTarget)) return;
     close();
   });
-  window.addEventListener('blur', close);
-  window.addEventListener('resize', close);
-  document.addEventListener('visibilitychange', () => { if (document.hidden) close(); });
-  document.addEventListener('keydown', event => { if (event.key === 'Escape') close(); });
+  const signal = relicPageSignal();
+  window.addEventListener('blur', close, { signal });
+  window.addEventListener('resize', close, { signal });
+  document.addEventListener('visibilitychange', () => { if (document.hidden) close(); }, { signal });
+  document.addEventListener('keydown', event => { if (event.key === 'Escape') close(); }, { signal });
   document.addEventListener('scroll', event => {
     if (!contains(tooltip, event.target)) close();
-  }, true);
+  }, { capture: true, signal });
 
   // Follow native detail/eligibility changes without retaining stale relic snapshots.
   const detailObserver = new MutationObserver(() => {
     if (activeTile) captureDetails(activeTile);
   });
   detailObserver.observe(selectedDetails, { childList: true, subtree: true, characterData: true, attributes: true });
-  new MutationObserver(() => {
+  const gridObserver = new MutationObserver(() => {
     if (activeTile && (!grid.contains(activeTile) || activeTile.querySelector<HTMLImageElement>('img[data-id]')?.dataset.id !== hoveredId)) close();
-  }).observe(grid, { childList: true, subtree: true });
+  });
+  gridObserver.observe(grid, { childList: true, subtree: true });
+  onRelicPageDispose(() => { detailObserver.disconnect(); gridObserver.disconnect(); });
   grid.addEventListener('click', event => {
     const tile = (event.target as Element).closest<HTMLElement>('#relics > div');
     if (!tile || (event as MouseEvent).button !== 0) return;

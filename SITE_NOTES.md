@@ -2,6 +2,86 @@
 
 Stand: 13.10.2026. Vor Browserzugriff diese bekannten Strukturen verwenden.
 
+## Update 30.10.2026: echter Sperrfall mit partialReload und GM-Speicher
+
+- Im vorbereiteten Opera-Testfall wurde ein Banner ausgeruestet (vom Nutzer).
+  Ein freies Inventarobjekt blieb vorhanden, aber Such-UI fehlte, village_relic
+  war nicht mehr gedockt und grid.page/per_page waren NaN (JSON zeigt null).
+- Nach Reload wurde ein nativer XHR `game.php?...&_partial` beobachtet.
+  `partialReload()` ruft TribalWars.fetch auf; handleResponse ersetzt synchron
+  `#content_value` und startet native Inventar-Initialisierung mit einem neuen Grid.
+  Ein weiteres DOMContentLoaded wird nicht ausgeloest. Vorhandene UI-Styles und
+  body-Randfenster ueberleben den Austausch, Referenzen auf alte Nodes sind veraltet.
+- Lifecycle nach Root-Identitaet (#page_inventory, sonst Content-Anker) beobachten;
+  normale Kachel-/Timer-Mutationen nicht als neue Seite behandeln. Alte UI-Nodes,
+  Styles, Observer und globale Listener entsorgen, native Hooks restaurieren,
+  anschliessend ganze UI inkl. Dock-Registrierung neu aufbauen. Kein Eingriff in
+  Timer/Entfernen- oder Premiumaktionen. Vorheriger statischer Cooldown-Test allein
+  deckte diesen Austausch nicht ab; Bundlepruefung erweitert um zwei echte Rootwechsel.
+- Alte Raster-Resize-Observer liefen auf getrenntem Element weiter: leere Padding-
+  Werte ergaben NaN, das ins neue Grid geschrieben wurde. isConnected und endliche
+  Messwerte pruefen, geplante RAFs abbrechen; Kapazitaetsmodell nie NaN liefern lassen.
+- Neuer Speicher `src/ui/relic-storage.ts`: GM-Werte als Strings, Schluessel
+  `${location.hostname}:reliquiensrtipz:...`. Vier bekannte Einstellungen; pro Key
+  Migrationsmarker `:migrated`. Vorhandene GM-Werte gewinnen, alte LocalStorage-Kopie
+  bleibt fuer Rueckweg erhalten. Keine neuen LS-Schreibzugriffe. Fehlende Grants
+  erlauben nur Sitzungsspeicher mit Hinweis, nicht heimlichen LS-Fallback.
+- @sandbox raw fuer native lexikalische RelicSystem-Bindung; GM_getValue/GM_setValue
+  und unsafeWindow explizit freigeben. Dev-Loader 0.2.0 braucht direkten eval, um
+  GM-Bindungen zu behalten. Der Team-getScript-Loader exportiert stattdessen eine
+  auf die vier weltbezogenen Keys plus Migrationsmarker begrenzte Speicherbruecke.
+  Quellen: https://www.tampermonkey.net/documentation.php?q=sandbox und ?q=GM_values.
+- Im echten gesperrten Opera-Inventar nach Fix: freie ID 323537 wieder sichtbar,
+  nativer Countdown weiter aktiv, Seite 0 und per_page 60. Zwei native partialReload-
+  Aufrufe (davon einer bei offenem Preseteditor) wiederholen den kompletten Aufbau
+  ohne doppelte Fenster/Modals oder NaN. Suche, Presets, Ausruestfenster und Hilfe
+  funktionieren; Editor nach Seitenwechsel geschlossen, Aufwertungsslots unveraendert.
+- GM-Backend offline direkt sowie mit echtem Initialisierungscode aus dem Foren-
+  entwurf getestet. Letzterer laedt den Hauptcode ohne GM-Globals; nur die begrenzte
+  Bruecke ist verfuegbar. Weltfremde/unbekannte Keys erreichen GM nicht. Beide
+  Varianten bestehen zwei Rootwechsel samt unveraenderten Einstellungen.
+- Live-Abschluss mit installiertem Dev-Loader 0.2.0 in Opera: GM-Verfuegbarkeit
+  bestaetigt, kein Sitzungsspeicher-Hinweis. Testfarbe #47b8c9 ueber Preset-UI
+  gespeichert; nach vollstaendigem Reload und nativem partialReload erhalten.
+  Alle vier alten LocalStorage-Werte dabei unveraendert. Ursprungsfarbe #d2d51b
+  wiederhergestellt und nach weiterem Reload bestaetigt. Freie Reliquie weiter
+  sichtbar, pro Panel genau eine Instanz, grid.page=0/per_page=60; Countdown und
+  versteckter Entfernen-Link erhalten, Aufwertungsslots alle null.
+
+## Update 30.10.2026: neues natives Grid und gemeinsamer Filter-Katalog
+
+- Opera-Erweiterung erreichbar, auch wenn das Chat-/Accessibility-Overlay nicht
+  erscheint. Welt 259 lieferte reproduzierbar `inventory.getMaxPage is not a function`.
+- Seitenauswahl liegt jetzt auf `RelicSystem.Inventory.grid`: `page`, `per_page`,
+  `getMaxPage()`, `setPage(n)`, `getPageStacks()`. `Inventory.relics_per_page` und
+  `Inventory.page` sind keine Steuerung mehr; `getGroupedInventoryRelics()` entfaellt.
+- `grid.getIncludedRelics()` wendet native include-Regel an: keine ausgeruesteten/
+  angebotenen Reliquien oder IDs in `relics_to_upgrade`. Danach `matchesFilters`,
+  `getFilteredRelics()`, `getStacks()` und Seitenschnitt. `updateData` ersetzt Daten
+  via `grid.setRelics()`; Methode und volle Quelldaten nicht fuer Suche umschreiben.
+- `RelicSelect.groupRelics` behaelt alle Records und nimmt den ersten als
+  `representative`. Daher eigene Sortierung vor Gruppierung (staerkster Substat/
+  Shiny-Repraesentant) und nach nativer Stapelsortierung (sonst quality_desc-Vorrang).
+- Native Selects heissen `inventory_filter_slot1/slot2`, optgroups mit `q:quality`,
+  `t:type`, `s:substat`. Sortierung in `inventory_filter_sort`, Anzahl in
+  `inventory_filter_count`. Alte quality/type/sub1-Selects fehlen. Gemeinsamer Leser
+  `src/ui/relic-inventory.ts` entfernt Praefixe und dedupliziert beide Slots;
+  Suche und Presets verwenden denselben Katalog, gespeicherte IDs bleiben gleich.
+- Native Controls liegen in `.relic-controls` und `.relic-filters`; bei eigener
+  Suche mitsamt Beschriftungen ausblenden, nicht nur Dropdown-Widgets.
+- Gemeldeter Welt-258-Cooldown-DOM: remove_relic_button existiert mit display-none,
+  countdown_container/timer bleiben vorhanden; restliche Inventar-/Upgrade-IDs gleich.
+  URL village=5485&screen=relic_system passt zum Match. Anonymisierte Minimalfassung
+  in `scripts/fixtures/relic-cooldown.html`; verify-userscript prueft komplettes Bundle
+  samt Suche/Presets/Docks, erhaelt Timer und Sperre und fuehrt keine Spielaktion aus.
+  Welt-258-Link in Opera fuehrte auf abgelaufene Sitzung; dort keine Live-Pruefung.
+- Endkontrolle Welt 259: 10 Spalten x 6 Reihen, native grid.per_page=60 statt 20;
+  Suche Grossaxt 1/2, leere Treffer, Typfilter Banner, Sortierung Typ absteigend und
+  Reset erfolgreich. Eine Reliquie per Linksklick testweise in Aufwertungsslot 0,
+  danach wieder entfernt. Keine Aufwertung/Ausruestung ausgefuehrt. Slots danach
+  alle null, native Gesamt-/Trefferzahl wieder 2/2, keine neuen Scriptfehler.
+  80 Jest-Tests plus Typecheck, lesbarer Build und kompilierter Cooldown-Start bestanden.
+
 ## Update 17.10.2026: Kampf-Pools statt fester Kombinationen (1.0.7)
 
 - Nutzerpraezisierung: Offensiv aus Axt-Angriff, LK-Angriff und ausschliesslich

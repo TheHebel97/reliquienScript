@@ -1,7 +1,9 @@
+import { relicStorage } from './relic-storage';
 import { addDockedPanel } from './docked-panels';
-import { Choice } from './relic-search-model';
+import { readRelicCatalog } from './relic-inventory';
 import { DEFAULT_PARTIAL_COLOR, DEFAULT_PRESET_COLOR, installedDefaultIds, MAIN_BONUSES, presetMatchLevel, presetColor, PresetRelic, readPresets, RelicPreset, writePresets } from './relic-preset-model';
 import { seedDefaultPresets } from './relic-preset-defaults';
+import { onRelicPageDispose, ownRelicNode } from './relic-page-scope';
 
 const WINDOW_ID = 'relic-preset-window';
 const STORAGE_KEY = 'reliquiensrtipz:relic-presets';
@@ -12,10 +14,7 @@ export function installRelicPresets(): void {
   const grid = document.getElementById('relics');
   const line = document.querySelector('#relic-search .search-line');
   if (!grid || !line || document.getElementById(WINDOW_ID) || typeof RelicSystem === 'undefined') return;
-  const options = (id: string): Choice[] => Array.from(document.querySelectorAll<HTMLOptionElement>(`#${id} option`))
-    .filter(o => o.value && o.value !== 'null').map(o => ({ value: o.value, label: o.textContent || o.value }));
-  const types = options('inventory_filter_type');
-  const stats = options('inventory_filter_sub1');
+  const { types, substats: stats } = readRelicCatalog();
   if (!types.length || !stats.length) return;
   stats.push({ value: 'barracks-cost', label: 'Kaserne: Rekrutierungskosten reduzieren' });
   stats.push({ value: 'light-attack', label: 'Leichte Kavallerie: +x% Angriffsstärke' });
@@ -62,19 +61,19 @@ export function installRelicPresets(): void {
   let partialColor = DEFAULT_PARTIAL_COLOR;
   let storageMessage = '';
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = relicStorage.getItem(STORAGE_KEY);
     color = presetColor(raw);
     partialColor = presetColor(raw, true);
     const seeded = seedDefaultPresets(readPresets(raw), installedDefaultIds(raw));
     presets = seeded.presets; installed = seeded.installed;
-    localStorage.setItem(STORAGE_KEY, writePresets(presets, installed, color, partialColor));
+    relicStorage.setItem(STORAGE_KEY, writePresets(presets, installed, color, partialColor));
   } catch {
     const seeded = seedDefaultPresets(presets, installed); presets = seeded.presets; installed = seeded.installed;
-    storageMessage = 'Nur für diese Sitzung: Browser-Speicher nicht verfügbar.';
+    storageMessage = 'Nur für diese Sitzung: Tampermonkey-Speicher nicht verfügbar.';
   }
   let editingId: string | null = null;
   let selectedStats = new Set<string>();
-  const style = document.createElement('style');
+  const style = ownRelicNode(document.createElement('style'));
   style.textContent = `
     #relics > div.relic-preset { position: relative; }
     #relics > div.relic-preset::after {
@@ -127,10 +126,11 @@ export function installRelicPresets(): void {
   const button = (label: string, action: () => void): HTMLButtonElement => {
     const b = document.createElement('button'); b.type = 'button'; b.textContent = label; b.addEventListener('click', action); return b;
   };
-  const panel = document.createElement('aside'); panel.id = WINDOW_ID; panel.hidden = true;
+  const panel = ownRelicNode(document.createElement('aside')); panel.id = WINDOW_ID; panel.hidden = true;
   panel.setAttribute('aria-label', 'Reliquien-Presets'); document.body.append(panel);
   const dock = addDockedPanel(panel, 'Presets', 57, 340);
   const trigger = button('Presets', () => setOpen(panel.hidden));
+  ownRelicNode(trigger);
   trigger.id = 'relic-preset-trigger'; trigger.setAttribute('aria-controls', WINDOW_ID); trigger.setAttribute('aria-expanded', 'false');
   line.insertBefore(trigger, line.lastElementChild);
   function setOpen(open: boolean): void { dock.setVisible(open); trigger.setAttribute('aria-expanded', String(open)); }
@@ -157,7 +157,7 @@ export function installRelicPresets(): void {
   form.hidden = true;
   const heading = document.createElement('strong'); heading.textContent = 'Neues Preset';
   heading.id = 'relic-preset-editor-title';
-  const modal = document.createElement('dialog'); modal.id = EDITOR_ID;
+  const modal = ownRelicNode(document.createElement('dialog')); modal.id = EDITOR_ID;
   modal.setAttribute('aria-labelledby', heading.id); document.body.append(modal);
   function applyColor(): void {
     [grid!, panel, modal].forEach(element => {
@@ -255,8 +255,8 @@ export function installRelicPresets(): void {
     count.textContent = `Markiert: ${marked}`;
   };
   function persist(): void {
-    try { localStorage.setItem(STORAGE_KEY, writePresets(presets, installed, color, partialColor)); message.textContent = ''; }
-    catch { message.textContent = 'Nur für diese Sitzung übernommen: Browser-Speicher ist nicht verfügbar.'; }
+    try { relicStorage.setItem(STORAGE_KEY, writePresets(presets, installed, color, partialColor)); message.textContent = ''; }
+    catch { message.textContent = 'Nur für diese Sitzung übernommen: Tampermonkey-Speicher ist nicht verfügbar.'; }
     renderList(); highlight();
   }
   function renderList(): void {
@@ -326,6 +326,8 @@ export function installRelicPresets(): void {
     else presets.push(preset);
     resetEditor(); persist(); newButton.focus();
   });
-  new MutationObserver(highlight).observe(grid, { childList: true, subtree: true });
+  const observer = new MutationObserver(highlight);
+  observer.observe(grid, { childList: true, subtree: true });
+  onRelicPageDispose(() => observer.disconnect());
   resetEditor(); renderList(); highlight();
 }

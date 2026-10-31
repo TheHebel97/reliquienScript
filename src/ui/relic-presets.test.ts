@@ -3,6 +3,8 @@ import { installRelicPresets } from './relic-presets';
 import { DEFAULT_PRESET_COLOR, presetColor, readPresets, writePresets } from './relic-preset-model';
 import { DEFAULT_PRESETS } from './relic-preset-defaults';
 import { installRelicShinyHighlight } from './relic-shiny-highlight';
+import { relicStorage } from './relic-storage';
+import { mockUserscriptStorage } from './test-helpers/userscript-storage';
 
 jest.mock('./docked-panels', () => ({
   addDockedPanel: (element: HTMLElement) => ({
@@ -24,13 +26,13 @@ const addStat = (id: string): void => {
   document.getElementById('relic-preset-add-substat')!.click();
 };
 const card = (): HTMLElement => document.querySelector<HTMLElement>('.preset-card')!;
-const stored = () => readPresets(localStorage.getItem(key));
+const stored = () => readPresets(relicStorage.getItem(key));
 const submit = (): void => { document.getElementById('relic-preset-form')!.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })); };
 const tile = (id: string): HTMLElement => document.querySelector<HTMLImageElement>(`#relics img[data-id="${id}"]`)!.parentElement!;
 const create = (): void => { document.getElementById('relic-preset-new')!.click(); input().value = 'Axt + LK Off'; type().value = 'greataxe'; addStat('5'); addStat('24'); submit(); };
 
 beforeEach(() => {
-  localStorage.clear(); localStorage.setItem(key, writePresets([], DEFAULT_PRESETS.map(p => p.id))); document.head.replaceChildren();
+  localStorage.clear(); mockUserscriptStorage(); localStorage.setItem(key, writePresets([], DEFAULT_PRESETS.map(p => p.id))); document.head.replaceChildren();
   Object.defineProperty(HTMLDialogElement.prototype, 'showModal', { configurable: true, value: function () { this.setAttribute('open', ''); } });
   Object.defineProperty(HTMLDialogElement.prototype, 'close', { configurable: true, value: function () { this.removeAttribute('open'); } });
   document.body.innerHTML = `<div id="relic-search"><div class="search-line"><input id="search" value="meine Suche"><button>Filter</button><button>Zurücksetzen</button></div></div>
@@ -163,7 +165,7 @@ test('actual shiny highlighting coexists with presets after toggles and native g
   expect(picker.value).toBe(DEFAULT_PRESET_COLOR);
   picker.value = '#c73721'; picker.dispatchEvent(new Event('input')); picker.dispatchEvent(new Event('change'));
   expect(document.getElementById('relics')!.style.getPropertyValue('--relic-preset-color')).toBe('#c73721');
-  expect(presetColor(localStorage.getItem(key))).toBe('#c73721');
+  expect(presetColor(relicStorage.getItem(key))).toBe('#c73721');
   expect(stored()[0].shinyOnly).toBe(true);
   expect(tile('1').classList.contains('relic-shiny')).toBe(true);
   expect(tile('1').classList.contains('relic-preset')).toBe(true);
@@ -184,8 +186,8 @@ test('full matches win over partial matches and both colors survive saving and r
   const picker = document.getElementById('relic-preset-partial-color') as HTMLInputElement;
   expect(picker.value).toBe('#ff8800');
   picker.value = '#44aabb'; picker.dispatchEvent(new Event('change'));
-  expect(presetColor(localStorage.getItem(key), true)).toBe('#44aabb');
-  expect(presetColor(localStorage.getItem(key))).toBe('#bada55');
+  expect(presetColor(relicStorage.getItem(key), true)).toBe('#44aabb');
+  expect(presetColor(relicStorage.getItem(key))).toBe('#bada55');
   document.getElementById('relic-preset-window')!.remove();
   document.getElementById('relic-preset-editor')!.remove();
   document.getElementById('relic-preset-trigger')!.remove();
@@ -252,8 +254,8 @@ test('migrates the old offensive defaults and highlights the screenshot combinat
   expect(tile('1').classList.contains('relic-preset-partial')).toBe(false);
   expect(tile('2').classList.contains('relic-preset')).toBe(false);
   expect(stored().map(p => p.id)).toEqual(['default:offence', 'default:defence']);
-  expect(presetColor(localStorage.getItem(key))).toBe('#bada55');
-  expect(presetColor(localStorage.getItem(key), true)).toBe('#ff8800');
+  expect(presetColor(relicStorage.getItem(key))).toBe('#bada55');
+  expect(presetColor(relicStorage.getItem(key), true)).toBe('#ff8800');
   const off = document.querySelector<HTMLElement>('[data-preset-id="default:offence"]')!;
   off.querySelector<HTMLButtonElement>('button')!.click();
   expect((document.getElementById('relic-preset-mode') as HTMLSelectElement).value).toBe('all');
